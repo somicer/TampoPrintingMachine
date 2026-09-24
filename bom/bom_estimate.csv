@@ -1,0 +1,31 @@
+group,item,model,qty,unit_min_MT,unit_max_MT,basis,note
+Control,PLC,Delta DVP28SV11T2,1,35,35,user,قیمت اعلامی شما (ترب 18 تا 40.6)
+Control,HMI 7in,Delta DOP-107BV,1,20,20,user,قیمت اعلامی شما
+Control,Expansion I/O 8DI/8DO,Delta DVP16SP11T,1,6,10,estimate,پیشنهادی
+Motion,Closed-loop driver,Leadshine CL57,2,8,14,estimate,کلون HBS57 در ترب از 2.45
+Motion,Closed-loop motor NEMA24 4Nm,60HSE4N,2,6,10,estimate,
+Motion,Planetary gearbox 1:3 (X),PLF60-3,1,7,12,search,SAM PLF60:3 = 6.85
+Power,PSU 48V 10A,MeanWell NDR-480-48 / SE-600-48,1,6,10,estimate,چینی HZS-480-48 از 1.2
+Power,PSU 24V 6.5A,MeanWell LRS-150-24,1,1.5,2.5,search,آگهی قدیمی‌تر 0.78 تا 0.81
+Pneumatic,Guided cylinder (current),SMC MGPM25-200,1,15,25,estimate,
+Pneumatic,5/2 double solenoid valve,SMC SY5220 (Airtac 4V220 1-2),1,4,7,estimate,
+Pneumatic,Speed controller meter-out,SMC AS2201F,2,0.6,1.2,estimate,
+Pneumatic,Hydraulic shock absorber,SMC RB1412,2,2,4,estimate,
+Pneumatic,Reed/solid-state switch,SMC D-M9N,3,1.5,3,estimate,سومی برای X17
+Pneumatic,FRL + pressure switch,SMC AC20 + ISE20,1,4,8,estimate,
+Pneumatic,Pilot check valve (recommended),SMC XT34 / AS-R,1,2,4,estimate,
+Pneumatic,Fittings + PU tube,-,1,1.5,3,estimate,
+Sensors,Inductive NPN M18,Autonics PR18-8DN,2,1.6,3.2,search,دو قیمت دیده‌شده
+Sensors,Over-travel limit switch,Omron/Autonics,4,0.5,1.5,estimate,
+Safety,Safety relay,Pilz PNOZ s4 + s7.1,1,20,45,estimate,قیمت روز را از نماینده بگیرید
+Safety,E-stop 2NC,Schneider XB5AS8442,2,1,2.5,estimate,
+Safety,Light curtain type 4,Chinese brand (Sick/Omron 60-150),1,15,30,estimate,
+Safety,DC contactor 48V,KM1,1,3,6,estimate,
+Mechanics,Linear rail HGR15 (Y) per m,HIWIN/HQM,1,2.5,5,search,ریل 2.56 میلیون (چینی)
+Mechanics,Carriage HGH15CA,HIWIN/HQM,2,1,5.4,search,از 1.0 (چینی) تا 5.35 (HIWIN)
+Mechanics,Timing belt HTD5M 15mm open PU steel (m),-,3,1,2.5,estimate,
+Mechanics,Timing pulley 24T HTD5M-15 (drive+idler),-,4,0.5,1.5,estimate,
+Panel,Enclosure 60x80 + mounting plate,-,1,8,15,estimate,
+Panel,MCB/fuse/terminal/relay/duct/EMI filter,-,1,20,40,estimate,
+Panel,Shielded cables + drag chain + EMC glands,-,1,10,20,estimate,
+Panel,Tower lamp + pedal + push buttons,-,1,5,9,estimate,

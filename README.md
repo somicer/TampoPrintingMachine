@@ -12,6 +12,8 @@
 | [docs/06_electrical_safety_troubleshooting.md](docs/06_electrical_safety_troubleshooting.md) | تغذیه، ضد نویز، گراندینگ، مدار ایمنی، جدول آلارم‌ها و عیب‌یابی |
 | [plc/TampoPrinter_SV2.il](plc/TampoPrinter_SV2.il) | برنامه‌ی کامل PLC (Instruction List) |
 | [hmi/tag_list.csv](hmi/tag_list.csv) | فهرست Tagهای HMI |
+| [docs/07_bom_cost_estimate.md](docs/07_bom_cost_estimate.md) | برآورد هزینه‌ی قطعات (BOM) |
+| [bom/bom_estimate.csv](bom/bom_estimate.csv) | فهرست قطعات و قیمت برای Excel |
 | [tools/axis_sizing.py](tools/axis_sizing.py) | محاسبه‌ی سرعت پیک، گشتاور، نسبت اینرسی و نیروی جک |
 
 ## مهم‌ترین نتیجه‌ها
