@@ -1,31 +1,31 @@
-group,item,model,qty,unit_min_MT,unit_max_MT,basis,note,usd_equiv_min,usd_equiv_max,intl_usd_min,intl_usd_max
-Control,PLC,Delta DVP28SV11T2,1,35,35,user,قیمت اعلامی شما (ترب 18 تا 40.6),152,152,220,320
-Control,HMI 7in,Delta DOP-107BV,1,20,20,user,قیمت اعلامی شما,87,87,180,260
-Control,Expansion I/O 8DI/8DO,Delta DVP16SP11T,1,6,10,estimate,پیشنهادی,26,43,60,90
-Motion,Closed-loop driver,Leadshine CL57,2,8,14,estimate,کلون HBS57 در ترب از 2.45,35,61,55,90
-Motion,Closed-loop motor NEMA24 4Nm,60HSE4N,2,6,10,estimate,,26,43,50,80
-Motion,Planetary gearbox 1:3 (X),PLF60-3,1,7,12,search,SAM PLF60:3 = 6.85,30,52,60,120
-Power,PSU 48V 10A,MeanWell NDR-480-48 / SE-600-48,1,6,10,estimate,چینی HZS-480-48 از 1.2,26,43,80,130
-Power,PSU 24V 6.5A,MeanWell LRS-150-24,1,1.5,2.5,search,آگهی قدیمی‌تر 0.78 تا 0.81,6,11,20,28
-Pneumatic,Guided cylinder (current),SMC MGPM25-200,1,15,25,estimate,,65,108,250,400
-Pneumatic,5/2 double solenoid valve,SMC SY5220 (Airtac 4V220 1-2),1,4,7,estimate,,17,30,50,90
-Pneumatic,Speed controller meter-out,SMC AS2201F,2,0.6,1.2,estimate,,3,5,8,15
-Pneumatic,Hydraulic shock absorber,SMC RB1412,2,2,4,estimate,,9,17,40,70
-Pneumatic,Reed/solid-state switch,SMC D-M9N,3,1.5,3,estimate,سومی برای X17,6,13,15,30
-Pneumatic,FRL + pressure switch,SMC AC20 + ISE20,1,4,8,estimate,,17,35,60,150
-Pneumatic,Pilot check valve (recommended),SMC XT34 / AS-R,1,2,4,estimate,,9,17,25,50
-Pneumatic,Fittings + PU tube,-,1,1.5,3,estimate,,6,13,20,40
-Sensors,Inductive NPN M18,Autonics PR18-8DN,2,1.6,3.2,search,دو قیمت دیده‌شده,7,14,15,25
-Sensors,Over-travel limit switch,Omron/Autonics,4,0.5,1.5,estimate,,2,6,8,25
-Safety,Safety relay,Pilz PNOZ s4 + s7.1,1,20,45,estimate,قیمت روز را از نماینده بگیرید,87,195,300,550
-Safety,E-stop 2NC,Schneider XB5AS8442,2,1,2.5,estimate,,4,11,15,30
-Safety,Light curtain type 4,Chinese brand (Sick/Omron 60-150),1,15,30,estimate,,65,130,150,400
-Safety,DC contactor 48V,KM1,1,3,6,estimate,,13,26,30,80
-Mechanics,Linear rail HGR15 (Y) per m,HIWIN/HQM,1,2.5,5,search,ریل 2.56 میلیون (چینی),11,22,20,60
-Mechanics,Carriage HGH15CA,HIWIN/HQM,2,1,5.4,search,از 1.0 (چینی) تا 5.35 (HIWIN),4,23,10,40
-Mechanics,Timing belt HTD5M 15mm open PU steel (m),-,3,1,2.5,estimate,,4,11,8,20
-Mechanics,Timing pulley 24T HTD5M-15 (drive+idler),-,4,0.5,1.5,estimate,,2,6,6,15
-Panel,Enclosure 60x80 + mounting plate,-,1,8,15,estimate,,35,65,80,200
-Panel,MCB/fuse/terminal/relay/duct/EMI filter,-,1,20,40,estimate,,87,173,200,450
-Panel,Shielded cables + drag chain + EMC glands,-,1,10,20,estimate,,43,87,100,250
-Panel,Tower lamp + pedal + push buttons,-,1,5,9,estimate,,22,39,50,120
+group,item,model,qty,unit_min_MT,unit_max_MT,basis,note,usd_equiv_min,usd_equiv_max,intl_usd_min,intl_usd_max,intl_basis,intl_source,intl_url
+Control,PLC,Delta DVP28SV11T2,1,35,35,user,قیمت اعلامی شما (ترب 18 تا 40.6),152,152,182,330,search,YingZhou / PLC ERA / eBay,https://www.ebay.com/itm/395576838844
+Control,HMI 7in,Delta DOP-107BV,1,20,20,user,قیمت اعلامی شما,87,87,136,169,search,eBay (+$20–50 حمل),https://www.ebay.com/itm/185015742358
+Control,Expansion I/O 8DI/8DO,Delta DVP16SP11T,1,6,10,estimate,پیشنهادی,26,43,117,127,search,WI Automation / PLC Direct,https://plc-direct.com/products/dvp16sp11t
+Motion,Closed-loop driver,Leadshine CL57,2,8,14,estimate,کلون HBS57 در ترب از 2.45,35,61,54,68,search,Cloudray / AliExpress,https://www.cloudraylaser.com/products/cloudray-cl57-24-48vdc-3-6a-leadshine-closed-loop-stepper-motor-driver
+Motion,Closed-loop motor NEMA24 4Nm,60HSE4N,2,6,10,estimate,,26,43,44,44,search,Oyostepper 24HS40-5004D-E1000,https://www.oyostepper.com/goods-1263-S-Series-Nema-24-Closed-Loop-Stepper-Motor-18-Deg-40-Nm56645ozin-50A-2-Phase-with-Optical-Incremental-Encoder.html
+Motion,Planetary gearbox 1:3 (X),PLF60-3,1,7,12,search,SAM PLF60:3 = 6.85,30,52,60,120,estimate,یافت نشد,
+Power,PSU 48V 10A,MeanWell NDR-480-48 / SE-600-48,1,6,10,estimate,چینی HZS-480-48 از 1.2,26,43,106,106,search,DigiKey NDR-480-48,https://www.digikey.com/en/products/detail/mean-well-usa-inc/NDR-480-48/7705225
+Power,PSU 24V 6.5A,MeanWell LRS-150-24,1,1.5,2.5,search,آگهی قدیمی‌تر 0.78 تا 0.81,6,11,18,18,search,DigiKey LRS-150-24,https://www.digikey.com/en/products/detail/mean-well-usa-inc/LRS-150-24/7705015
+Pneumatic,Guided cylinder (current),SMC MGPM25-200,1,15,25,estimate,,65,108,178,332,search,eBay / MROSupply / RS,https://us.rs-online.com/product/smc-corporation/mgpm25-200z/70605821/
+Pneumatic,5/2 double solenoid valve,SMC SY5220 (Airtac 4V220 1-2),1,4,7,estimate,,17,30,70,97,search,MISUMI / MROSupply / Southern Controls,https://www.mrosupply.com/hydraulics-and-pneumatics/6430742_sy5220-5dz-01_smc/
+Pneumatic,Speed controller meter-out,SMC AS2201F,2,0.6,1.2,estimate,,3,5,11,15,search,Automation Distribution,https://automationdistribution.com/as2201f-01-06s/
+Pneumatic,Hydraulic shock absorber,SMC RB1412,2,2,4,estimate,,9,17,29,43,search,Mechatalk / MISUMI,https://us.misumi-ec.com/vona2/detail/221006500174/?HissuCode=RB1412
+Pneumatic,Reed/solid-state switch,SMC D-M9N,3,1.5,3,estimate,سومی برای X17,6,13,29,36,search,Automation Distribution / MROSupply,https://automationdistribution.com/d-m9n/
+Pneumatic,FRL + pressure switch,SMC AC20 + ISE20,1,4,8,estimate,,17,35,110,130,search,AW20 ($42.65) + ISE20 ($67–87),https://automationdistribution.com/smc-aw20-02bg/
+Pneumatic,Pilot check valve (recommended),SMC XT34 / AS-R,1,2,4,estimate,,9,17,42,42,search,SMC ASP430F (Automation Distribution),https://automationdistribution.com/asp430f-02-08s/
+Pneumatic,Fittings + PU tube,-,1,1.5,3,estimate,,6,13,20,40,estimate,–,
+Sensors,Inductive NPN M18,Autonics PR18-8DN,2,1.6,3.2,search,دو قیمت دیده‌شده,7,14,26,28,search,Wolf Automation / QF Automation,https://www.wolfautomation.com/sensor-inductive-proximity-o18mm-8mm-range-24707
+Sensors,Over-travel limit switch,Omron/Autonics,4,0.5,1.5,estimate,,2,6,26,44,search,Omron D4N (Hartfiel / MISUMI),https://shop.hartfiel.com/products/D4N-1A31
+Safety,Safety relay,Pilz PNOZ s4 + s7.1,1,20,45,estimate,قیمت روز را از نماینده بگیرید,87,195,348,604,search,PNOZ s4 ($133–364) + s7.1 ($215–240),https://shop.powermation.com/products/PILZ-750104
+Safety,E-stop 2NC,Schneider XB5AS8442,2,1,2.5,estimate,,4,11,24,29,search,TME / Kempston / Tameson,https://www.tme.com/us/en-us/details/xb5as8442/panel-mount-switches-standard-22mm/schneider-electric/
+Safety,Light curtain type 4,Chinese brand (Sick/Omron 60-150),1,15,30,estimate,,65,130,492,602,search,AutomationDirect (Contrinex / Datasensing),https://library.automationdirect.com/datasensing-sh4-light-curtain/
+Safety,DC contactor 48V,KM1,1,3,6,estimate,,13,26,30,80,estimate,–,
+Mechanics,Linear rail HGR15 (Y) per m,HIWIN/HQM,1,2.5,5,search,ریل 2.56 میلیون (چینی),11,22,31,60,search,Motion Constrained (از $30.72),https://motionconstrained.com/store/hiwin-linear-guides/hiwin-hg-series-linear-guides/hg-rails-only/hiwin-hgr15r-linear-guideway-rail/
+Mechanics,Carriage HGH15CA,HIWIN/HQM,2,1,5.4,search,از 1.0 (چینی) تا 5.35 (HIWIN),4,23,29,53,search,PicClick / eBay,https://www.ebay.com/itm/184611756265
+Mechanics,Timing belt HTD5M 15mm open PU steel (m),-,3,1,2.5,estimate,,4,11,8,20,estimate,قیمت در نتایج نبود,
+Mechanics,Timing pulley 24T HTD5M-15 (drive+idler),-,4,0.5,1.5,estimate,,2,6,5,20,search,BEP Ltd (از $4.80),https://bepltd.com/products/24-5m-15-htd-pilot-bore-5m-timing-belt-pulley-24-tooth-x-15mm-wide
+Panel,Enclosure 60x80 + mounting plate,-,1,8,15,estimate,,35,65,80,200,estimate,–,
+Panel,MCB/fuse/terminal/relay/duct/EMI filter,-,1,20,40,estimate,,87,173,200,450,estimate,–,
+Panel,Shielded cables + drag chain + EMC glands,-,1,10,20,estimate,,43,87,100,250,estimate,–,
+Panel,Tower lamp + pedal + push buttons,-,1,5,9,estimate,,22,39,50,120,estimate,–,
