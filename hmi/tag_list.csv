@@ -1,0 +1,78 @@
+Tag,Address,Type,Access,Unit,Min,Max,Decimals,HMI Object,Screen,Description
+MODE_AUTO,M120,Bit,RW,,,,,Toggle switch,1,0=Manual 1=Auto
+CMD_START,M100,Bit,W,,,,,Set ON button,1,Auto start (PLC resets)
+CMD_STOP,M101,Bit,W,,,,,Set ON button,1,Stop at end of cycle
+CMD_RESET,M102,Bit,W,,,,,Set ON button,1/7,Alarm + drive reset
+CMD_HOME,M103,Bit,W,,,,,Set ON button,1/2,Start homing
+JOG_X_POS,M104,Bit,W,,,,,Momentary,2,Jog X+ (hold-to-run)
+JOG_X_NEG,M105,Bit,W,,,,,Momentary,2,Jog X-
+JOG_Y_POS,M106,Bit,W,,,,,Momentary,2,Jog Y+
+JOG_Y_NEG,M107,Bit,W,,,,,Momentary,2,Jog Y-
+CMD_Z_DOWN,M108,Bit,W,,,,,Set ON button,2,Manual Z down
+CMD_Z_UP,M109,Bit,W,,,,,Set ON button,2,Manual Z up
+GOTO_X_PICK,M110,Bit,W,,,,,Set ON button,2,X to pick-up
+GOTO_X_PRINT,M111,Bit,W,,,,,Set ON button,2,X to print
+GOTO_Y_PARK,M112,Bit,W,,,,,Set ON button,2,Y to park
+GOTO_Y_END,M113,Bit,W,,,,,Set ON button,2,Y to end
+RST_TOTAL,M115,Bit,W,,,,,Set ON button (lvl 2),6,Reset total counter
+RST_BATCH,M116,Bit,W,,,,,Set ON button (lvl 1),6,Reset batch counter
+Y_TEST_STROKE,M117,Bit,W,,,,,Set ON button,2,One ink stroke out+back
+AIR_LOTO,M119,Bit,RW,,,,,Toggle (lvl 2),9,Dump main air for maintenance
+OPT_OVERLAP,M500,Bit,RW,,,,,Toggle,1/4,Re-ink during print travel
+OPT_Z_DOWN2,M501,Bit,RW,,,,,Toggle (lvl 2),9,Second down sensor X17 installed
+OPT_CONTINUOUS,M502,Bit,RW,,,,,Toggle,1/4,Cycle without pedal
+OPT_DRY_RUN,M503,Bit,RW,,,,,Toggle (lvl 1),4,No Z down
+OPT_BATCH_STOP,M504,Bit,RW,,,,,Toggle,4,Stop when batch reached
+OPT_WATCHDOG,M505,Bit,RW,,,,,Toggle (lvl 2),9,HMI heartbeat supervision
+ST_HOMED,M24,Bit,R,,,,,Lamp,1/2,All axes homed
+ST_Z_UP_OK,M25,Bit,R,,,,,Lamp,2/8,Z confirmed up
+ST_PERMIT_X,M40,Bit,R,,,,,Lamp,2,X motion permitted
+ST_PERMIT_Z,M41,Bit,R,,,,,Lamp,2,Z down permitted
+ST_PERMIT_Y,M42,Bit,R,,,,,Lamp,2,Y motion permitted
+ST_MANUAL_EN,M38,Bit,R,,,,,Visibility/enable,2,Manual controls enabled
+ST_AUTO,M90,Bit,R,,,,,Lamp,1,Auto active
+ST_BATCH_DONE,M95,Bit,R,,,,,Lamp,1/6,Batch complete
+AUTO_STEP,D0,Word,R,,,,,Text by value,1/8,Auto step (S5..S130)
+INK_STEP,D1,Word,R,,,,,Numeric,8,Ink sub-step
+HOME_STEP,D2,Word,R,,,,,Numeric,8,Homing step
+MACHINE_STATE,D9,Word,R,,,,,Text by value,1,0 NotHomed/1 Homing/2 Ready/3 Auto/4 Stopping/5 Alarm
+X_POS,D30,DWord,R,mm,,,1,Numeric,1/2,X actual position
+Y_POS,D34,DWord,R,mm,,,1,Numeric,1/2,Y actual position
+ALARM_WORD,D50,Word,R,,,,,Alarm bits,7,Bit0=A01 ... Bit15=A16
+HMI_HEARTBEAT,D60,Word,W,,,,,Cycle macro 500 ms,-,D60 = D60 + 1
+X_PICK_POS,D500,DWord,RW,mm,0,7000,1,Numeric,3,Pick-up position
+X_PRINT_POS,D502,DWord,RW,mm,0,7000,1,Numeric,3,Print position
+X_READY_POS,D504,DWord,RW,mm,0,7000,1,Numeric,3,Ready/park position
+X_SOFT_MAX,D506,DWord,RW,mm,0,7000,1,Numeric (lvl 2),3,X soft limit
+X_ZONE_MIN,D508,DWord,RW,mm,0,7000,1,Numeric (lvl 2),3,Cliche zone start
+X_ZONE_MAX,D510,DWord,RW,mm,0,7000,1,Numeric (lvl 2),3,Cliche zone end
+Y_PARK_POS,D512,DWord,RW,mm,0,4000,1,Numeric,3,Cup park
+Y_END_POS,D514,DWord,RW,mm,0,4000,1,Numeric,3,Cup stroke end
+Y_SOFT_MAX,D516,DWord,RW,mm,0,4000,1,Numeric (lvl 2),3,Y soft limit
+X_SCALE,D518,DWord,RW,p/1000mm,1000,200000,0,Numeric (lvl 2),9,X pulses per 1000 mm
+Y_SCALE,D520,DWord,RW,p/1000mm,1000,200000,0,Numeric (lvl 2),9,Y pulses per 1000 mm
+X_SPD_AUTO,D522,Word,RW,mm/s,50,800,0,Numeric,3,
+X_SPD_MAN,D523,Word,RW,mm/s,5,200,0,Numeric,3,
+X_SPD_HOME,D524,Word,RW,mm/s,5,150,0,Numeric (lvl 2),3,
+X_SPD_CREEP,D525,Word,RW,mm/s,2,30,0,Numeric (lvl 2),3,
+X_ACC,D526,Word,RW,ms,100,1000,0,Numeric,3,
+Y_SPD_OUT,D527,Word,RW,mm/s,50,600,0,Numeric,3,
+Y_SPD_RET,D528,Word,RW,mm/s,50,600,0,Numeric,3,
+Y_SPD_JOG,D529,Word,RW,mm/s,5,200,0,Numeric,3,
+Y_SPD_HOME,D530,Word,RW,mm/s,5,150,0,Numeric (lvl 2),3,
+Y_SPD_CREEP,D531,Word,RW,mm/s,2,30,0,Numeric (lvl 2),3,
+Y_ACC,D532,Word,RW,ms,100,1000,0,Numeric,3,
+DWELL1,D540,Word,RW,s,20,60,2,Numeric,4,Pick-up dwell 0.20-0.60 s
+DWELL2,D541,Word,RW,s,30,80,2,Numeric,4,Print dwell 0.30-0.80 s
+FLASH_OFF,D542,Word,RW,s,0,200,2,Numeric,4,Delay after ink stroke
+Z_DN_TIMEOUT,D543,Word,RW,s,50,500,2,Numeric,4,
+Z_UP_TIMEOUT,D544,Word,RW,s,50,500,2,Numeric,4,
+Z_SETTLE,D545,Word,RW,s,0,50,2,Numeric,4,
+AUTO_PAUSE,D546,Word,RW,s,0,1000,2,Numeric,4,Pause in continuous mode
+HOME_TIMEOUT,D547,Word,RW,s,50,1200,1,Numeric (lvl 2),9,
+POS_TOL,D548,DWord,RW,mm,1,20,1,Numeric (lvl 2),3,
+TOTAL_COUNT,D560,DWord,R,pcs,,,0,Numeric,1/6,
+BATCH_COUNT,D562,DWord,R,pcs,,,0,Numeric,1/6,
+BATCH_TARGET,D564,DWord,RW,pcs,0,999999,0,Numeric,4/6,
+CYCLE_TIME,D566,DWord,R,s,,,2,Numeric,1/6,
+PARTS_PER_HOUR,D568,Word,R,pcs/h,,,0,Numeric,1/6,
