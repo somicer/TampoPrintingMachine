@@ -39,36 +39,36 @@
 
 | قلم | مدل | تعداد | قیمت جهانی واحد (USD) | جمع ردیف (USD) | منبع | معادل دلاری قیمت ایران (واحد) |
 |---|---|:-:|---|---:|---|---|
-| PLC | Delta DVP28SV11T2 | 1 | $182 تا 330 | $182 تا 330 | [YingZhou / PLC ERA / eBay](https://www.ebay.com/itm/395576838844) | $152 |
-| HMI 7in | Delta DOP-107BV | 1 | $136 تا 169 | $136 تا 169 | [eBay (+$20–50 حمل)](https://www.ebay.com/itm/185015742358) | $87 |
-| Expansion I/O 8DI/8DO | Delta DVP16SP11T | 1 | $117 تا 127 | $117 تا 127 | [WI Automation / PLC Direct](https://plc-direct.com/products/dvp16sp11t) | $26 تا 43 |
-| Closed-loop driver | Leadshine CL57 | 2 | $54 تا 68 | $108 تا 136 | [Cloudray / AliExpress](https://www.cloudraylaser.com/products/cloudray-cl57-24-48vdc-3-6a-leadshine-closed-loop-stepper-motor-driver) | $35 تا 61 |
-| Closed-loop motor NEMA24 4Nm | 60HSE4N | 2 | $44 | $88 | [Oyostepper 24HS40-5004D-E1000](https://www.oyostepper.com/goods-1263-S-Series-Nema-24-Closed-Loop-Stepper-Motor-18-Deg-40-Nm56645ozin-50A-2-Phase-with-Optical-Incremental-Encoder.html) | $26 تا 43 |
-| Planetary gearbox 1:3 (X) | PLF60-3 | 1 | $60 تا 120 | $60 تا 120 | *یافت نشد* (برآورد) | $30 تا 52 |
-| PSU 48V 10A | MeanWell NDR-480-48 / SE-600-48 | 1 | $106 | $106 | [DigiKey NDR-480-48](https://www.digikey.com/en/products/detail/mean-well-usa-inc/NDR-480-48/7705225) | $26 تا 43 |
-| PSU 24V 6.5A | MeanWell LRS-150-24 | 1 | $18 | $18 | [DigiKey LRS-150-24](https://www.digikey.com/en/products/detail/mean-well-usa-inc/LRS-150-24/7705015) | $6 تا 11 |
-| Guided cylinder (current) | SMC MGPM25-200 | 1 | $178 تا 332 | $178 تا 332 | [eBay / MROSupply / RS](https://us.rs-online.com/product/smc-corporation/mgpm25-200z/70605821/) | $65 تا 108 |
-| 5/2 double solenoid valve | SMC SY5220 (Airtac 4V220 1-2) | 1 | $70 تا 97 | $70 تا 97 | [MISUMI / MROSupply / Southern Controls](https://www.mrosupply.com/hydraulics-and-pneumatics/6430742_sy5220-5dz-01_smc/) | $17 تا 30 |
-| Speed controller meter-out | SMC AS2201F | 2 | $11 تا 15 | $22 تا 30 | [Automation Distribution](https://automationdistribution.com/as2201f-01-06s/) | $3 تا 5 |
-| Hydraulic shock absorber | SMC RB1412 | 2 | $29 تا 43 | $58 تا 86 | [Mechatalk / MISUMI](https://us.misumi-ec.com/vona2/detail/221006500174/?HissuCode=RB1412) | $9 تا 17 |
-| Reed/solid-state switch | SMC D-M9N | 3 | $29 تا 36 | $87 تا 108 | [Automation Distribution / MROSupply](https://automationdistribution.com/d-m9n/) | $6 تا 13 |
-| FRL + pressure switch | SMC AC20 + ISE20 | 1 | $110 تا 130 | $110 تا 130 | [AW20 ($42.65) + ISE20 ($67–87)](https://automationdistribution.com/smc-aw20-02bg/) | $17 تا 35 |
-| Pilot check valve (recommended) | SMC XT34 / AS-R | 1 | $42 | $42 | [SMC ASP430F (Automation Distribution)](https://automationdistribution.com/asp430f-02-08s/) | $9 تا 17 |
-| Fittings + PU tube | - | 1 | $20 تا 40 | $20 تا 40 | *–* (برآورد) | $6 تا 13 |
-| Inductive NPN M18 | Autonics PR18-8DN | 2 | $26 تا 28 | $52 تا 56 | [Wolf Automation / QF Automation](https://www.wolfautomation.com/sensor-inductive-proximity-o18mm-8mm-range-24707) | $7 تا 14 |
-| Over-travel limit switch | Omron/Autonics | 4 | $26 تا 44 | $104 تا 176 | [Omron D4N (Hartfiel / MISUMI)](https://shop.hartfiel.com/products/D4N-1A31) | $2 تا 6 |
-| Safety relay | Pilz PNOZ s4 + s7.1 | 1 | $348 تا 604 | $348 تا 604 | [PNOZ s4 ($133–364) + s7.1 ($215–240)](https://shop.powermation.com/products/PILZ-750104) | $87 تا 195 |
-| E-stop 2NC | Schneider XB5AS8442 | 2 | $24 تا 29 | $48 تا 58 | [TME / Kempston / Tameson](https://www.tme.com/us/en-us/details/xb5as8442/panel-mount-switches-standard-22mm/schneider-electric/) | $4 تا 11 |
-| Light curtain type 4 | Chinese brand (Sick/Omron 60-150) | 1 | $492 تا 602 | $492 تا 602 | [AutomationDirect (Contrinex / Datasensing)](https://library.automationdirect.com/datasensing-sh4-light-curtain/) | $65 تا 130 |
-| DC contactor 48V | KM1 | 1 | $30 تا 80 | $30 تا 80 | *–* (برآورد) | $13 تا 26 |
-| Linear rail HGR15 (Y) per m | HIWIN/HQM | 1 | $31 تا 60 | $31 تا 60 | [Motion Constrained (از $30.72)](https://motionconstrained.com/store/hiwin-linear-guides/hiwin-hg-series-linear-guides/hg-rails-only/hiwin-hgr15r-linear-guideway-rail/) | $11 تا 22 |
-| Carriage HGH15CA | HIWIN/HQM | 2 | $29 تا 53 | $58 تا 106 | [PicClick / eBay](https://www.ebay.com/itm/184611756265) | $4 تا 23 |
-| Timing belt HTD5M 15mm open PU steel (m) | - | 3 | $8 تا 20 | $24 تا 60 | *قیمت در نتایج نبود* (برآورد) | $4 تا 11 |
-| Timing pulley 24T HTD5M-15 (drive+idler) | - | 4 | $5 تا 20 | $20 تا 80 | [BEP Ltd (از $4.80)](https://bepltd.com/products/24-5m-15-htd-pilot-bore-5m-timing-belt-pulley-24-tooth-x-15mm-wide) | $2 تا 6 |
-| Enclosure 60x80 + mounting plate | - | 1 | $80 تا 200 | $80 تا 200 | *–* (برآورد) | $35 تا 65 |
-| MCB/fuse/terminal/relay/duct/EMI filter | - | 1 | $200 تا 450 | $200 تا 450 | *–* (برآورد) | $87 تا 173 |
-| Shielded cables + drag chain + EMC glands | - | 1 | $100 تا 250 | $100 تا 250 | *–* (برآورد) | $43 تا 87 |
-| Tower lamp + pedal + push buttons | - | 1 | $50 تا 120 | $50 تا 120 | *–* (برآورد) | $22 تا 39 |
+| PLC | Delta DVP28SV11T2 | 1 | $182 تا $330 | $182 تا $330 | [YingZhou / PLC ERA / eBay](https://www.ebay.com/itm/395576838844) | $152 |
+| HMI 7in | Delta DOP-107BV | 1 | $136 تا $169 | $136 تا $169 | [eBay (+$20–50 حمل)](https://www.ebay.com/itm/185015742358) | $87 |
+| Expansion I/O 8DI/8DO | Delta DVP16SP11T | 1 | $117 تا $127 | $117 تا $127 | [WI Automation / PLC Direct](https://plc-direct.com/products/dvp16sp11t) | $26 تا $43 |
+| Closed-loop driver | Leadshine CL57 | 2 | $54 تا $68 | $108 تا $136 | [Cloudray / AliExpress](https://www.cloudraylaser.com/products/cloudray-cl57-24-48vdc-3-6a-leadshine-closed-loop-stepper-motor-driver) | $35 تا $61 |
+| Closed-loop motor NEMA24 4Nm | 60HSE4N | 2 | $44 | $88 | [Oyostepper 24HS40-5004D-E1000](https://www.oyostepper.com/goods-1263-S-Series-Nema-24-Closed-Loop-Stepper-Motor-18-Deg-40-Nm56645ozin-50A-2-Phase-with-Optical-Incremental-Encoder.html) | $26 تا $43 |
+| Planetary gearbox 1:3 (X) | PLF60-3 | 1 | $60 تا $120 | $60 تا $120 | *یافت نشد* (برآورد) | $30 تا $52 |
+| PSU 48V 10A | MeanWell NDR-480-48 / SE-600-48 | 1 | $106 | $106 | [DigiKey NDR-480-48](https://www.digikey.com/en/products/detail/mean-well-usa-inc/NDR-480-48/7705225) | $26 تا $43 |
+| PSU 24V 6.5A | MeanWell LRS-150-24 | 1 | $18 | $18 | [DigiKey LRS-150-24](https://www.digikey.com/en/products/detail/mean-well-usa-inc/LRS-150-24/7705015) | $6 تا $11 |
+| Guided cylinder (current) | SMC MGPM25-200 | 1 | $178 تا $332 | $178 تا $332 | [eBay / MROSupply / RS](https://us.rs-online.com/product/smc-corporation/mgpm25-200z/70605821/) | $65 تا $108 |
+| 5/2 double solenoid valve | SMC SY5220 (Airtac 4V220 1-2) | 1 | $70 تا $97 | $70 تا $97 | [MISUMI / MROSupply / Southern Controls](https://www.mrosupply.com/hydraulics-and-pneumatics/6430742_sy5220-5dz-01_smc/) | $17 تا $30 |
+| Speed controller meter-out | SMC AS2201F | 2 | $11 تا $15 | $22 تا $30 | [Automation Distribution](https://automationdistribution.com/as2201f-01-06s/) | $3 تا $5 |
+| Hydraulic shock absorber | SMC RB1412 | 2 | $29 تا $43 | $58 تا $86 | [Mechatalk / MISUMI](https://us.misumi-ec.com/vona2/detail/221006500174/?HissuCode=RB1412) | $9 تا $17 |
+| Reed/solid-state switch | SMC D-M9N | 3 | $29 تا $36 | $87 تا $108 | [Automation Distribution / MROSupply](https://automationdistribution.com/d-m9n/) | $6 تا $13 |
+| FRL + pressure switch | SMC AC20 + ISE20 | 1 | $110 تا $130 | $110 تا $130 | [AW20 ($42.65) + ISE20 ($67–87)](https://automationdistribution.com/smc-aw20-02bg/) | $17 تا $35 |
+| Pilot check valve (recommended) | SMC XT34 / AS-R | 1 | $42 | $42 | [SMC ASP430F (Automation Distribution)](https://automationdistribution.com/asp430f-02-08s/) | $9 تا $17 |
+| Fittings + PU tube | - | 1 | $20 تا $40 | $20 تا $40 | *–* (برآورد) | $6 تا $13 |
+| Inductive NPN M18 | Autonics PR18-8DN | 2 | $26 تا $28 | $52 تا $56 | [Wolf Automation / QF Automation](https://www.wolfautomation.com/sensor-inductive-proximity-o18mm-8mm-range-24707) | $7 تا $14 |
+| Over-travel limit switch | Omron/Autonics | 4 | $26 تا $44 | $104 تا $176 | [Omron D4N (Hartfiel / MISUMI)](https://shop.hartfiel.com/products/D4N-1A31) | $2 تا $6 |
+| Safety relay | Pilz PNOZ s4 + s7.1 | 1 | $348 تا $604 | $348 تا $604 | [PNOZ s4 ($133–364) + s7.1 ($215–240)](https://shop.powermation.com/products/PILZ-750104) | $87 تا $195 |
+| E-stop 2NC | Schneider XB5AS8442 | 2 | $24 تا $29 | $48 تا $58 | [TME / Kempston / Tameson](https://www.tme.com/us/en-us/details/xb5as8442/panel-mount-switches-standard-22mm/schneider-electric/) | $4 تا $11 |
+| Light curtain type 4 | Chinese brand (Sick/Omron 60-150) | 1 | $492 تا $602 | $492 تا $602 | [AutomationDirect (Contrinex / Datasensing)](https://library.automationdirect.com/datasensing-sh4-light-curtain/) | $65 تا $130 |
+| DC contactor 48V | KM1 | 1 | $30 تا $80 | $30 تا $80 | *–* (برآورد) | $13 تا $26 |
+| Linear rail HGR15 (Y) per m | HIWIN/HQM | 1 | $31 تا $60 | $31 تا $60 | [Motion Constrained (از $30.72)](https://motionconstrained.com/store/hiwin-linear-guides/hiwin-hg-series-linear-guides/hg-rails-only/hiwin-hgr15r-linear-guideway-rail/) | $11 تا $22 |
+| Carriage HGH15CA | HIWIN/HQM | 2 | $29 تا $53 | $58 تا $106 | [PicClick / eBay](https://www.ebay.com/itm/184611756265) | $4 تا $23 |
+| Timing belt HTD5M 15mm open PU steel (m) | - | 3 | $8 تا $20 | $24 تا $60 | *قیمت در نتایج نبود* (برآورد) | $4 تا $11 |
+| Timing pulley 24T HTD5M-15 (drive+idler) | - | 4 | $5 تا $20 | $20 تا $80 | [BEP Ltd (از $4.80)](https://bepltd.com/products/24-5m-15-htd-pilot-bore-5m-timing-belt-pulley-24-tooth-x-15mm-wide) | $2 تا $6 |
+| Enclosure 60x80 + mounting plate | - | 1 | $80 تا $200 | $80 تا $200 | *–* (برآورد) | $35 تا $65 |
+| MCB/fuse/terminal/relay/duct/EMI filter | - | 1 | $200 تا $450 | $200 تا $450 | *–* (برآورد) | $87 تا $173 |
+| Shielded cables + drag chain + EMC glands | - | 1 | $100 تا $250 | $100 تا $250 | *–* (برآورد) | $43 تا $87 |
+| Tower lamp + pedal + push buttons | - | 1 | $50 تا $120 | $50 تا $120 | *–* (برآورد) | $22 تا $39 |
 | **جمع کل** | | | | **$3,039 تا $4,861** | | **$1,026 تا $1,796** |
 
 ## اثر پیشنهادهای بخش ۱ روی هزینه
