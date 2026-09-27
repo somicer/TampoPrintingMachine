@@ -1,0 +1,32 @@
+group,item,spec,qty,usd_min,usd_max,basis,source
+کنترل,PLC,Delta DVP28SV11T2 (۱۶ ورودی / ۱۲ خروجی ترانزیستوری),1,182,330,search,https://www.ebay.com/itm/395576838844
+کنترل,HMI,Delta DOP-107BV هفت اینچ,1,136,169,search,https://www.ebay.com/itm/185015742358
+کنترل,ماژول توسعه,Delta DVP16SP11T (۸ ورودی / ۸ خروجی),1,117,127,search,https://plc-direct.com/products/dvp16sp11t
+حرکت,موتور X و Y + یدکی,استپر کلوزلوپ NEMA24، ۴ N·m (۴۰ kg·cm)، انکودر ۱۰۰۰ خط، با کابل انکودر,3,44,60,search,https://www.oyostepper.com/goods-1263-S-Series-Nema-24-Closed-Loop-Stepper-Motor-18-Deg-40-Nm56645ozin-50A-2-Phase-with-Optical-Incremental-Encoder.html
+حرکت,درایور + یدکی,درایور کلوزلوپ CL57T یا HBS57، ورودی ۲۴ تا ۴۸ ولت، خروجی ALM,3,54,68,search,https://www.cloudraylaser.com/products/cloudray-cl57-24-48vdc-3-6a-leadshine-closed-loop-stepper-motor-driver
+حرکت,گیربکس X,خورشیدی NEMA24 (فلنج ۶۰)، نسبت ۱:۳، لقی ≤ ۱۵ آرک‌دقیقه,1,100,150,estimate,https://www.omc-stepperonline.com/nema-24-eg-series-planetary-gearbox
+تغذیه,منبع ۴۸ ولت,MeanWell NDR-480-48 (۴۸V / ۱۰A),1,106,106,search,https://www.digikey.com/en/products/detail/mean-well-usa-inc/NDR-480-48/7705225
+تغذیه,منبع ۲۴ ولت,MeanWell LRS-150-24,1,18,18,search,https://www.digikey.com/en/products/detail/mean-well-usa-inc/LRS-150-24/7705015
+مکانیک X,ریل,HIWIN HGR20، طول حدود ۹۰۰ mm,2,40,70,estimate,https://motionconstrained.com/store/hiwin-linear-guides/hiwin-hg-series-linear-guides/hg-rails-only/hiwin-hgr20r-linear-guideway-rail/
+مکانیک X,واگن,HIWIN HGH20CA,4,23,83,search,https://www.ebay.com/itm/174586829684
+مکانیک X,تسمه X (متر),HTD5M عرض ۲۵ mm، پلی‌یورتان با مغزی فولادی، مدار باز,2,10,25,estimate,
+مکانیک X,پولی X,۲۴ دندانه HTD5M برای تسمه‌ی ۲۵ mm (یکی محرک، یکی هرزگرد),2,5,20,search,https://bepltd.com/products/24-5m-15-htd-pilot-bore-5m-timing-belt-pulley-24-tooth-x-15mm-wide
+مکانیک Y,پولی Y,۲۴ دندانه گام ۵ mm برای تسمه‌ی ۲۰ mm (شکل دندانه مطابق تسمه‌ی فعلی),1,5,20,search,https://bepltd.com/products/24-5m-15-htd-pilot-bore-5m-timing-belt-pulley-24-tooth-x-15mm-wide
+پنوماتیک Z,جک Z,Airtac SC63×100-S (مگنت‌دار) + راهنمای بیرونی مثل دستگاه فعلی,1,136,181,search,https://trimantec.com/products/airtac-sc-double-acting-standard-cylinder-sc63x100s
+پنوماتیک Z,شیر Z,5/2 دوبوبین سایز 3/8، 24VDC (مثل Airtac 4V320-10),1,40,80,estimate,https://trimantec.com/products/airtac-4v300-pneumatic-solenoid-valve-4v32010b
+پنوماتیک Z,شیر تخلیه‌ی سریع,SMC AQ5000 یا معادل، 3/8,2,34,61,search,https://automationdistribution.com/aq5000-04/
+پنوماتیک Z,فلوکنترل,3/8، Meter-Out,2,15,30,estimate,
+پنوماتیک Z,رگولاتور Z,SMC AR30-03BG با گیج,1,34,63,search,https://automationdistribution.com/smc-ar30-03bg-b/
+پنوماتیک Z,پایلوت‌چک,SMC ASP یا معادل,1,42,60,search,https://automationdistribution.com/asp430f-02-08s/
+پنوماتیک Z,سنسور مگنتی,مناسب جک SC63: بالا، ارتفاع امن، پایین,3,15,36,search,https://automationdistribution.com/d-m9n/
+پنوماتیک Z,FRL اصلی + پرشر سوئیچ,فیلتر رگولاتور و پرشر سوئیچ,1,110,130,search,https://automationdistribution.com/smc-aw20-02bg/
+سنسورها,سنسور هوم,القایی M18 NPN (Autonics PR18-8DN),2,26,28,search,https://www.wolfautomation.com/sensor-inductive-proximity-o18mm-8mm-range-24707
+سنسورها,لیمیت سوئیچ,Omron D4N (دو سر هر محور),4,26,44,search,https://shop.hartfiel.com/products/D4N-1A31
+ایمنی,رله‌ی ایمنی,Pilz PNOZ s4 + s7.1 (یا معادل با خروجی تأخیری),1,348,604,search,https://shop.powermation.com/products/PILZ-750104
+ایمنی,E-Stop,Schneider XB5AS8442,2,24,29,search,https://www.tme.com/us/en-us/details/xb5as8442/panel-mount-switches-standard-22mm/schneider-electric/
+ایمنی,پرده‌ی نوری,نوع ۴، رزولوشن ۱۴ mm (انگشت),1,492,602,search,https://library.automationdirect.com/datasensing-sh4-light-curtain/
+ایمنی,کنتاکتور DC,برای قطع ۴۸ ولت درایورها,1,30,80,estimate,
+تابلو,تابلو,بدنه ۶۰×۸۰ با صفحه‌ی نصب,1,80,200,estimate,
+تابلو,لوازم تابلو,فیوز، ترمینال، رله، داکت، فیلتر EMI,1,200,450,estimate,
+تابلو,کابل و Drag Chain,کابل شیلددار، زنجیر کابل، گلند EMC,1,100,250,estimate,
+تابلو,چراغ، پدال، شستی,چراغ برج، پدال، شستی‌ها,1,50,120,estimate,
