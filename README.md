@@ -14,6 +14,7 @@
 | [hmi/tag_list.csv](hmi/tag_list.csv) | فهرست Tagهای HMI |
 | [docs/07_bom_cost_estimate.md](docs/07_bom_cost_estimate.md) | برآورد هزینه‌ی قطعات (BOM) |
 | [bom/bom_estimate.csv](bom/bom_estimate.csv) | فهرست قطعات و قیمت برای Excel |
+| [docs/08_field_data_redesign.md](docs/08_field_data_redesign.md) | **داده‌های دستگاه موجود و طراحی از صفر** (معتبرترین بخش) |
 | [tools/axis_sizing.py](tools/axis_sizing.py) | محاسبه‌ی سرعت پیک، گشتاور، نسبت اینرسی و نیروی جک |
 
 ## مهم‌ترین نتیجه‌ها
