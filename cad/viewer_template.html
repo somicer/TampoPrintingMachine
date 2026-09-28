@@ -116,7 +116,7 @@ input[type=range]{width:100%;accent-color:var(--accent);direction:ltr}
         </div>
       </div>
       <div style="margin-top:10px">
-        <div class="slider"><label for="sx">محور X</label><input id="sx" type="range" min="0" max="650" step="1" value="100"><output id="ox">100 mm</output></div>
+        <div class="slider"><label for="sx">محور X</label><input id="sx" type="range" min="0" max="1010" step="1" value="50"><output id="ox">50 mm</output></div>
         <div class="slider"><label for="sz">پد Z</label><input id="sz" type="range" min="0" max="100" step="1" value="0"><output id="oz">بالا</output></div>
         <div class="slider"><label for="sc">کاپ</label><input id="sc" type="range" min="0" max="370" step="1" value="0"><output id="oc">روی تصویر</output></div>
       </div>
@@ -185,7 +185,7 @@ const camera = new THREE.PerspectiveCamera(32, 1, 20, 30000);
 camera.up.set(0,0,1);
 const controls = new THREE.OrbitControls(camera, canvas);
 controls.enableDamping = true; controls.dampingFactor = 0.12;
-const target0 = new THREE.Vector3(700, 0, 950);
+const target0 = new THREE.Vector3(850, -100, 950);
 controls.target.copy(target0);
 scene.add(new THREE.HemisphereLight(0xffffff, 0x445566, 0.75));
 const sun = new THREE.DirectionalLight(0xffffff, 0.75); sun.position.set(2500, 1500, 4000); scene.add(sun);
@@ -194,7 +194,7 @@ let grid;
 function makeGrid(){
   if (grid) scene.remove(grid);
   grid = new THREE.GridHelper(4000, 40, new THREE.Color(css('--grid')), new THREE.Color(css('--grid')));
-  grid.rotation.x = Math.PI/2; grid.position.set(650, 0, 0); scene.add(grid);
+  grid.rotation.x = Math.PI/2; grid.position.set(850, 0, 0); scene.add(grid);
 }
 makeGrid();
 
@@ -203,7 +203,7 @@ const root = new THREE.Group(), gx = new THREE.Group(), gz = new THREE.Group(), 
 gx.add(gz); root.add(gx); root.add(gc); scene.add(root);
 const edgeMat = new THREE.LineBasicMaterial({color:0x000000, transparent:true, opacity:0.28, clippingPlanes:[clip]});
 const meshes = [], byCode = {}, byGroup = {};
-const asmC = new THREE.Vector3(650, 0, 800);
+const asmC = new THREE.Vector3(850, -100, 800);
 for (const p of D.parts){
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.Float32BufferAttribute(p.v, 3));
@@ -236,7 +236,8 @@ function resize(){
 new ResizeObserver(resize).observe(stage); resize();
 
 // ---------- views
-const VIEWS = {iso:[3300,2300,2300], front:[4600,0,1050], side:[650,-4600,1050], top:[650,-1,5200]};
+const VIEWS = {iso:[3600,2600,2600], front:[5300,-100,1100], side:[850,-5300,1100], top:[850,-101,5800]};
+$('sx').max = M.x_travel;
 let camAnim = null;
 function goView(v){
   camAnim = {t:0, p0:camera.position.clone(), p1:new THREE.Vector3(...VIEWS[v]), t0:controls.target.clone(), t1:target0.clone()};
@@ -253,9 +254,9 @@ const SEG = [ // [t0, t1, label, fn(u) -> partial state]
   [0.50,0.85,'پد پایین می‌آید و رنگ را از کلیشه برمی‌دارد', u=>({x:P0,z:ZS*u,c:CS})],
   [0.85,1.35,'مکث روی کلیشه', u=>({x:P0,z:ZS,c:CS})],
   [1.35,1.70,'پد بالا می‌رود', u=>({x:P0,z:ZS*(1-u),c:CS})],
-  [1.70,2.50,'حرکت به محل چاپ؛ کاپ هم‌زمان برمی‌گردد و جوهر می‌زند', u=>({x:P0+(P1-P0)*u,z:0,c:CS*(1-Math.min(1,u*1.6))})],
-  [2.50,2.85,'پد روی قطعه پایین می‌آید', u=>({x:P1,z:ZS*u,c:0})],
-  [2.85,3.35,'چاپ: مکث روی قطعه', u=>({x:P1,z:ZS,c:0})],
+  [1.70,2.50,'پد از پنجره بیرون می‌آید و روی دیسک می‌رود؛ کاپ هم‌زمان برمی‌گردد', u=>({x:P0+(P1-P0)*u,z:0,c:CS*(1-Math.min(1,u*1.6))})],
+  [2.50,2.85,'پد روی دیسک پایین می‌آید', u=>({x:P1,z:ZS*u,c:0})],
+  [2.85,3.35,'چاپ: مکث روی دیسک', u=>({x:P1,z:ZS,c:0})],
   [3.35,3.70,'پد بالا می‌رود', u=>({x:P1,z:ZS*(1-u),c:0})],
   [3.70,4.50,'بازگشت به محل برداشت', u=>({x:P1+(P0-P1)*u,z:0,c:0})],
 ];

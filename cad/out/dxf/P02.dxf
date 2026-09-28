@@ -489,7 +489,7 @@ $SKPOLY
   9
 $TDCREATE
  40
-2461312.7988078706
+2461312.8327893517
   9
 $TDUCREATE
  40
@@ -497,7 +497,7 @@ $TDUCREATE
   9
 $TDUPDATE
  40
-2461312.7988078706
+2461312.8327893517
   9
 $TDUUPDATE
  40
@@ -549,7 +549,7 @@ $SPLINESEGS
   9
 $HANDSEED
   5
-CE
+D9
   9
 $SURFTAB1
  70
@@ -929,11 +929,11 @@ $PSTYLEMODE
   9
 $FINGERPRINTGUID
   2
-{143B944A-1A91-4B5B-868B-DB07AC938FB7}
+{E7C3C0FB-30B5-41F1-B6BC-CC9BB9EEE177}
   9
 $VERSIONGUID
   2
-{2538B16A-7900-4414-A75D-ECF0381F5C44}
+{1B270E27-F36C-4783-B4B3-4B60A5814DB6}
   9
 $EXTNAMES
 290
@@ -3181,7 +3181,7 @@ ACAD
   0
 APPID
   5
-CB
+D6
 330
 3
 100
@@ -3195,7 +3195,7 @@ HATCHBACKGROUNDCOLOR
   0
 APPID
   5
-CC
+D7
 330
 3
 100
@@ -5001,7 +5001,7 @@ _CLOSEDBLANK
   0
 BLOCK_RECORD
   5
-AD
+B8
 330
 9
 100
@@ -5021,7 +5021,7 @@ AcDbBlockTableRecord
   0
 BLOCK_RECORD
   5
-BC
+C7
 330
 9
 100
@@ -5341,9 +5341,9 @@ AcDbBlockEnd
   0
 BLOCK
   5
-AE
+B9
 330
-AD
+B8
 100
 AcDbEntity
   8
@@ -5367,9 +5367,9 @@ AcDbBlockBegin
   0
 LINE
   5
-B0
+BB
 330
-AD
+B8
 100
 AcDbEntity
   8
@@ -5377,13 +5377,13 @@ AcDbEntity
 100
 AcDbLine
  10
--450.0
+-620.0
  20
 -20.125
  30
 0.0
  11
--450.0
+-620.0
  21
 -45.375
  31
@@ -5391,9 +5391,9 @@ AcDbLine
   0
 LINE
   5
-B1
+BC
 330
-AD
+B8
 100
 AcDbEntity
   8
@@ -5401,13 +5401,13 @@ AcDbEntity
 100
 AcDbLine
  10
-450.0
+620.0
  20
 -20.125
  30
 0.0
  11
-450.0
+620.0
  21
 -45.375
  31
@@ -5415,9 +5415,9 @@ AcDbLine
   0
 INSERT
   5
-B2
+BD
 330
-AD
+B8
 100
 AcDbEntity
   8
@@ -5427,7 +5427,7 @@ AcDbBlockReference
   2
 _ARCHTICK
  10
--450.0
+-620.0
  20
 -45.0
  30
@@ -5441,9 +5441,9 @@ _ARCHTICK
   0
 INSERT
   5
-B4
+BF
 330
-AD
+B8
 100
 AcDbEntity
   8
@@ -5453,7 +5453,7 @@ AcDbBlockReference
   2
 _ARCHTICK
  10
-450.0
+620.0
  20
 -45.0
  30
@@ -5465,9 +5465,9 @@ _ARCHTICK
   0
 LINE
   5
-B6
+C1
 330
-AD
+B8
 100
 AcDbEntity
   8
@@ -5475,13 +5475,13 @@ AcDbEntity
 100
 AcDbLine
  10
--450.0
+-620.0
  20
 -45.0
  30
 0.0
  11
-450.0
+620.0
  21
 -45.0
  31
@@ -5489,9 +5489,9 @@ AcDbLine
   0
 MTEXT
   5
-B7
+C2
 330
-AD
+B8
 100
 AcDbEntity
   8
@@ -5509,15 +5509,15 @@ AcDbMText
  71
 5
   1
-900
+1240
   7
 OpenSansCondensed-Light
   0
 POINT
   5
-B8
+C3
 330
-AD
+B8
 100
 AcDbEntity
   8
@@ -5525,7 +5525,7 @@ Defpoints
 100
 AcDbPoint
  10
--450.0
+-620.0
  20
 -45.0
  30
@@ -5533,9 +5533,9 @@ AcDbPoint
   0
 POINT
   5
-B9
+C4
 330
-AD
+B8
 100
 AcDbEntity
   8
@@ -5543,7 +5543,7 @@ Defpoints
 100
 AcDbPoint
  10
--450.0
+-620.0
  20
 -20.0
  30
@@ -5551,9 +5551,9 @@ AcDbPoint
   0
 POINT
   5
-BA
+C5
 330
-AD
+B8
 100
 AcDbEntity
   8
@@ -5561,7 +5561,7 @@ Defpoints
 100
 AcDbPoint
  10
-450.0
+620.0
  20
 -20.0
  30
@@ -5569,9 +5569,9 @@ AcDbPoint
   0
 ENDBLK
   5
-AF
+BA
 330
-AD
+B8
 100
 AcDbEntity
   8
@@ -5581,9 +5581,9 @@ AcDbBlockEnd
   0
 BLOCK
   5
-BD
+C8
 330
-BC
+C7
 100
 AcDbEntity
   8
@@ -5607,9 +5607,9 @@ AcDbBlockBegin
   0
 LINE
   5
-BF
+CA
 330
-BC
+C7
 100
 AcDbEntity
   8
@@ -5617,13 +5617,13 @@ AcDbEntity
 100
 AcDbLine
  10
--450.125
+-620.125
  20
 -20.0
  30
 0.0
  11
--475.375
+-645.375
  21
 -20.0
  31
@@ -5631,9 +5631,9 @@ AcDbLine
   0
 LINE
   5
-C0
+CB
 330
-BC
+C7
 100
 AcDbEntity
   8
@@ -5641,13 +5641,13 @@ AcDbEntity
 100
 AcDbLine
  10
--450.125
+-620.125
  20
 20.0
  30
 0.0
  11
--475.375
+-645.375
  21
 20.0
  31
@@ -5655,9 +5655,9 @@ AcDbLine
   0
 INSERT
   5
-C1
+CC
 330
-BC
+C7
 100
 AcDbEntity
   8
@@ -5667,7 +5667,7 @@ AcDbBlockReference
   2
 _ARCHTICK
  10
--475.0
+-645.0
  20
 -20.0
  30
@@ -5681,9 +5681,9 @@ _ARCHTICK
   0
 INSERT
   5
-C3
+CE
 330
-BC
+C7
 100
 AcDbEntity
   8
@@ -5693,7 +5693,7 @@ AcDbBlockReference
   2
 _ARCHTICK
  10
--475.0
+-645.0
  20
 20.0
  30
@@ -5707,9 +5707,9 @@ _ARCHTICK
   0
 LINE
   5
-C5
+D0
 330
-BC
+C7
 100
 AcDbEntity
   8
@@ -5717,13 +5717,13 @@ AcDbEntity
 100
 AcDbLine
  10
--475.0
+-645.0
  20
 -20.0
  30
 0.0
  11
--475.0
+-645.0
  21
 20.0
  31
@@ -5731,9 +5731,9 @@ AcDbLine
   0
 MTEXT
   5
-C6
+D1
 330
-BC
+C7
 100
 AcDbEntity
   8
@@ -5741,7 +5741,7 @@ DIM
 100
 AcDbMText
  10
--477.6
+-647.6
  20
 0.0
  30
@@ -5759,9 +5759,9 @@ OpenSansCondensed-Light
   0
 POINT
   5
+D2
+330
 C7
-330
-BC
 100
 AcDbEntity
   8
@@ -5769,7 +5769,7 @@ Defpoints
 100
 AcDbPoint
  10
--475.0
+-645.0
  20
 -20.0
  30
@@ -5777,9 +5777,9 @@ AcDbPoint
   0
 POINT
   5
-C8
+D3
 330
-BC
+C7
 100
 AcDbEntity
   8
@@ -5787,7 +5787,7 @@ Defpoints
 100
 AcDbPoint
  10
--450.0
+-620.0
  20
 -20.0
  30
@@ -5795,9 +5795,9 @@ AcDbPoint
   0
 POINT
   5
-C9
+D4
 330
-BC
+C7
 100
 AcDbEntity
   8
@@ -5805,7 +5805,7 @@ Defpoints
 100
 AcDbPoint
  10
--450.0
+-620.0
  20
 20.0
  30
@@ -5813,9 +5813,9 @@ AcDbPoint
   0
 ENDBLK
   5
-BE
+C9
 330
-BC
+C7
 100
 AcDbEntity
   8
@@ -5845,19 +5845,19 @@ AcDbPolyline
  70
 1
  10
--450.0
+-620.0
  20
 -20.0
  10
-450.0
+620.0
  20
 -20.0
  10
-450.0
+620.0
  20
 20.0
  10
--450.0
+-620.0
  20
 20.0
   0
@@ -5873,7 +5873,7 @@ HOLES
 100
 AcDbCircle
  10
--420.0
+-600.0
  20
 0.0
  30
@@ -5893,7 +5893,7 @@ HOLES
 100
 AcDbCircle
  10
--360.0
+-540.0
  20
 0.0
  30
@@ -5913,7 +5913,7 @@ HOLES
 100
 AcDbCircle
  10
--300.0
+-480.0
  20
 0.0
  30
@@ -5933,7 +5933,7 @@ HOLES
 100
 AcDbCircle
  10
--240.0
+-420.0
  20
 0.0
  30
@@ -5953,7 +5953,7 @@ HOLES
 100
 AcDbCircle
  10
--180.0
+-360.0
  20
 0.0
  30
@@ -5973,7 +5973,7 @@ HOLES
 100
 AcDbCircle
  10
--120.0
+-300.0
  20
 0.0
  30
@@ -5993,7 +5993,7 @@ HOLES
 100
 AcDbCircle
  10
--60.0
+-240.0
  20
 0.0
  30
@@ -6013,7 +6013,7 @@ HOLES
 100
 AcDbCircle
  10
-0.0
+-180.0
  20
 0.0
  30
@@ -6033,7 +6033,7 @@ HOLES
 100
 AcDbCircle
  10
-60.0
+-120.0
  20
 0.0
  30
@@ -6053,7 +6053,7 @@ HOLES
 100
 AcDbCircle
  10
-120.0
+-60.0
  20
 0.0
  30
@@ -6073,7 +6073,7 @@ HOLES
 100
 AcDbCircle
  10
-180.0
+0.0
  20
 0.0
  30
@@ -6093,7 +6093,7 @@ HOLES
 100
 AcDbCircle
  10
-240.0
+60.0
  20
 0.0
  30
@@ -6113,7 +6113,7 @@ HOLES
 100
 AcDbCircle
  10
-300.0
+120.0
  20
 0.0
  30
@@ -6133,7 +6133,7 @@ HOLES
 100
 AcDbCircle
  10
-360.0
+180.0
  20
 0.0
  30
@@ -6153,7 +6153,7 @@ HOLES
 100
 AcDbCircle
  10
-420.0
+240.0
  20
 0.0
  30
@@ -6173,13 +6173,13 @@ HOLES
 100
 AcDbCircle
  10
--390.0
+300.0
  20
-13.0
+0.0
  30
 0.0
  40
-4.5
+2.1
   0
 CIRCLE
   5
@@ -6193,13 +6193,13 @@ HOLES
 100
 AcDbCircle
  10
--270.0
+360.0
  20
-13.0
+0.0
  30
 0.0
  40
-4.5
+2.1
   0
 CIRCLE
   5
@@ -6213,13 +6213,13 @@ HOLES
 100
 AcDbCircle
  10
--150.0
+420.0
  20
-13.0
+0.0
  30
 0.0
  40
-4.5
+2.1
   0
 CIRCLE
   5
@@ -6233,13 +6233,13 @@ HOLES
 100
 AcDbCircle
  10
--30.0
+480.0
  20
-13.0
+0.0
  30
 0.0
  40
-4.5
+2.1
   0
 CIRCLE
   5
@@ -6253,13 +6253,13 @@ HOLES
 100
 AcDbCircle
  10
-90.0
+540.0
  20
-13.0
+0.0
  30
 0.0
  40
-4.5
+2.1
   0
 CIRCLE
   5
@@ -6273,7 +6273,7 @@ HOLES
 100
 AcDbCircle
  10
-210.0
+-570.0
  20
 13.0
  30
@@ -6293,7 +6293,7 @@ HOLES
 100
 AcDbCircle
  10
-330.0
+-450.0
  20
 13.0
  30
@@ -6313,9 +6313,9 @@ HOLES
 100
 AcDbCircle
  10
--390.0
+-330.0
  20
--13.0
+13.0
  30
 0.0
  40
@@ -6333,9 +6333,9 @@ HOLES
 100
 AcDbCircle
  10
--270.0
+-210.0
  20
--13.0
+13.0
  30
 0.0
  40
@@ -6353,9 +6353,9 @@ HOLES
 100
 AcDbCircle
  10
--150.0
+-90.0
  20
--13.0
+13.0
  30
 0.0
  40
@@ -6373,9 +6373,9 @@ HOLES
 100
 AcDbCircle
  10
--30.0
+30.0
  20
--13.0
+13.0
  30
 0.0
  40
@@ -6393,9 +6393,9 @@ HOLES
 100
 AcDbCircle
  10
-90.0
+150.0
  20
--13.0
+13.0
  30
 0.0
  40
@@ -6413,9 +6413,9 @@ HOLES
 100
 AcDbCircle
  10
-210.0
+270.0
  20
--13.0
+13.0
  30
 0.0
  40
@@ -6433,7 +6433,227 @@ HOLES
 100
 AcDbCircle
  10
-330.0
+390.0
+ 20
+13.0
+ 30
+0.0
+ 40
+4.5
+  0
+CIRCLE
+  5
+AC
+330
+17
+100
+AcDbEntity
+  8
+HOLES
+100
+AcDbCircle
+ 10
+510.0
+ 20
+13.0
+ 30
+0.0
+ 40
+4.5
+  0
+CIRCLE
+  5
+AD
+330
+17
+100
+AcDbEntity
+  8
+HOLES
+100
+AcDbCircle
+ 10
+-570.0
+ 20
+-13.0
+ 30
+0.0
+ 40
+4.5
+  0
+CIRCLE
+  5
+AE
+330
+17
+100
+AcDbEntity
+  8
+HOLES
+100
+AcDbCircle
+ 10
+-450.0
+ 20
+-13.0
+ 30
+0.0
+ 40
+4.5
+  0
+CIRCLE
+  5
+AF
+330
+17
+100
+AcDbEntity
+  8
+HOLES
+100
+AcDbCircle
+ 10
+-330.0
+ 20
+-13.0
+ 30
+0.0
+ 40
+4.5
+  0
+CIRCLE
+  5
+B0
+330
+17
+100
+AcDbEntity
+  8
+HOLES
+100
+AcDbCircle
+ 10
+-210.0
+ 20
+-13.0
+ 30
+0.0
+ 40
+4.5
+  0
+CIRCLE
+  5
+B1
+330
+17
+100
+AcDbEntity
+  8
+HOLES
+100
+AcDbCircle
+ 10
+-90.0
+ 20
+-13.0
+ 30
+0.0
+ 40
+4.5
+  0
+CIRCLE
+  5
+B2
+330
+17
+100
+AcDbEntity
+  8
+HOLES
+100
+AcDbCircle
+ 10
+30.0
+ 20
+-13.0
+ 30
+0.0
+ 40
+4.5
+  0
+CIRCLE
+  5
+B3
+330
+17
+100
+AcDbEntity
+  8
+HOLES
+100
+AcDbCircle
+ 10
+150.0
+ 20
+-13.0
+ 30
+0.0
+ 40
+4.5
+  0
+CIRCLE
+  5
+B4
+330
+17
+100
+AcDbEntity
+  8
+HOLES
+100
+AcDbCircle
+ 10
+270.0
+ 20
+-13.0
+ 30
+0.0
+ 40
+4.5
+  0
+CIRCLE
+  5
+B5
+330
+17
+100
+AcDbEntity
+  8
+HOLES
+100
+AcDbCircle
+ 10
+390.0
+ 20
+-13.0
+ 30
+0.0
+ 40
+4.5
+  0
+CIRCLE
+  5
+B6
+330
+17
+100
+AcDbEntity
+  8
+HOLES
+100
+AcDbCircle
+ 10
+510.0
  20
 -13.0
  30
@@ -6443,7 +6663,7 @@ AcDbCircle
   0
 DIMENSION
   5
-AC
+B7
 330
 17
 100
@@ -6459,7 +6679,7 @@ AcDbDimension
   3
 EZDXF
  10
--450.0
+-620.0
  20
 -45.0
  30
@@ -6479,13 +6699,13 @@ EZDXF
 100
 AcDbAlignedDimension
  13
--450.0
+-620.0
  23
 -20.0
  33
 0.0
  14
-450.0
+620.0
  24
 -20.0
  34
@@ -6525,7 +6745,7 @@ DSTYLE
   0
 DIMENSION
   5
-BB
+C6
 330
 17
 100
@@ -6541,13 +6761,13 @@ AcDbDimension
   3
 EZDXF
  10
--475.0
+-645.0
  20
 -20.0
  30
 0.0
  11
--477.6
+-647.6
  21
 0.0
  31
@@ -6561,13 +6781,13 @@ EZDXF
 100
 AcDbAlignedDimension
  13
--450.0
+-620.0
  23
 -20.0
  33
 0.0
  14
--450.0
+-620.0
  24
 20.0
  34
@@ -6607,7 +6827,7 @@ DSTYLE
   0
 TEXT
   5
-CA
+D5
 330
 17
 100
@@ -6617,7 +6837,7 @@ TEXT
 100
 AcDbText
  10
--450.0
+-620.0
  20
 -75.0
  30
@@ -6625,9 +6845,9 @@ AcDbText
  40
 6.0
   1
-P02  900 x 40 x 15  CK45  QTY 2  (mm)
+P02  1240 x 40 x 15  CK45  QTY 2  (mm)
  11
--450.0
+-620.0
  21
 -75.0
  31
@@ -7725,7 +7945,7 @@ CREATED_BY_EZDXF
   3
 WRITTEN_BY_EZDXF
 350
-CD
+D8
   0
 DICTIONARYVAR
   5
@@ -7737,7 +7957,7 @@ DictionaryVariables
 280
 0
   1
-1.4.4 @ 2026-09-28T19:10:17.273437+00:00
+1.4.4 @ 2026-09-28T19:59:13.086136+00:00
   0
 VISUALSTYLE
   5
@@ -8441,7 +8661,7 @@ X-Ray
   0
 DICTIONARYVAR
   5
-CD
+D8
 330
 2D
 100
@@ -8449,7 +8669,7 @@ DictionaryVariables
 280
 0
   1
-1.4.4 @ 2026-09-28T19:10:17.279144+00:00
+1.4.4 @ 2026-09-28T19:59:13.091778+00:00
   0
 ENDSEC
   0

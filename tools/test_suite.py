@@ -236,16 +236,16 @@ def S12(s, c):
     """Manual jog X homed (soft limits, hold-to-run)"""
     ck(c, "homing", s.home())
     s.plc.bits["M104"] = True
-    s.run(7)
+    s.run(12)
     s.plc.bits["M104"] = False
     s.run(0.3)
-    ck(c, "jog+ stops at soft max 615 mm", abs(s.xpos() - 615) < 1)
+    ck(c, "jog+ stops at soft max 1010 mm", abs(s.xpos() - 1010) < 1)
     s.plc.bits["M105"] = True
     s.run(1.0)
     s.plc.bits["M105"] = False
     s.run(0.3)
     x = s.xpos()
-    ck(c, "release stops jog-", 0 < x < 615 and not s.b("M1336"))
+    ck(c, "release stops jog-", 0 < x < 1010 and not s.b("M1336"))
     ck(c, "no alarm", clean(s))
 
 
@@ -265,10 +265,10 @@ def S14(s, c):
     ck(c, "homing", s.home())
     s.cmd("M111")
     s.run(6)
-    ck(c, "X at print", abs(s.xpos() - 550) < 0.6)
+    ck(c, "X at print", abs(s.xpos() - 495) < 0.6)
     s.cmd("M110")
     s.run(6)
-    ck(c, "X at pick", abs(s.xpos() - 100) < 0.6)
+    ck(c, "X at pick", abs(s.xpos() - 50) < 0.6)
     s.cmd("M113")
     s.run(6)
     ck(c, "Y at end", abs(s.ypos() - 350) < 0.6)
@@ -511,20 +511,20 @@ def S31(s, c):
 def S32(s, c):
     """No-drop zone at the print station"""
     ck(c, "homing", s.home())
-    s.set_zone(664, 0, 540, 560)
+    s.set_zone(664, 0, 485, 505)
     zs = []
     s.hook = lambda t: zs.append((t.xpos(), t.plant.z))
     s.start_auto(0)
     s.pedal()
     s.run(6)
     ck(c, "A18 raised at the pad-down step", s.b("M217"))
-    ck(c, "pad never came down in the zone", all(z < 40 for x, z in zs if 540 <= x <= 560))
+    ck(c, "pad never came down in the zone", all(z < 40 for x, z in zs if 485 <= x <= 505))
 
 
 def S33(s, c):
     """A19 axis already inside a zone, then jog out"""
     ck(c, "homing", s.home())
-    s.set_zone(640, 0, 90, 110)            # around pick = 100 mm
+    s.set_zone(640, 0, 40, 60)             # around pick = 50 mm
     s.run(0.3)
     ck(c, "A19 raised", s.b("M218"))
     s.reset()
@@ -533,7 +533,7 @@ def S33(s, c):
     s.run(1)
     s.plc.bits["M104"] = False
     s.run(0.3)
-    ck(c, "jogged out of the zone", s.xpos() > 110 and not s.alarms())
+    ck(c, "jogged out of the zone", s.xpos() > 60 and not s.alarms())
 
 
 def S34(s, c):
@@ -583,7 +583,7 @@ def S37(s, c):
     s.set_zone(640, 0, 10, 20)
     s.cmd("M140")
     s.run(0.2)
-    ck(c, "print position back to 550.0", s.w("D502", True) == 5500)
+    ck(c, "print position back to 495.0", s.w("D502", True) == 4950)
     ck(c, "zones cleared", s.w("D642", True) == 0)
 
 
@@ -731,7 +731,7 @@ def S45(s, c):
         P.put(d, v)
         s.run(0.02)
         ck(c, "%s %d -> %d" % (d, v, want), s.w(d) == want)
-    for d, v, want in [("D500", 9000, 6150), ("D500", -50, 0), ("D502", 9000, 6150), ("D502", -50, 0)]:
+    for d, v, want in [("D500", 20000, 10100), ("D500", -50, 0), ("D502", 20000, 10100), ("D502", -50, 0)]:
         P.put(d, v, True)
         s.run(0.02)
         ck(c, "%s %d -> %d" % (d, v, want), s.w(d, True) == want)
@@ -789,17 +789,17 @@ def S48(s, c):
     s.run(0.2)
     ck(c, "unhomed X jog- max 50 mm", 45 <= x0 - s.xpos() <= 50.5)
     ck(c, "homing", s.home())
-    s.set_zone(640, 2, 40, 60)
+    s.set_zone(640, 2, 10, 20)
     s.plc.bits["M105"] = True
     s.run(8)
     s.plc.bits["M105"] = False
     s.run(0.2)
-    ck(c, "X jog- stops at 62 mm", abs(s.xpos() - 62) < 0.6)
+    ck(c, "X jog- stops at 22 mm", abs(s.xpos() - 22) < 0.6)
     s.plc.bits["M104"] = True               # jog+ right after: zone behind is ignored
     s.run(0.5)
     s.plc.bits["M104"] = False
     s.run(0.2)
-    ck(c, "jog+ away from the zone works", s.xpos() > 62.5 and clean(s))
+    ck(c, "jog+ away from the zone works", s.xpos() > 22.5 and clean(s))
 
 
 def S49(s, c):

@@ -90,7 +90,7 @@
 ### ✅ S12: Manual jog X homed (soft limits, hold-to-run)
 
 - ✅ homing
-- ✅ jog+ stops at soft max 615 mm
+- ✅ jog+ stops at soft max 1010 mm
 - ✅ release stops jog-
 - ✅ no alarm
 
@@ -320,7 +320,7 @@
 
 ### ✅ S37: Restore default parameters
 
-- ✅ print position back to 550.0
+- ✅ print position back to 495.0
 - ✅ zones cleared
 
 ### ✅ S38: Black box records the first alarm
@@ -392,9 +392,9 @@
 - ✅ D541 500 -> 100
 - ✅ D554 -1 -> 0
 - ✅ D555 20 -> 9
-- ✅ D500 9000 -> 6150
+- ✅ D500 20000 -> 10100
 - ✅ D500 -50 -> 0
-- ✅ D502 9000 -> 6150
+- ✅ D502 20000 -> 10100
 - ✅ D502 -50 -> 0
 
 ### ✅ S46: Homing: Y sensor stuck ON -> A12
@@ -414,7 +414,7 @@
 
 - ✅ unhomed X jog- max 50 mm
 - ✅ homing
-- ✅ X jog- stops at 62 mm
+- ✅ X jog- stops at 22 mm
 - ✅ jog+ away from the zone works
 
 ### ✅ S49: Ring buffers wrap: 70 sessions, 18 black-box entries

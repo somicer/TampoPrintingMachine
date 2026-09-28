@@ -32,32 +32,39 @@ QUICK = "--quick" in sys.argv
 # ============================================================================
 P = dict(
     Zc=945.0,          # cliché top = part top at print = working height
-    base_L=1300.0,     # base frame length (X)
+    body_L=600.0,      # machine body length (X): holds the ink station only
+    reach=700.0,       # how far the pad centre reaches beyond the body front (disc table is outside)
     base_Y0=-600.0,    # base frame Y extent: the ink station (cup travel 370 along Y) sits on the -Y side
     base_Y1=350.0,
     base_top=880.0,    # top of base frame tubes
     foot_h=60.0,       # levelling feet
     tb=60.0, tb_t=4.0, # base / portal square tube 60x60x4
-    x_home=490.0,      # world X of pad centre at X-axis position 0
-    x_pick=100.0,      # X-axis position of pick (over the image)
-    x_print=600.0,     # X-axis position of print
-    x_travel=650.0,    # usable X travel (limit switch to limit switch)
+    x_home=290.0,      # world X of pad centre at X-axis position 0
+    x_pick=50.0,       # X-axis position of pick (over the image)
+    x_print=495.0,     # X-axis position of print (ring of a Ø1000/500 disc, r = 375)
     rail_y=150.0,      # Y of the X rails (±)
-    x_belt_y=105.0,    # X belt line, inside between the rails (close to the carriage centre)
+    x_belt_y=100.0,    # X belt line, inside between the rails (close to the carriage centre)
     pad_L=195.0, pad_W=140.0, pad_H=80.0,   # pad 3016
     z_stroke=100.0, pad_press=5.0,          # SC63 stroke, pad compression on cliché
     cup_od=140.0, cup_h=45.0,
     cup_stroke=370.0,  # cup travel along Y, 90° to X (measured on the existing machine)
     cliche_L=580.0, cliche_W=200.0, cliche_t=10.0,
-    part_h=60.0,       # sample part height at the print station
+    disc_od=1000.0, disc_id=500.0, disc_t=2.0,   # plastic disc (the part)
+    disc_gap=60.0,     # disc edge to machine body front
     F_print=1590.0,    # SC63 @ 5.1 bar, N
 )
 Zc = P["Zc"]
 YA = P["base_Y0"] + 30          # leg / column centre lines
 YB = P["base_Y1"] - 30
 ZT = P["base_top"]
-X_PICK = P["x_home"] + P["x_pick"]      # 590
-X_PRINT = P["x_home"] + P["x_print"]    # 1090
+P["x_travel"] = P["body_L"] + P["reach"] - P["x_home"]      # 1010 usable X travel
+X_PICK = P["x_home"] + P["x_pick"]      # 340
+X_PRINT = P["x_home"] + P["x_print"]    # 785
+X_FRONT = P["body_L"]                   # body front face
+X_FP = X_FRONT - 30                     # front post centre line
+X_REACH = P["x_home"] + P["x_travel"]   # 1300 furthest pad centre
+X_DISC = X_FRONT + P["disc_gap"] + P["disc_od"] / 2   # disc / table centre 1160
+X_END = X_REACH + 190                   # beam tip (end cross member outer face)
 PAD_UP_BOTTOM = Zc + P["z_stroke"] - P["pad_press"]          # 1040
 # Z head stack (bottom -> top): pad, pad base 12, holder block (lowest) + side plates 210, head plate 20, gap 20
 HEAD_BOT = PAD_UP_BOTTOM + P["pad_H"] + 12 + 210                # 1342
@@ -67,7 +74,7 @@ CP_T = 15.0
 RAIL_BOT = ZCP - 30                                              # HGH20CA total height 30
 BAR_BOT = RAIL_BOT - 15                                          # rail mounting bar 40x15
 BEAM_TOP = BAR_BOT
-BEAM_BOT = BEAM_TOP - 100
+BEAM_BOT = BEAM_TOP - 120
 CROSS_TOP = BEAM_BOT
 CROSS_BOT = CROSS_TOP - 60
 PULLEY_Z = ZCP - 30          # X belt pulley axis
@@ -78,7 +85,7 @@ PD24 = 38.2                  # pitch diameter 24T 5M
 
 STEEL, ALU, PC, POM = 7.85e-6, 2.70e-6, 1.20e-6, 1.41e-6
 RHO = {"فولاد": STEEL, "St37": STEEL, "CK45": STEEL, "آلومینیوم 6061": ALU,
-       "آلومینیوم": ALU, "پلی‌کربنات": PC, "پلی‌استال": POM}
+       "آلومینیوم": ALU, "پلی‌کربنات": PC, "پلی‌استال": POM, "MDF روکش‌دار": 0.75e-6}
 
 C = {  # colours r,g,b,a
     "frame": (0.22, 0.25, 0.29, 1), "steel": (0.56, 0.58, 0.61, 1), "alu": (0.80, 0.82, 0.85, 1),
@@ -261,34 +268,28 @@ def build_base():
     g = "اسکلت پایین"
     h = tb / 2
     zb0, zb1 = P["foot_h"], ZT
-    legX = (h, 900.0, P["base_L"] - h)
-    for x in legX:
-        for y in (YA, YB):
-            tube("پایه", (x, y, zb0), (x, y, zb1), tb, tb, t, g, note="سرتاسری، دو سر گونیا")
+    ry = P["rail_y"]
+    legs = [(h, YA), (h, YB), (X_FP, YA), (X_FP, -ry), (X_FP, ry), (X_FP, YB)]
+    for (x, y) in legs:
+        tube("پایه", (x, y, zb0), (x, y, zb1), tb, tb, t, g, note="سرتاسری، دو سر گونیا")
     for zc in (zb1 - h, zb0 + h):
         for y in (YA, YB):
-            tube("طولی", (tb, y, zc), (900 - h, y, zc), tb, tb, t, g, note="بین پایه‌ها")
-            tube("طولی", (900 + h, y, zc), (P["base_L"] - tb, y, zc), tb, tb, t, g, note="بین پایه‌ها")
-        for x in legX:
-            tube("عرضی", (x, YA + h, zc), (x, YB - h, zc), tb, tb, t, g, note="بین طولی‌ها")
-    for x in (300.0, 600.0):  # deck supports
+            tube("طولی", (tb, y, zc), (X_FP - h, y, zc), tb, tb, t, g, note="بین پایه‌ها")
+        tube("عرضی", (h, YA + h, zc), (h, YB - h, zc), tb, tb, t, g, note="بین طولی‌ها")
+        for (y0, y1) in ((YA + h, -ry - h), (-ry + h, ry - h), (ry + h, YB - h)):
+            tube("عرضی جلو", (X_FP, y0, zc), (X_FP, y1, zc), tb, tb, t, g, note="بین پایه‌های جلو")
+    for x in (200.0, 400.0):  # deck supports
         tube("عرضی زیر صفحه", (x, YA + h, zb1 - h), (x, YB - h, zb1 - h), tb, tb, t, g)
-    # print-station sub-frame (well), top at Z 640
-    zs = 640 - h
-    for y in (YA, YB):
-        tube("طولی زیرقاب چاپ", (900 + h, y, zs), (P["base_L"] - tb, y, zs), tb, tb, t, g)
-    for x in (960.0, 1210.0):
-        tube("عرضی زیرقاب چاپ", (x, YA + h, zs), (x, YB - h, zs), tb, tb, t, g)
-    for x in legX:
-        for y in (YA, YB):
-            buy("B40", "پایه‌ی ترازشو M16", comp(cyl("Z", (x, y), 80, 0, 12), cyl("Z", (x, y), 16, 12, P["foot_h"])),
-                "gear", g, 0.6, "M16، کف Ø80، ظرفیت ≥ ۵۰۰ kg")
+    for (x, y) in legs:
+        buy("B40", "پایه‌ی ترازشو M16", comp(cyl("Z", (x, y), 80, 0, 12), cyl("Z", (x, y), 16, 12, P["foot_h"])),
+            "gear", g, 0.6, "M16، کف Ø80، ظرفیت ≥ ۵۰۰ kg")
     W = P["base_Y1"] - P["base_Y0"]
     yc = (P["base_Y0"] + P["base_Y1"]) / 2
-    deck = Plate("P01", "صفحه‌ی رویی ایستگاه جوهر", 800, W, 10, "St37",
-                 holes=[(u, v - yc, 9) for u in (-370, -170, 130, 370) for v in (YA, YB)],
+    dl = X_FP - h - 70            # deck between rear portal columns and front posts
+    deck = Plate("P01", "صفحه‌ی رویی ایستگاه جوهر", dl, W, 10, "St37",
+                 holes=[(u, v - yc, 9) for u in (-dl / 2 + 30, 0, dl / 2 - 30) for v in (YA, YB)],
                  note="با پیچ M8 روی قاب؛ سوراخ‌های نصب قطعات را بعد از چیدمان جای‌یابی کنید")
-    plate(deck, "XY", 470, yc, ZT, g, "steel")
+    plate(deck, "XY", 70 + dl / 2, yc, ZT, g, "steel")
 
 
 # ============================================================================
@@ -298,28 +299,43 @@ def build_gantry():
     tb, t = P["tb"], P["tb_t"]
     g = "اسکلت بالا"
     h = tb / 2
-    portX = (40.0, 1260.0)
-    for x in portX:
-        for y in (YA, YB):
-            tube("ستون پرتال", (x, y, ZT), (x, y, CROSS_BOT), tb, tb, t, g, note="روی قاب پایین جوش")
-        tube("تیر عرضی پرتال", (x, P["base_Y0"], CROSS_BOT + h), (x, P["base_Y1"], CROSS_BOT + h), tb, tb, t, g,
-             note="سرتاسری روی ستون‌ها")
+    ry = P["rail_y"]
+    # rear portal: 2 columns + full-width cross member
+    for y in (YA, YB):
+        tube("ستون پرتال عقب", (40, y, ZT), (40, y, CROSS_BOT), tb, tb, t, g, note="روی قاب پایین جوش")
+    tube("تیر عرضی پرتال عقب", (40, P["base_Y0"], CROSS_BOT + h), (40, P["base_Y1"], CROSS_BOT + h), tb, tb, t, g,
+         note="سرتاسری روی ستون‌ها")
+    # front: posts straight under each beam (the pad passes between them), outer columns + short crosses
+    for y in (-ry, ry):
+        tube("ستون جلو زیر تیر", (X_FP, y, ZT), (X_FP, y, BEAM_BOT), tb, tb, t, g,
+             note="ادامه‌ی پایه‌ی جلو؛ تیر X رویش پیچ می‌شود (کشش ≈ 2 kN)")
+    for y in (YA, YB):
+        tube("ستون جلو کناری", (X_FP, y, ZT), (X_FP, y, BEAM_BOT), tb, tb, t, g)
+    for (y0, y1) in ((YA + h, -ry - h), (ry + h, YB - h)):
+        tube("عرضی کوتاه جلو", (X_FP, y0, CROSS_BOT + h), (X_FP, y1, CROSS_BOT + h), tb, tb, t, g)
     for y in (P["base_Y0"] + 20, P["base_Y1"] - 20):
-        tube("طولی بالای محافظ", (portX[0] + h, y, CROSS_TOP - 20), (portX[1] - h, y, CROSS_TOP - 20), 40, 40, 3, g,
-             note="بین دو پرتال، رو با تیر عرضی")
-    for y in (-P["rail_y"], P["rail_y"]):
-        tube("تیر ریل X", (10, y, BEAM_BOT + 50), (1290, y, BEAM_BOT + 50), 50, 100, t, g,
-             note="با ۴ پیچ M10 روی هر پرتال؛ رو با تسمه‌ی تخت ریل")
-        # rail mounting bar (machined flat)
-        bar = Plate("P02", "تسمه‌ی نصب ریل X (سنگ‌خورده)", 900, 40, 15, "CK45",
-                    holes=[(-450 + 30 + 60 * i, 0, 4.2) for i in range(15)] +
-                          [(-450 + 60 + 120 * i, 13, 9) for i in range(7)] +
-                          [(-450 + 60 + 120 * i, -13, 9) for i in range(7)],
+        tube("طولی بالای محافظ", (40 + h, y, BEAM_BOT - 20), (X_FP - h, y, BEAM_BOT - 20), 40, 40, 3, g,
+             note="بین پرتال عقب و ستون جلو")
+    L_beam = X_END - 10
+    for y in (-ry, ry):
+        tube("تیر ریل X (یک‌سرآزاد)", (10, y, BEAM_BOT + 60), (X_END, y, BEAM_BOT + 60), 60, 120, 5, g,
+             note=f"روی پرتال عقب و ستون جلو، {X_END - X_FP:.0f} mm بیرون‌زده؛ هر اتصال 4× M10")
+    tube("عرضی سر تیرها", (X_END - h, -ry - 30, CROSS_BOT + h), (X_END - h, ry + 30, CROSS_BOT + h), tb, tb, t, g,
+         note="زیر سر آزاد دو تیر؛ هرزگرد X رویش")
+    r0 = P["x_home"] - 115
+    r1 = X_REACH + 115
+    rl = round(r1 - r0, -1)
+    n = int(rl // 60)
+    for y in (-ry, ry):
+        bar = Plate("P02", "تسمه‌ی نصب ریل X (سنگ‌خورده)", rl, 40, 15, "CK45",
+                    holes=[(-rl / 2 + 20 + 60 * i, 0, 4.2) for i in range(n)] +
+                          [(-rl / 2 + 50 + 120 * i, 13, 9) for i in range(int((rl - 60) // 120) + 1)] +
+                          [(-rl / 2 + 50 + 120 * i, -13, 9) for i in range(int((rl - 60) // 120) + 1)],
                     note="Ø4.2 = قلاویز M5 برای ریل (گام ۶۰)؛ Ø9 = پیچ M8 به تیر؛ رو و زیر سنگ، تخت ≤ 0.02",
                     process="برش + فرز + سنگ")
-        plate(bar, "XY", 815, y, BAR_BOT, "ریل‌ها", "steel")
-        buy("B01", "ریل HIWIN HGR20 طول 900", box(365, 1265, y - 10, y + 10, RAIL_BOT, RAIL_BOT + 17.5), "rail",
-            "ریل‌ها", 2.21 * 0.9, "HGR20R900C, گام سوراخ 60")
+        plate(bar, "XY", r0 + rl / 2, y, BAR_BOT, "ریل‌ها", "steel")
+        buy("B01", f"ریل HIWIN HGR20 طول {rl:g}", box(r0, r0 + rl, y - 10, y + 10, RAIL_BOT, RAIL_BOT + 17.5), "rail",
+            "ریل‌ها", 2.21 * rl / 1000, f"HGR20R{rl:g}C, گام سوراخ 60")
 
 
 # ============================================================================
@@ -439,13 +455,13 @@ def build_x_drive():
     carriage centre. Motor + gearbox sit between the beams behind the carriage's home position."""
     g = "محرک X"
     yb = P["x_belt_y"]
-    xr, xf = 90.0, 1230.0
+    xr, xf = 90.0, X_REACH + 100
     yp0 = yb - 33                      # bracket plate (12 mm) on the -Y side of the pulley
     ztop = PULLEY_Z + 23               # below the carriage plate
     zc_b = (CROSS_TOP + 12 + ztop) / 2
     hb = ztop - CROSS_TOP - 12
-    foot = Plate("P20", "پایه‌ی براکت موتور X", 60, 52, 12, "St37", holes=rect_pattern(0, 0, 18, 15, 9))
-    plate(foot, "XY", 40, yp0 + 26, CROSS_TOP, g, "steel")
+    foot = Plate("P20", "پایه‌ی براکت موتور X", 60, 50, 12, "St37", holes=rect_pattern(0, 0, 18, 15, 9))
+    plate(foot, "XY", 40, yp0 + 25, CROSS_TOP, g, "steel")
     vp = Plate("P21", "براکت موتور X", 130, hb, 12, "St37",
                holes=[(xr - 75, PULLEY_Z - zc_b, 51)] + pcd(xr - 75, PULLEY_Z - zc_b, 35, 4, 5.5),
                note="جوش به پایه + لچکی؛ الگوی فلنج گیربکس PLF60 را با کاتالوگ تطبیق دهید")
@@ -461,28 +477,31 @@ def build_x_drive():
                                                  cyl("Y", (x, PULLEY_Z), 46, yb + 14, yb + 16))
             .cut(cyl("Y", (x, PULLEY_Z), 14, yb - 20, yb + 20)), "gear", g, 0.18, "24-5M-25")
         buy("B06", "شافت پولی Ø14", cyl("Y", (x, PULLEY_Z), 14, yp0 + 12, yb + 16), "gear", g, 0.05, "Ø14")
-    foot2 = Plate("P22", "پایه‌ی براکت هرزگرد X", 60, 52, 12, "St37", holes=rect_pattern(0, 0, 18, 15, 9))
-    plate(foot2, "XY", 1260, yp0 + 26, CROSS_TOP, g, "steel")
+    foot2 = Plate("P22", "پایه‌ی براکت هرزگرد X", 60, 50, 12, "St37", holes=rect_pattern(0, 0, 18, 15, 9))
+    plate(foot2, "XY", X_END - 30, yp0 + 25, CROSS_TOP, g, "steel")
+    xb2 = X_END - 55
     vp2 = Plate("P23", "براکت هرزگرد X (شیار کشش)", 110, hb, 12, "St37",
-                slots=[(xf - 1235 - 10, PULLEY_Z - zc_b, xf - 1235 + 10, PULLEY_Z - zc_b, 14.5)],
+                slots=[(xf - xb2 - 10, PULLEY_Z - zc_b, xf - xb2 + 10, PULLEY_Z - zc_b, 14.5)],
                 holes=[(40, PULLEY_Z - zc_b, 8.5)],
                 note="شیار ±10 برای کشش تسمه؛ پیچ کشش M8 از لبه")
-    plate(vp2, "XZ", 1235, zc_b, yp0, g, "steel")
+    plate(vp2, "XZ", xb2, zc_b, yp0, g, "steel")
     r = PD24 / 2
     for z0_, z1_ in ((PULLEY_Z + r, PULLEY_Z + r + 3.6), (PULLEY_Z - r - 3.6, PULLEY_Z - r)):
         buy("B07", "تسمه HTD5M عرض 25 مغزی فولادی", box(xr, xf, yb - 12.5, yb + 12.5, z0_, z1_), "belt", g,
             0.1, "HTD5M-25 PU steel", mov=None)
-    for x in (330.0, 1275.0):
-        buy("B30", "لیمیت سوئیچ Omron D4N", box(x - 15, x + 15, 176, 199, BEAM_TOP - 60, BEAM_TOP - 5), "yellow",
+    for x in (P["x_home"] - 155, X_REACH + 160):
+        buy("B30", "لیمیت سوئیچ Omron D4N", box(x - 15, x + 15, 181, 204, BEAM_TOP - 60, BEAM_TOP - 5), "yellow",
             "سنسورها", 0.15, "D4N-1A31")
-    buy("B31", "سنسور هوم M18", cyl("Z", (395, 188), 18, BEAM_TOP - 60, BEAM_TOP - 5), "gear", "سنسورها", 0.06,
-        "PR18-8DN")
-    tray = Plate("P24", "سینی زنجیر کابل X", 860, 64, 2, "فولاد", note="ورق 2 خم U، ارتفاع لبه 30",
+    buy("B31", "سنسور هوم M18", cyl("Z", (P["x_home"] + 10, 193), 18, BEAM_TOP - 60, BEAM_TOP - 5), "gear", "سنسورها",
+        0.06, "PR18-8DN")
+    tl = X_END - 20 - (P["x_home"] + 40)
+    tray = Plate("P24", "سینی زنجیر کابل X", tl, 64, 2, "فولاد", note="ورق 2 خم U، ارتفاع لبه 30",
                  process="برش + خم")
-    plate(tray, "XY", 825, -228, BEAM_TOP - 12, g, "steel")
-    buy("B08", "زنجیر کابل 25×50 (X)", comp(box(830, 1240, -253, -203, BEAM_TOP - 10, BEAM_TOP + 15),
-                                            box(xc_chain(), 830, -253, -203, ZCP - 25, ZCP)),
-        "chain", g, 1.5, "25x50 R55، طول ≈ 1.2 m")
+    xm = P["x_home"] + 40 + tl / 2
+    plate(tray, "XY", xm, -214, BEAM_TOP - 12, g, "steel")
+    buy("B08", "زنجیر کابل 25×50 (X)", comp(box(xm, X_END - 20, -239, -189, BEAM_TOP - 10, BEAM_TOP + 15),
+                                            box(xc_chain(), xm, -239, -189, ZCP - 25, ZCP)),
+        "chain", g, 2.0, "25x50 R55، طول ≈ 1.7 m")
 
 
 def xc_chain():
@@ -571,31 +590,49 @@ def build_ink():
 # 7. PRINT STATION: height-adjustable fixture table
 # ============================================================================
 def build_print_station():
-    g = "ایستگاه چاپ"
-    xc = X_PRINT
-    top = Zc - P["part_h"]
-    bp = Plate("P40", "صفحه‌ی پایه‌ی میز چاپ", 300, 300, 15, "St37",
-               holes=[(dx, dy, 32) for dx in (-75, 75) for dy in (-90, 90)] +
-                     [p for dx in (-75, 75) for dy in (-90, 90) for p in pcd(dx, dy, 21.5, 4, 5.5)] +
-                     [(0, 0, 36)] + [(dx, 0, 11) for dx in (-130, -120, 120, 130)],
-               note="روی زیرقاب چاپ؛ Ø36 یاتاقان پیچ Tr20")
-    plate(bp, "XY", xc, 0, 640, g, "steel")
-    tp = Plate("P41", "صفحه‌ی بالای میز چاپ (فیکسچر)", 260, 260, 20, "آلومینیوم 6061",
-               holes=[(dx, dy, 17.5) for dx in (-75, 75) for dy in (-90, 90)] + [(0, 0, 17.5)] +
-                     [(u, v, 6.8) for u in (-100, -50, 50, 100) for v in (-100, -50, 0, 50, 100)],
-               note="شبکه‌ی M8 گام 50 برای قالب قطعه؛ مهره‌ی Tr20 زیر صفحه")
-    plate(tp, "XY", xc, 0, top - 20, g, "alu")
-    for dx in (-75, 75):
-        for dy in (-90, 90):
-            buy("B41", "بوش خطی LMF20UU", comp(tubecyl("Z", (xc + dx, dy), 54, 20, 655, 663),
-                                               tubecyl("Z", (xc + dx, dy), 32, 20, 663, 715)), "gear", g, 0.18,
-                "LMF20UU")
-            machined("M20", "میله‌ی راهنمای میز Ø20", cyl("Z", (xc + dx, dy), 20, top - 20 - 250, top - 20),
-                     cyl("Z", (0, 0), 20, 0, 250), "CK45", "rail", g, "Ø20 h6 × 250")
-    buy("B42", "پیچ ذوزنقه Tr20×4 + مهره", cyl("Z", (xc, 0), 20, 555, top - 20), "gear", g, 0.8, "Tr20x4 L≈330")
-    buy("B43", "فلکه‌ی دستی Ø125", comp(tubecyl("Z", (xc, 0), 125, 105, 530, 545), cyl("Z", (xc, 0), 30, 530, 555)),
-        "motor", g, 0.5, "DIN 950 Ø125")
-    buy("B44", "قطعه‌ی نمونه Ø80×60", cyl("Z", (xc, 0), 80, top, top + P["part_h"]), "part", g, 0.3, "نمونه")
+    """Disc table outside the body, bolted to it with two tie pairs so the print force closes
+    inside the steel (no tipping, no floor dependence). Turntable on a lazy-susan bearing,
+    centring ring for the disc bore."""
+    g = "میز دیسک"
+    tb, t = P["tb"], P["tb_t"]
+    h = tb / 2
+    xc = X_DISC
+    zt = ZT                              # table frame top = machine base top (ties are straight)
+    a = 300.0                            # half size of the table frame (leg centres)
+    legs = [(xc + sx * a, sy * a) for sx in (-1, 1) for sy in (-1, 1)]
+    for (x, y) in legs:
+        tube("پایه‌ی میز دیسک", (x, y, P["foot_h"]), (x, y, zt), tb, tb, t, g)
+        buy("B40", "پایه‌ی ترازشو M16", comp(cyl("Z", (x, y), 80, 0, 12), cyl("Z", (x, y), 16, 12, P["foot_h"])),
+            "gear", g, 0.6, "M16، کف Ø80، ظرفیت ≥ ۵۰۰ kg")
+    for zc in (zt - h, P["foot_h"] + h):
+        for y in (-a, a):
+            tube("طولی میز دیسک", (xc - a + h, y, zc), (xc + a - h, y, zc), tb, tb, t, g)
+        for x in (xc - a, xc + a):
+            tube("عرضی میز دیسک", (x, -a + h, zc), (x, a - h, zc), tb, tb, t, g)
+        for y in (-P["rail_y"], P["rail_y"]):     # ties to the machine front posts
+            tube("اتصال میز به دستگاه (پیچی)", (X_FRONT, y, zc), (xc - a - h, y, zc), tb, tb, t, g,
+                 note="دو سر ورق فلنج 10 mm و 4× M12؛ نیروی چاپ را داخل فولاد می‌بندد")
+    bp = Plate("P60", "صفحه‌ی پایه‌ی میز گردان", 2 * a + tb, 2 * a + tb, 15, "St37",
+               holes=[(sx * a, sy * a, 13) for sx in (-1, 1) for sy in (-1, 1)] + [(0, 0, 40)] +
+                     pcd(0, 0, 235, 8, 9, a0=22.5),
+               note="روی قاب میز؛ 8× M8 برای بلبرینگ گردان")
+    plate(bp, "XY", xc, 0, zt, g, "steel")
+    z1 = zt + 15
+    zb = Zc - P["disc_t"] - 20            # turntable plate bottom
+    buy("B70", "بلبرینگ گردان (Lazy Susan) Ø500", tubecyl("Z", (xc, 0), 500, 430, z1, zb), "gear", g, 3.5,
+        "Ø500، ظرفیت ≥ 200 kg")
+    tt = cyl("Z", (xc, 0), P["disc_od"] + 50, zb, zb + 20)
+    add("M30", "صفحه‌ی گردان Ø1050 (MDF روکش‌دار یا کامپوزیت آلومینیوم)", tt, "machined", "MDF روکش‌دار", C["cab"], g,
+        meta=dict(dims=f"Ø{P['disc_od'] + 50:g} × 20", process="برش CNC", note="سطح صاف؛ 4 سوراخ تنظیم زاویه (120°) برای چاپ سه‌تایی"),
+        local=cyl("Z", (0, 0), P["disc_od"] + 50, 0, 20))
+    buy("B71", "حلقه‌ی مرکزگیر دیسک (قابل تعویض برای هر قطر داخلی)",
+        tubecyl("Z", (xc, 0), P["disc_id"] - 2, P["disc_id"] - 40, Zc - P["disc_t"], Zc - 0.5), "red", g, 0.5,
+        "POM، ارتفاع کمتر از ضخامت دیسک")
+    buy("B72", f"دیسک پلاستیکی Ø{P['disc_od']:g}/Ø{P['disc_id']:g} × {P['disc_t']:g}",
+        tubecyl("Z", (xc, 0), P["disc_od"], P["disc_id"], Zc - P["disc_t"], Zc), "part", g, 1.8, "قطعه‌کار نمونه")
+    buy("B73", "پین شاخص 120° (ایندکس)", comp(box(xc + a + h, xc + a + h + 50, -20, 20, zt - 40, zt),
+                                             cyl("Z", (xc + a + h + 25, 0), 10, zt, zb)), "yellow", g, 0.3,
+        "پین فنری دستی")
 
 
 # ============================================================================
@@ -603,38 +640,47 @@ def build_print_station():
 # ============================================================================
 def build_periphery():
     g = "ایمنی و برق"
-    # light curtain on the front portal columns (field between the two sticks)
-    for y in (YA + 47.5, YB - 47.5):
-        buy("B60", "پرده‌ی نوری نوع ۴، 14 mm (فرستنده / گیرنده)", box(1292, 1327, y - 17.5, y + 17.5, ZT, ZT + 310), "yellow", g, 0.6,
-            "ارتفاع حفاظت ≈ 300")
-    # guards (polycarbonate 5 mm)
     gd = "محافظ‌ها"
+    ry = P["rail_y"]
+    H = BEAM_BOT - ZT
     W = P["base_Y1"] - P["base_Y0"]
-    pr = Plate("P50", "محافظ عقب (پلی‌کربنات)", W, CROSS_TOP - ZT, 5, "پلی‌کربنات")
-    add("P50", pr.name, pr.place("YZ", (P["base_Y0"] + P["base_Y1"]) / 2, (ZT + CROSS_TOP) / 2, -5), "plate", pr.mat,
-        C["guard"], gd, meta=dict(dims=f"{W:g}x{CROSS_TOP - ZT:g}x5", plate=pr, process=pr.process, note=""), local=pr.solid())
-    pr2 = Plate("P51", "محافظ کناری راست (پلی‌کربنات)", 1160, CROSS_TOP - ZT, 5, "پلی‌کربنات")
-    plate(pr2, "XZ", 650, (ZT + CROSS_TOP) / 2, P["base_Y1"] + 2, gd, "guard")
-    pr3 = Plate("P52", "درب کناری چپ روی ایستگاه جوهر (لولایی، با سوئیچ ایمنی)", 800, CROSS_TOP - ZT, 5, "پلی‌کربنات")
-    plate(pr3, "XZ", 470, (ZT + CROSS_TOP) / 2, P["base_Y0"] - 7, gd, "guard")
-    pr4 = Plate("P53", "محافظ کناری چپ جلو (پلی‌کربنات)", 360, CROSS_TOP - ZT, 5, "پلی‌کربنات")
-    plate(pr4, "XZ", 1050, (ZT + CROSS_TOP) / 2, P["base_Y0"] - 7, gd, "guard")
-    buy("B61", "سوئیچ ایمنی درب", box(860, 880, P["base_Y0"] - 30, P["base_Y0"] - 8, 1120, 1160), "yellow", g, 0.1, "Pilz PSEN / Schmersal")
-    # HMI on a bracket at the right front column
-    machined("P54", "بازوی HMI", box(1290, 1340, 300, 340, 1330, 1370), box(0, 50, 0, 40, 0, 40), "St37", "frame", g,
-             "SHS 40x40x3 L50 + ورق")
-    buy("B62", "جعبه‌ی HMI + DOP-107BV", comp(box(1340, 1410, 300, 540, 1260, 1440),
-                                            box(1410, 1412, 330, 510, 1290, 1420)), "hmi", g, 2.5, "DOP-107BV در جعبه")
-    buy("B63", "E-Stop", comp(box(1350, 1400, 540, 585, 1270, 1320), cyl("Y", (1375, 1295), 40, 585, 610)),
-        "red", g, 0.2, "XB5AS8442")
-    buy("B63", "E-Stop", comp(box(1235, 1285, P["base_Y0"] - 70, P["base_Y0"], 1050, 1120), cyl("Y", (1260, 1085), 40, P["base_Y0"] - 95, P["base_Y0"] - 70)),
-        "red", g, 0.2, "XB5AS8442")
+    Lb = X_FRONT
+    pr = Plate("P50", "محافظ عقب (پلی‌کربنات)", W, H, 5, "پلی‌کربنات")
+    add("P50", pr.name, pr.place("YZ", (P["base_Y0"] + P["base_Y1"]) / 2, (ZT + BEAM_BOT) / 2, -5), "plate", pr.mat,
+        C["guard"], gd, meta=dict(dims=f"{W:g}x{H:g}x5", plate=pr, process=pr.process, note=""), local=pr.solid())
+    pr2 = Plate("P51", "محافظ کناری راست (پلی‌کربنات)", Lb, H, 5, "پلی‌کربنات")
+    plate(pr2, "XZ", Lb / 2, (ZT + BEAM_BOT) / 2, P["base_Y1"] + 2, gd, "guard")
+    pr3 = Plate("P52", "درب کناری چپ روی ایستگاه جوهر (لولایی، با سوئیچ ایمنی)", Lb, H, 5, "پلی‌کربنات")
+    plate(pr3, "XZ", Lb / 2, (ZT + BEAM_BOT) / 2, P["base_Y0"] - 7, gd, "guard")
+    # front wall with a window for the pad (between the two posts)
+    sill = PAD_UP_BOTTOM - 20
+    for code, nm, y0, y1, z0, z1 in (("P53", "محافظ جلو چپ", P["base_Y0"], -ry - 30, ZT, BEAM_BOT),
+                                     ("P55", "محافظ جلو راست", ry + 30, P["base_Y1"], ZT, BEAM_BOT),
+                                     ("P56", "محافظ جلو پایین پنجره‌ی پد", -ry + 30, ry - 30, ZT, sill)):
+        pl = Plate(code, nm + " (پلی‌کربنات)", y1 - y0, z1 - z0, 5, "پلی‌کربنات")
+        add(code, pl.name, pl.place("YZ", (y0 + y1) / 2, (z0 + z1) / 2, X_FRONT), "plate", pl.mat, C["guard"], gd,
+            meta=dict(dims=f"{y1 - y0:g}x{z1 - z0:g}x5", plate=pl, process=pl.process, note=""), local=pl.solid())
+    buy("B61", "سوئیچ ایمنی درب", box(Lb - 60, Lb - 40, P["base_Y0"] - 30, P["base_Y0"] - 8, 1080, 1120), "yellow",
+        g, 0.1, "Pilz PSEN / Schmersal")
+    # HMI at the front-right corner, facing the disc table
+    machined("P54", "بازوی HMI", box(X_FRONT, X_FRONT + 50, YB - 20, YB + 20, 1230, 1270),
+             box(0, 50, 0, 40, 0, 40), "St37", "frame", g, "SHS 40x40x3 L50 + ورق")
+    hx = X_FRONT + 50
+    buy("B62", "جعبه‌ی HMI + DOP-107BV", comp(box(hx, hx + 70, YB - 20, YB + 220, 1160, 1340),
+                                            box(hx + 70, hx + 72, YB + 10, YB + 190, 1190, 1320)), "hmi", g, 2.5,
+        "DOP-107BV در جعبه")
+    buy("B63", "E-Stop", comp(box(hx + 10, hx + 60, YB + 220, YB + 265, 1170, 1220),
+                              cyl("Y", (hx + 35, 1195), 40, YB + 265, YB + 290)), "red", g, 0.2, "XB5AS8442")
+    buy("B63", "E-Stop", comp(box(X_DISC + 280, X_DISC + 320, -375, -330, 700, 760),
+                              cyl("Y", (X_DISC + 300, 730), 40, -400, -375)), "red", g, 0.2, "XB5AS8442")
     buy("B64", "چراغ برج", comp(cyl("Z", (40, -300), 60, CROSS_TOP, CROSS_TOP + 100),
                                cyl("Z", (40, -300), 60, CROSS_TOP + 100, CROSS_TOP + 150)), "green", g, 0.5, "3 رنگ")
-    buy("B65", "تابلو برق 600×800×250", comp(box(150, 750, P["base_Y1"] + 7, P["base_Y1"] + 257, 80, 880), box(170, 730, P["base_Y1"] + 257, P["base_Y1"] + 260, 100, 860)),
+    buy("B65", "تابلو برق 600×800×250", comp(box(0, 600, P["base_Y1"] + 7, P["base_Y1"] + 257, 80, 880),
+                                            box(20, 580, P["base_Y1"] + 257, P["base_Y1"] + 260, 100, 860)),
         "cab", g, 28.0, "ورق 1.5، صفحه‌ی نصب")
-    buy("B66", "پدال پایی", box(1450, 1750, -100, 100, 0, 90), "yellow", g, 1.2, "پدال صنعتی با قاب")
-    buy("B67", "FRL + پرشر سوئیچ", comp(box(10, 90, P["base_Y0"] - 90, P["base_Y0"] - 12, 1000, 1160)), "pneu", g, 1.2, "AW20 + ISE")
+    buy("B66", "پدال پایی", box(X_DISC + 400, X_DISC + 700, -450, -250, 0, 90), "yellow", g, 1.2, "پدال صنعتی با قاب")
+    buy("B67", "FRL + پرشر سوئیچ", comp(box(10, 90, P["base_Y0"] - 90, P["base_Y0"] - 12, 1000, 1160)), "pneu", g, 1.2,
+        "AW20 + ISE")
 
 
 def build_all():
@@ -681,7 +727,7 @@ def common_vol(a, b):
         return -1
 
 
-EXPECTED = {("B27", "B50"), ("B27", "B44"),   # pad pressing on cliché / part
+EXPECTED = {("B27", "B50"), ("B27", "B72"), ("B27", "B71"), ("B27", "M30"),   # pad pressing on cliché / disc / table
             ("B07", "P11"), ("B13", "P32"),   # belt strand clamped in its clamp
             ("B21", "B21R")}                 # piston rod inside the cylinder
 FLEX = {"B08"}                               # drag chain: flexible, not checked
@@ -749,33 +795,28 @@ def mass_of(p):
 
 
 def stiffness():
+    """Beams sit on the rear portal (X 40) and the front posts (X_FP) and overhang to the disc table.
+    The print force pushes the carriage UP: the overhang lifts, the front posts are pulled (tension)."""
     E = 210000.0
-    I_beam = (50 * 100 ** 3 - 42 * 92 ** 3) / 12.0          # RHS 100x50x4, strong axis
-    I_60 = (60 ** 4 - 52 ** 4) / 12.0
-    L = 1260.0 - 40.0
+    I2 = 2 * (60 * 120 ** 3 - 50 * 110 ** 3) / 12.0          # two RHS 120x60x5
+    s = X_FP - 40.0
     F = P["F_print"]
     out = []
-    for lbl, x in (("چاپ", X_PRINT), ("برداشت", X_PICK)):
-        a = x - 40.0
-        b = L - a
-        d = (F / 2) * a * a * b * b / (3 * E * I_beam * L)
-        out.append((f"خیز تیر ریل X زیر نیروی {F:.0f} N در {lbl}", d))
-    def ss(L, loads, x, I):
-        d = 0.0
-        for (Pn, a_) in loads:
-            b_ = L - a_
-            if x <= a_:
-                d += Pn * b_ * x * (L * L - b_ * b_ - x * x) / (6 * E * I * L)
-            else:
-                d += Pn * a_ * (L - x) * (L * L - a_ * a_ - (L - x) ** 2) / (6 * E * I * L)
-        return d
-    Lc = YB - YA
-    R = F * (X_PRINT - 40) / L / 2
-    loads = [(R, -P["rail_y"] - YA), (R, P["rail_y"] - YA)]
-    d = max(ss(Lc, loads, a_, I_60) for _, a_ in loads)
-    out.append(("خیز تیر عرضی پرتال جلو در محل تیر ریل", d))
-    out.append(("خیز عرضی زیرقاب چاپ", ss(Lc, [(F / 2, -YA)], -YA, I_60)))
+    a = X_PICK - 40.0
+    b = s - a
+    out.append((f"خیز تیرهای X در برداشت (بین دو تکیه‌گاه)، {F:.0f} N", F * a * a * b * b / (3 * E * I2 * s)))
+    for lbl, x in ((f"چاپ دیسک Ø{P['disc_od']:g}", X_PRINT), ("بیشترین دسترسی", X_REACH)):
+        c = x - X_FP
+        out.append((f"خیز سر یک‌سرآزاد تیرهای X در {lbl} ({c:.0f} mm بیرون از ستون جلو)", F * c * c * (c + s) / (3 * E * I2)))
     return out
+
+
+def tipping(F):
+    """Tipping about the rear feet if the disc table were NOT tied to the machine."""
+    body = [p for p in PARTS if p["group"] != "میز دیسک"]
+    W = sum(mass_of(p) for p in body) * 9.81
+    xg = sum(mass_of(p) * p["shape"].BoundingBox().center.x for p in body) * 9.81 / W
+    return W, xg, [(x, F * (x - 30) / 1000, W * (xg - 30) / 1000) for x in (X_PRINT, X_REACH)]
 
 
 def x_motor_check(m_x):
@@ -812,7 +853,13 @@ def write_report(inter, stat, extra):
     L += ["", "## ۴. سفتی سازه (نیروی چاپ واکنش به بالا روی ریل‌ها)", "", "| مورد | خیز mm |", "|---|---:|"]
     for k, v in extra["stiff"]:
         L.append(f"| {k} | {v:.3f} |")
-    L += ["", "خیز زیر ۰.۲ mm در برابر فشردگی چند میلی‌متری پد ناچیز است.", "",
+    L += ["", "خیز زیر ۰.۵ mm در برابر فشردگی چند میلی‌متری پد ناچیز است و از چاپی به چاپ دیگر ثابت می‌ماند.", "",
+          "### اگر میز دیسک به دستگاه پیچ نشود (واژگونی)", "",
+          f"وزن بدنه‌ی دستگاه ≈ **{extra['tip'][0]:.0f} N**، مرکز جرم در X = {extra['tip'][1]:.0f} mm. نیروی چاپ رو به بالا جلوی دستگاه را بلند می‌کند:", "",
+          "| محل چاپ X | گشتاور بلندکننده N·m | گشتاور وزن N·m | نتیجه |", "|---:|---:|---:|---|"] + [
+          f"| {x:.0f} | {mo:.0f} | {mr:.0f} | {'❌ جلوی دستگاه بلند می‌شود' if mo > mr else ('⚠️ حاشیه کم' if mo > 0.6 * mr else '✅')} |"
+          for x, mo, mr in extra["tip"][2]] + ["",
+          "**به همین دلیل میز دیسک با ۴ لوله‌ی اتصال به بدنه پیچ می‌شود.** نیروی چاپ داخل فولاد بسته می‌شود و دستگاه هرگز بلند نمی‌شود. یا باید دستگاه را با رول‌بولت به زمین بست.", "",
           "## ۵. جرم‌ها", "", "| مورد | kg |", "|---|---:|"]
     for k, v in extra["mass"]:
         L.append(f"| {k} | {v:.1f} |")
@@ -837,6 +884,9 @@ def write_report(inter, stat, extra):
 # 10. EXPORTS
 # ============================================================================
 def export_all():
+    import shutil
+    for d in ("parts_step", "dxf"):
+        shutil.rmtree(os.path.join(OUT, d), ignore_errors=True)
     os.makedirs(os.path.join(OUT, "parts_step"), exist_ok=True)
     os.makedirs(os.path.join(OUT, "dxf"), exist_ok=True)
     # --- assembly STEP
@@ -993,22 +1043,24 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     build_all()
     print(f"built {len(PARTS)} parts in {time.time() - t0:.1f}s")
+    xw = X_FP - P["x_home"]
     configs = [("X=0 (خانه)، Z بالا، کاپ روی تصویر", 0, 0, 0),
                (f"X={P['x_pick']:g} برداشت، Z پایین، کاپ عقب", P["x_pick"], P["z_stroke"], -P["cup_stroke"]),
                (f"X={P['x_pick']:g} برداشت، Z بالا، کاپ روی تصویر (انتظار برداشت زودتر)", P["x_pick"], 0, 0),
-               ("X=350 وسط مسیر، Z بالا، کاپ در حال حرکت", 350, 0, -185),
-               (f"X={P['x_print']:g} چاپ، Z پایین", P["x_print"], P["z_stroke"], 0),
-               (f"X={P['x_travel']:g} انتهای کورس، Z بالا", P["x_travel"], 0, -P["cup_stroke"]),
-               (f"X={P['x_travel']:g} انتهای کورس، Z پایین (خطای فرضی)", P["x_travel"], P["z_stroke"], 0)]
+               (f"X={xw:g} عبور پد از پنجره‌ی جلو، Z بالا، کاپ در حال حرکت", xw, 0, -185),
+               (f"X={P['x_print']:g} چاپ دیسک Ø{P['disc_od']:g}، Z پایین", P["x_print"], P["z_stroke"], 0),
+               (f"X={P['x_travel']:g} بیشترین دسترسی ({P['reach']:g} mm بیرون)، Z بالا", P["x_travel"], 0, -P["cup_stroke"]),
+               (f"X={P['x_travel']:g} بیشترین دسترسی، Z پایین", P["x_travel"], P["z_stroke"], 0)]
     inter = interference(configs)
     stat = static_overlaps()
     print(f"checks {time.time() - t0:.1f}s")
     pad = find("B27")[0]
     cup = find("B52")[0]
     arm = find("P31")[0]
-    front_cross = [p for p in PARTS if p["kind"] == "tube" and p["name"] == "تیر عرضی پرتال"
-                   and p["shape"].BoundingBox().xmin > 1000][0]
-    beams = [p for p in PARTS if p["name"] == "تیر ریل X"]
+    end_cross = [p for p in PARTS if p["name"] == "عرضی سر تیرها"][0]
+    beams = [p for p in PARTS if p["name"] == "تیر ریل X (یک‌سرآزاد)"]
+    posts = [p for p in PARTS if p["name"] == "ستون جلو زیر تیر"]
+    sill = find("P56")[0]
     sideplates = find("P14")
     dist = [
         ("پد (بالا) تا بازوی کاپ، وقتی پد منتظر روی کلیشه است", min_dist(moved(pad, P["x_pick"]), arm["shape"])),
@@ -1017,16 +1069,21 @@ def main():
                                                      moved(cup, dcup=-P["cup_stroke"]))),
         ("صفحه‌ی کناری هد Z (پایین) تا تیر ریل", min(min_dist(moved(s, P["x_print"], P["z_stroke"]), b["shape"])
                                                    for s in sideplates for b in beams)),
-        ("پد در انتهای کورس تا تیر عرضی پرتال جلو", min_dist(moved(pad, P["x_travel"]), front_cross["shape"])),
-        ("فضای آزاد بالای قطعه تا زیر تیر عرضی جلو (دسترسی دست)", CROSS_BOT - Zc),
-        ("عرض دهانه‌ی جلو بین ستون‌ها", YB - YA - P["tb"]),
+        ("هد Z تا ستون‌های جلو هنگام عبور از پنجره", min(min_dist(moved(q, X_FP - P["x_home"]), c["shape"])
+                                                         for q in sideplates + [pad] for c in posts)),
+        ("پد (بالا) تا لبه‌ی پایین پنجره‌ی جلو", min_dist(moved(pad, X_FP - P["x_home"]), sill["shape"])),
+        ("هد Z در بیشترین دسترسی تا عرضی سر تیرها", min(min_dist(moved(q, P["x_travel"]), end_cross["shape"])
+                                                       for q in sideplates + [pad])),
+        ("فضای آزاد بالای دیسک تا زیر تیرهای X (جای دست)", BEAM_BOT - Zc),
+        ("لبه‌ی دیسک تا بدنه‌ی دستگاه", P["disc_gap"]),
     ]
     m_all = sum(mass_of(p) for p in PARTS)
     m_x = sum(mass_of(p) for p in PARTS if p["mov"] in ("x", "z"))
     m_z = sum(mass_of(p) for p in PARTS if p["mov"] == "z")
     m_c = sum(mass_of(p) for p in PARTS if p["mov"] == "c")
     m_frame = sum(mass_of(p) for p in PARTS if p["kind"] == "tube")
-    mass = [("کل دستگاه (بدون تابلو)", m_all - 28), ("اسکلت لوله‌ای", m_frame), ("متحرک X (کالسکه + هد Z)", m_x),
+    m_tab = sum(mass_of(p) for p in PARTS if p["group"] == "میز دیسک")
+    mass = [("کل دستگاه (بدون تابلو و میز دیسک)", m_all - 28 - m_tab), ("میز دیسک", m_tab), ("اسکلت لوله‌ای", m_frame), ("متحرک X (کالسکه + هد Z)", m_x),
             ("متحرک Z", m_z), ("متحرک کاپ", m_c)]
     mv = [p for p in PARTS if p["mov"] in ("x", "z")]
     ycg = sum(mass_of(p) * p["shape"].BoundingBox().center.y for p in mv) / m_x
@@ -1035,7 +1092,7 @@ def main():
     Mz = Fdrv * arm / 1000
     Fy = Mz / 0.140 / 2          # block pairs 140 mm apart along X, two rails
     Fy_old = Fdrv * abs(215 - ycg) / 1000 / 0.140 / 2
-    extra = dict(dist=dist, stiff=stiffness(), mass=mass, m_x=m_x, motor=x_motor_check(m_x),
+    extra = dict(dist=dist, stiff=stiffness(), tip=tipping(P["F_print"]), mass=mass, m_x=m_x, motor=x_motor_check(m_x),
                  offset=dict(ycg=ycg, yb=P["x_belt_y"], arm=arm, M=Mz, Fy=Fy, pct=Fy / 17750 * 100, Fy_old=Fy_old))
     rep = write_report(inter, stat, extra)
     print(rep)
