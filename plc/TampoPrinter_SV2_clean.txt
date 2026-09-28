@@ -1,0 +1,934 @@
+LD      M1002
+MOV     K200        D1340
+MOV     K200        D1352
+SET     M505
+DLD=    D518        K0
+DMOV    K100000     D518
+DMOV    K33333      D520
+DMOV    K1000       D500
+DMOV    K5500       D502
+DMOV    K1000       D504
+DMOV    K6150       D506
+DMOV    K0          D508
+DMOV    K2500       D510
+DMOV    K50         D512
+DMOV    K3500       D514
+DMOV    K3750       D516
+MOV     K800        D522
+MOV     K100        D523
+MOV     K60         D524
+MOV     K8          D525
+MOV     K300        D526
+MOV     K400        D527
+MOV     K400        D528
+MOV     K80         D529
+MOV     K60         D530
+MOV     K8          D531
+MOV     K300        D532
+MOV     K50         D540
+MOV     K50         D541
+MOV     K0          D542
+MOV     K150        D543
+MOV     K150        D544
+MOV     K10         D545
+MOV     K50         D546
+MOV     K300        D547
+DMOV    K5          D548
+DMOV    K50         D550
+MOV     K300        D552
+DMOV    K0          D564
+SET     M500
+RST     M506
+RST     M507
+LD<     D540        K20
+MOV     K20         D540
+LD>     D540        K100
+MOV     K100        D540
+LD<     D541        K20
+MOV     K20         D541
+LD>     D541        K100
+MOV     K100        D541
+LD>     D522        K900
+MOV     K900        D522
+LD>     D527        K600
+MOV     K600        D527
+LD>     D528        K600
+MOV     K600        D528
+LD<     D526        K100
+MOV     K100        D526
+LD<     D532        K100
+MOV     K100        D532
+LD>     D552        K1000
+MOV     K1000       D552
+DLD>    D500        D506
+DOR>    D502        D506
+DOR>    D504        D506
+DOR>    D508        D510
+DOR>    D514        D516
+DOR>=   D512        D514
+DOR<=   D518        K0
+DOR<=   D520        K0
+DOR<    D550        K0
+SET     M214
+LDP     X14
+ORP     M102
+SET     M36
+ZRST    M200        M216
+RST     M95
+LD      M36
+TMR     T7          K3
+LD      T7
+RST     M36
+LDI     X10
+SET     M200
+LDI     X4
+ANI     M36
+SET     M201
+LDI     X5
+ANI     M36
+SET     M202
+LDI     X6
+SET     M203
+LDI     X7
+SET     M204
+LDI     X15
+TMR     T2          K5
+LD      T2
+SET     M205
+LD      Y4
+ANI     M62
+TMR     T203        D543
+LD      T203
+SET     M206
+LDI     Y4
+ANI     X2
+AND     X10
+AND     X15
+TMR     T204        D544
+LD      T204
+SET     M207
+LD      X2
+AND     X3
+LD      X2
+AND     X17
+ORB
+LD      X20
+AND     X3
+ORB
+TMR     T6          K3
+LD      T6
+SET     M208
+LD      M1336
+OR      M50
+ANI     M26
+LD      M1337
+OR      M52
+ANI     M26
+AND     M30
+ORB
+SET     M209
+LD>     D3          K0
+TMR     T0          D547
+LD      T0
+SET     M210
+LD>     D4          K0
+TMR     T1          D547
+LD      T1
+SET     M211
+LDI     X16
+LD      Y4
+OR      M1336
+OR      M1337
+ANB
+SET     M212
+LD<>    D60         D61
+OUT     M37
+MOV     D60         D61
+LDI     M37
+AND     M505
+TMR     T3          K20
+LD      T3
+SET     M213
+ZRST    M100        M119
+LD      M90
+AND<>   D0          K10
+AND=    D0          D98
+TMR     T8          K150
+LD      T8
+SET     M215
+LD      M1000
+MOV     D0          D98
+LD      M62
+LD      M1336
+OR      M50
+ANB
+SET     M216
+LD      M1000
+MOV     K4M200      D50
+MOV     K4M216      D51
+LD<>    D50         K0
+OR<>    D51         K0
+OUT     M21
+LD      M200
+OR      M201
+OR      M202
+OR      M203
+OR      M204
+OR      M209
+OR      M216
+OUT     M28
+LD      M28
+OR      M212
+OR      M213
+OUT     M29
+LD      M28
+RST     M22
+RST     M23
+LD      M29
+SET     M1078
+SET     M1104
+RST     M46
+RST     M48
+LDI     M29
+ANI     M50
+ANI     M52
+ANI     M54
+ANI     M55
+RST     M1078
+RST     M1104
+LD      M21
+RST     M90
+RST     M91
+RST     M92
+RST     M93
+RST     M94
+RST     M60
+RST     M61
+RST     M45
+RST     M47
+RST     M54
+RST     M55
+ZRST    D0          D4
+LD      X10
+AND     X15
+AND     X4
+AND     X5
+AND     X6
+AND     X7
+ANI     M21
+OUT     M20
+DLD>    D518        K0
+DMUL    D1030       K10000      D40
+DDIV    D40         D518        D30
+DLD>    D520        K0
+DMUL    D1336       K10000      D40
+DDIV    D40         D520        D34
+LD      M1000
+DSUB    D500        D548        D70
+DADD    D500        D548        D72
+DZCP    D70         D72         D30     M70
+DSUB    D502        D548        D74
+DADD    D502        D548        D76
+DZCP    D74         D76         D30     M73
+DSUB    D504        D548        D78
+DADD    D504        D548        D80
+DZCP    D78         D80         D30     M76
+DZCP    D508        D510        D30     M79
+DSUB    D512        D548        D82
+DADD    D512        D548        D84
+DZCP    D82         D84         D34     M82
+DSUB    D514        D548        D86
+DADD    D514        D548        D88
+DZCP    D86         D88         D34     M85
+DSUB    D200        D30         D90
+DABS    D90
+DLD=    D200        D500
+OUT     M96
+DLD=    D200        D502
+OUT     M97
+LD      M22
+AND     M23
+OUT     M24
+LD      M71
+ANI     M1336
+AND     M22
+OUT     M31
+LD      M74
+ANI     M1336
+AND     M22
+OUT     M32
+LD      M77
+ANI     M1336
+AND     M22
+OUT     M34
+LD      M80
+ORI     M22
+OUT     M30
+LD      M83
+ANI     M1337
+AND     M23
+OUT     M33
+LD      M86
+ANI     M1337
+AND     M23
+OUT     M35
+LD      X2
+ANI     X3
+ANI     X17
+ANI     Y4
+TMR     T205        D545
+LD      T205
+OUT     M25
+LD      X2
+SET     M26
+LDP     X20
+ANI     Y4
+SET     M26
+LDF     X20
+AND     Y4
+RST     M26
+LD      X3
+OR      X17
+RST     M26
+LD      X3
+LD      X17
+AND     M501
+ORB
+OUT     M62
+LD      M26
+ANI     X3
+ANI     X17
+AND     M20
+OUT     M40
+LD      M26
+ORI     M30
+AND     M20
+OUT     M42
+LD      M507
+AND     M96
+DAND<=  D90         D550
+AND     M92
+OUT     M63
+LD      M507
+AND     M97
+DAND<=  D90         D550
+OUT     M64
+LD      M31
+OR      M63
+AND     M33
+LD      M32
+OR      M64
+AND     X16
+ORB
+AND     M24
+AND     M20
+OUT     M41
+LDI     M41
+RST     M60
+RST     M61
+LD      X12
+OR      M100
+AND     M120
+AND     M24
+AND     M20
+AND     X16
+ANI     M90
+AND=    D2          K0
+SET     M90
+RST     M91
+RST     M94
+RST     M95
+MOV     K5          D0
+LDI     X13
+OR      M101
+ORI     M120
+AND     M90
+SET     M91
+LDP     X11
+AND     M90
+AND     X16
+AND<=   D0          K70
+SET     M94
+LD      M103
+ANI     M90
+AND=    D2          K0
+AND     M20
+MOV     K10         D2
+LDI     M120
+ANI     M90
+AND=    D2          K0
+AND=    D1          K0
+AND     M20
+OUT     M38
+LD=     D2          K10
+RST     M60
+RST     M61
+RST     M22
+RST     M23
+LD=     D2          K10
+AND     M25
+MOV     K20         D2
+LD=     D2          K20
+MOV     K10         D3
+MOV     K10         D4
+MOV     K30         D2
+LD=     D2          K30
+AND=    D3          K0
+AND=    D4          K0
+AND     M24
+MOV     K40         D2
+LD=     D2          K40
+ANI     M34
+ANI     M45
+AND     M58
+AND     M40
+DMOV    D504        D200
+MOV     D523        D202
+SET     M45
+LD=     D2          K40
+ANI     M33
+ANI     M47
+AND     M59
+AND     M42
+DMOV    D512        D204
+MOV     D529        D206
+SET     M47
+LD=     D2          K40
+AND     M34
+AND     M33
+MOV     K0          D2
+LD=     D3          K10
+AND     M58
+AND     M40
+MPS
+AND     X0
+DMOV    K0          D1030
+DMOV    K300        D200
+MOV     D525        D202
+SET     M45
+MOV     K15         D3
+MPP
+ANI     X0
+MOV     K20         D3
+LD=     D3          K15
+ANI     M45
+AND     M58
+MOV     K20         D3
+LD=     D3          K20
+AND     M58
+AND     X0
+SET     M210
+LD=     D3          K20
+AND     M58
+ANI     X0
+SET     M54
+MOV     K25         D3
+LD=     D3          K25
+AND     M57
+RST     M57
+DMOV    K0          D1030
+SET     M22
+MOV     K0          D3
+LD=     D4          K10
+AND     M59
+AND     M40
+MPS
+AND     X1
+DMOV    K0          D1336
+DMOV    K300        D204
+MOV     D531        D206
+SET     M47
+MOV     K15         D4
+MPP
+ANI     X1
+MOV     K20         D4
+LD=     D4          K15
+ANI     M47
+AND     M59
+MOV     K20         D4
+LD=     D4          K20
+AND     M59
+AND     X1
+SET     M211
+LD=     D4          K20
+AND     M59
+ANI     X1
+SET     M55
+MOV     K25         D4
+LD=     D4          K25
+AND     M56
+RST     M56
+DMOV    K0          D1336
+SET     M23
+MOV     K0          D4
+LD=     D0          K5
+ANI     M31
+ANI     M45
+AND     M58
+AND     M40
+DMOV    D500        D200
+MOV     D522        D202
+SET     M45
+LD=     D0          K5
+ANI     M33
+ANI     M47
+AND     M59
+AND     M42
+DMOV    D512        D204
+MOV     D528        D206
+SET     M47
+LD=     D0          K5
+AND     M31
+AND     M33
+MOV     K10         D0
+LD=     D0          K10
+AND     M91
+RST     M90
+RST     M91
+RST     M93
+RST     M94
+MOV     K0          D0
+LD=     D0          K10
+AND     M502
+TMR     T206        D546
+LD=     D0          K10
+AND     M93
+TMR     T207        D552
+LD      T207
+RST     M93
+LD=     D0          K10
+ANI     M91
+AND     M506
+ANI     M93
+AND     M20
+MOV     K20         D0
+LD=     D0          K10
+ANI     M91
+AND     M506
+AND     M93
+AND     X16
+AND     M20
+LD      M94
+OR      T206
+ANB
+RST     M94
+MOV     K80         D0
+LD=     D0          K10
+ANI     M91
+ANI     M506
+AND     X16
+AND     M20
+LD      M94
+OR      T206
+ANB
+RST     M94
+MOV     K20         D0
+LD=     D0          K20
+ANI     M31
+ANI     M45
+AND     M58
+AND     M40
+DMOV    D500        D200
+MOV     D522        D202
+SET     M45
+LD=     D0          K20
+ANI     M92
+AND=    D1          K0
+MOV     K10         D1
+LD=     D0          K20
+AND     M92
+AND     M33
+LD      M31
+OR      M63
+ANB
+MOV     K40         D0
+LD=     D0          K40
+TMR     T202        D542
+LD=     D0          K40
+AND     T202
+MOV     K50         D0
+LD=     D0          K50
+ANI     M503
+AND     M41
+SET     M60
+LD=     D0          K50
+LD      M62
+OR      M503
+ANB
+AND     M31
+MOV     K60         D0
+LD=     D0          K60
+TMR     T200        D540
+LD=     D0          K60
+AND     T200
+RST     M60
+RST     M92
+SET     M93
+MOV     K70         D0
+LD=     D0          K70
+AND     M26
+AND     M500
+AND=    D1          K0
+MOV     K10         D1
+LD=     D0          K70
+AND     M26
+AND     M506
+MOV     K10         D0
+LD=     D0          K70
+AND     M26
+ANI     M506
+MOV     K80         D0
+LD=     D0          K80
+ANI     M32
+ANI     M45
+AND     M58
+AND     M40
+DMOV    D502        D200
+MOV     D522        D202
+SET     M45
+LD=     D0          K80
+LD      M32
+OR      M64
+ANB
+MOV     K90         D0
+LD=     D0          K90
+ANI     M503
+AND     M41
+SET     M60
+LD=     D0          K90
+LD      M62
+OR      M503
+ANB
+AND     M32
+MOV     K100        D0
+LD=     D0          K100
+TMR     T201        D541
+LD=     D0          K100
+AND     T201
+RST     M60
+RST     M93
+DINC    D560
+DINC    D562
+MOV     T210        D566
+MOV     K0          D567
+SET     M99
+MOV     K110        D0
+LD=     D0          K110
+AND     M26
+MOV     K120        D0
+LD=     D0          K120
+ANI     M31
+ANI     M45
+AND     M58
+AND     M40
+DMOV    D500        D200
+MOV     D522        D202
+SET     M45
+MOV     K10         D0
+LD=     D0          K120
+AND     M31
+MOV     K10         D0
+LD      M99
+AND>    D566        K0
+DDIV    K360000     D566        D570
+MOV     D570        D568
+LD      M504
+DAND>=  D562        D564
+DAND>   D564        K0
+SET     M95
+SET     M91
+LD      M90
+ANI     M99
+TMR     T210        K32767
+LD      M99
+RST     M99
+LD=     D1          K10
+ANI     M35
+ANI     M47
+AND     M59
+AND     M42
+DMOV    D514        D204
+MOV     D527        D206
+SET     M47
+LD=     D1          K10
+AND     M35
+MOV     K20         D1
+LD=     D1          K20
+ANI     M33
+ANI     M47
+AND     M59
+AND     M42
+DMOV    D512        D204
+MOV     D528        D206
+SET     M47
+LD=     D1          K20
+AND     M33
+SET     M92
+MOV     K0          D1
+LDP     M104
+AND     M38
+AND     M58
+AND     M40
+AND     M22
+DMOV    D506        D200
+MOV     D523        D202
+SET     M46
+LDP     M104
+AND     M38
+AND     M58
+AND     M40
+ANI     M22
+DADD    D30         K500        D200
+MOV     D525        D202
+SET     M46
+LDP     M105
+AND     M38
+AND     M58
+AND     M40
+AND     M22
+DMOV    K0          D200
+MOV     D523        D202
+SET     M46
+LDP     M105
+AND     M38
+AND     M58
+AND     M40
+ANI     M22
+DSUB    D30         K500        D200
+MOV     D525        D202
+SET     M46
+LDI     M104
+ANI     M105
+ORI     M38
+RST     M46
+LDP     M106
+AND     M38
+AND     M59
+AND     M42
+AND     M23
+DMOV    D516        D204
+MOV     D529        D206
+SET     M48
+LDP     M106
+AND     M38
+AND     M59
+AND     M42
+ANI     M23
+DADD    D34         K500        D204
+MOV     D531        D206
+SET     M48
+LDP     M107
+AND     M38
+AND     M59
+AND     M42
+AND     M23
+DMOV    K0          D204
+MOV     D529        D206
+SET     M48
+LDP     M107
+AND     M38
+AND     M59
+AND     M42
+ANI     M23
+DSUB    D34         K500        D204
+MOV     D531        D206
+SET     M48
+LDI     M106
+ANI     M107
+ORI     M38
+RST     M48
+LD      M110
+AND     M38
+AND     M24
+AND     M58
+AND     M40
+ANI     M45
+DMOV    D500        D200
+MOV     D523        D202
+SET     M45
+LD      M111
+AND     M38
+AND     M24
+AND     M58
+AND     M40
+ANI     M45
+DMOV    D502        D200
+MOV     D523        D202
+SET     M45
+LD      M112
+AND     M38
+AND     M24
+AND     M59
+AND     M42
+ANI     M47
+DMOV    D512        D204
+MOV     D529        D206
+SET     M47
+LD      M113
+AND     M38
+AND     M24
+AND     M59
+AND     M42
+ANI     M47
+DMOV    D514        D204
+MOV     D529        D206
+SET     M47
+LD      M117
+AND     M38
+AND     M24
+AND=    D1          K0
+MOV     K10         D1
+LD      M108
+AND     M38
+AND     M41
+ANI     M1336
+SET     M61
+LD      M109
+ORI     M38
+RST     M61
+LD      M45
+OR      M46
+OUT     M50
+LD      M47
+OR      M48
+OUT     M52
+LD      M1000
+DMUL    D200        D518        D40
+DDIV    D40         K10000      D44
+DMOV    D44         D10
+MOV     D202        D48
+MOV     K0          D49
+DMUL    D48         D518        D40
+DDIV    D40         K1000       D44
+DMOV    D44         D12
+MOV     D524        D48
+DMUL    D48         D518        D40
+DDIV    D40         K1000       D44
+DMOV    D44         D18
+MOV     D525        D48
+DMUL    D48         D518        D40
+DDIV    D40         K1000       D44
+DMOV    D44         D20
+MOV     D526        D1343
+DMUL    D204        D520        D40
+DDIV    D40         K10000      D44
+DMOV    D44         D14
+MOV     D206        D48
+DMUL    D48         D520        D40
+DDIV    D40         K1000       D44
+DMOV    D44         D16
+MOV     D530        D48
+DMUL    D48         D520        D40
+DDIV    D40         K1000       D44
+DMOV    D44         D22
+MOV     D531        D48
+DMUL    D48         D520        D40
+DDIV    D40         K1000       D44
+DMOV    D44         D24
+MOV     D532        D1353
+LD      M50
+AND     M40
+ANI     M54
+ANI     M29
+DDRVA   D10         D12         Y0      Y1
+LD      M54
+AND     M40
+ANI     M50
+ANI     M29
+DZRN    D18         D20         X0      Y0
+LDI     M50
+ANI     M54
+ANI     M1336
+OUT     M58
+LD      M1029
+MPS
+AND     M54
+RST     M54
+SET     M57
+MRD
+AND     M50
+RST     M45
+MPP
+RST     M1029
+LD      M52
+AND     M42
+ANI     M55
+ANI     M29
+DDRVA   D14         D16         Y2      Y3
+LD      M55
+AND     M40
+ANI     M52
+ANI     M29
+DZRN    D22         D24         X1      Y2
+LDI     M52
+ANI     M55
+ANI     M1337
+OUT     M59
+LD      M1030
+MPS
+AND     M55
+RST     M55
+SET     M56
+MRD
+AND     M52
+RST     M47
+MPP
+RST     M1030
+LD      M60
+OR      M61
+AND     M41
+OUT     Y4
+LDI     Y4
+OUT     Y5
+LD      X10
+ANI     M36
+OUT     Y6
+OUT     Y7
+LD      M90
+LD      M24
+ANI     M90
+AND     M1013
+ORB
+ANI     M21
+OUT     Y10
+LDI     M24
+OR      M95
+ORI     M120
+ANI     M21
+OUT     Y11
+LD      M21
+OUT     Y12
+LDI     M119
+OUT     Y13
+LD      M1000
+MOV     K0          D9
+LD      M24
+MOV     K2          D9
+LD>     D2          K0
+MOV     K1          D9
+LD      M90
+MOV     K3          D9
+LD      M91
+MOV     K4          D9
+LD      M21
+MOV     K5          D9
+LD      M115
+DMOV    K0          D560
+LD      M116
+DMOV    K0          D562
+RST     M95
+LD      M1000
+RST     M100
+RST     M101
+RST     M102
+RST     M103
+RST     M108
+RST     M109
+RST     M110
+RST     M111
+RST     M112
+RST     M113
+RST     M115
+RST     M116
+RST     M117
+END

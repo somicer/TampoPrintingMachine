@@ -95,7 +95,7 @@ MOV     K10         D545            // Z settle after UP 0.10 s
 MOV     K50         D546            // Continuous pause 0.50 s
 MOV     K300        D547            // Homing timeout 30.0 s (100 ms units)
 DMOV    K5          D548            // In-position tolerance 0.5 mm
-DMOV    K300        D550            // Early Z descent lead 30.0 mm
+DMOV    K50         D550            // Early Z descent lead 5.0 mm
 MOV     K300        D552            // Pre-pick max wait 3.00 s
 DMOV    K0          D564            // Batch target (0 = off)
 SET     M500                        // parallel inking ON
@@ -199,10 +199,14 @@ ORB
 TMR     T6          K3
 LD      T6
 SET     M208
-// A10 pad below safe height while an axis moves where it can collide
+// A10 pad below safe height while an axis moves or WANTS to move.
+//     The move request (M50/M52) is checked too: when M26 drops, M40/M42
+//     cut the pulse contact at once, so the busy flag alone is too late.
 LD      M1336
+OR      M50
 ANI     M26
 LD      M1337
+OR      M52
 ANI     M26
 AND     M30
 ORB
@@ -244,7 +248,9 @@ LD      M1000
 MOV     D0          D98
 // A17 pad landed while X was still moving (early-descent lead too long)
 LD      M62
-AND     M1336
+LD      M1336
+OR      M50
+ANB
 SET     M216
 
 // --- Alarm words for HMI ------------------------------------------
