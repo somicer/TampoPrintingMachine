@@ -2,6 +2,10 @@ group,item,spec,qty,usd_min,usd_max,basis,source
 کنترل,PLC,Delta DVP28SV11T2 (۱۶ ورودی / ۱۲ خروجی ترانزیستوری),1,182,330,search,https://www.ebay.com/itm/395576838844
 کنترل,HMI,Delta DOP-107BV هفت اینچ,1,136,169,search,https://www.ebay.com/itm/185015742358
 کنترل,ماژول توسعه,Delta DVP16SP11T (۸ ورودی / ۸ خروجی),1,117,127,search,https://plc-direct.com/products/dvp16sp11t
+کنترل,ماژول اترنت PLC,Delta DVPEN01-SL (سمت چپ DVP-SV، Modbus TCP),1,150,250,estimate,https://us.rs-online.com/product/delta-electronics/dvpen01-sl/72653131/
+شبکه,سوئیچ شبکه,سوئیچ صنعتی ۵ پورت DIN-Rail,1,30,90,estimate,
+شبکه,کابل شبکه,Cat6 شیلددار + کانکتور (حدود ۲۰ متر),1,15,40,estimate,
+شبکه,رایانه‌ی دروازه ERP,مینی‌PC ویندوز یا لینوکس (یا رایانه‌ی موجود),1,0,200,estimate,
 حرکت,موتور X و Y + یدکی,استپر کلوزلوپ NEMA24، ۴ N·m (۴۰ kg·cm)، انکودر ۱۰۰۰ خط، با کابل انکودر,3,44,60,search,https://www.oyostepper.com/goods-1263-S-Series-Nema-24-Closed-Loop-Stepper-Motor-18-Deg-40-Nm56645ozin-50A-2-Phase-with-Optical-Incremental-Encoder.html
 حرکت,درایور + یدکی,درایور کلوزلوپ CL57T یا HBS57، ورودی ۲۴ تا ۴۸ ولت، خروجی ALM,3,54,68,search,https://www.cloudraylaser.com/products/cloudray-cl57-24-48vdc-3-6a-leadshine-closed-loop-stepper-motor-driver
 حرکت,گیربکس X,خورشیدی NEMA24 (فلنج ۶۰)، نسبت ۱:۳، لقی ≤ ۱۵ آرک‌دقیقه,1,100,150,estimate,https://www.omc-stepperonline.com/nema-24-eg-series-planetary-gearbox

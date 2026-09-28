@@ -2,7 +2,7 @@
 """ERP gateway for the pad printer (Modbus TCP -> ERP).
 
 Runs on any PC / mini-PC in the plant network. It polls the Delta
-DVP-28SV2 through its Ethernet module (DVP-EN01-SL, Modbus TCP server,
+DVP-28SV2 through its Ethernet module (DVPEN01-SL, Modbus TCP server,
 port 502) and:
 
   * posts a live status snapshot every POLL_S seconds (best effort)
@@ -18,7 +18,7 @@ port 502) and:
 Configuration: environment variables (see CONFIG below) or edit here.
 Dependencies:  pip install pymodbus==3.6.9 requests
 
-Delta DVP Modbus addressing (verify with the DVP-EN01-SL manual):
+Delta DVP Modbus addressing (verify with the DVPEN01-SL manual):
     D0..D4095  -> holding registers 0x1000 + n   (4096 + n)
     M0..M1535  -> coils            0x0800 + n   (2048 + n)
 """
