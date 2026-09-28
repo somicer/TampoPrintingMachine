@@ -370,7 +370,7 @@ class Plant:
         b["X0"] = self.DOG[0] <= x <= self.DOG[1]
         b["X1"] = self.DOG[0] <= y <= self.DOG[1]
         b["X2"] = self.z <= 2.0
-        b["X20"] = self.Z_SAFE[0] <= self.z <= self.Z_SAFE[1]
+        b["X20"] = self.z <= self.Z_SAFE[1]       # zone sensor: steel flag from up to safe height
         b["X3"] = self.z >= self.Z_DOWN - 0.5
         for n in ("X4", "X5", "X6", "X7", "X10", "X13", "X15", "X16"):
             b[n] = True

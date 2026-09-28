@@ -14,7 +14,9 @@
 //  Units : positions 0.1 mm (32-bit), speeds mm/s, times 10 ms
 //
 //  New in Rev 2.0:
-//    * Z "above safe height" flag (M26) from the X20 sensor + direction:
+//    * Z "above safe height" flag (M26) from the X20 zone sensor
+//      (Rev 2.2: inductive M12 over a steel flag whose length is the
+//      whole safe zone, so X20 is ON from fully up down to safe height):
 //      X may move as soon as the pad is above the safe height (not only
 //      fully up)                                   -> motion overlap
 //    * Early Z descent when X is within D550 of the pick / print target
@@ -174,7 +176,7 @@ AND     X15
 TMR     T204        D544
 LD      T204
 SET     M207
-// A09 Z sensor plausibility (UP with SAFE or DOWN at the same time)
+// A09 Z sensor plausibility (UP with DOWN, SAFE with DOWN, UP without SAFE)
 LD      X2
 AND     X3
 LD      X2
@@ -182,6 +184,9 @@ AND     X17
 ORB
 LD      X20
 AND     X3
+ORB
+LD      X2                          // UP but not in the SAFE zone:
+ANI     X20                         // X20 sensor / steel flag lost
 ORB
 TMR     T6          K3
 LD      T6
@@ -461,19 +466,13 @@ TMR     T205        D545
 LD      T205
 OUT     M25
 
-// Z ABOVE SAFE HEIGHT (M26): the safe sensor X20 only sees the piston
-// while it passes, so the direction of the valve tells above / below.
-LD      X2
-SET     M26                         // fully up -> above
-LDP     X20
-ANI     Y4
-SET     M26                         // passing SAFE going up -> above
-LDF     X20
-AND     Y4
-RST     M26                         // passing SAFE going down -> below
-LD      X3
-OR      X17
-RST     M26                         // pad down -> below
+// Z ABOVE SAFE HEIGHT (M26): X20 is a ZONE sensor (steel flag from
+// fully up to safe height), so M26 follows it directly. A broken wire
+// or a lost flag gives OFF = "not safe" -> X cannot move (fail-safe).
+LD      X20
+ANI     X3
+ANI     X17
+OUT     M26
 
 // Z confirmed DOWN (pad compressed)
 LD      X3

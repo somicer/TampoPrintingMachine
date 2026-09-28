@@ -836,6 +836,30 @@ def S50(s, c):
     ck(c, "no alarm", clean(s))
 
 
+def S51(s, c):
+    """Inductive Z sensors: X20 wire break / lost steel flag during auto"""
+    fault_during_auto(s, c, "A09", _force(X20=False), "M208", _clear, False)
+
+
+def S52(s, c):
+    """Inductive Z sensors: without X20 the X axis stays locked (fail-safe)"""
+    ck(c, "homing", s.home())
+    x0 = s.xpos()
+    s.plant.force = {"X20": False}
+    s.cmd("M111")                            # go to print
+    s.run(3)
+    ck(c, "A09 raised (UP without SAFE)", s.b("M208"))
+    ck(c, "X did not move", abs(s.xpos() - x0) < 0.2)
+    ck(c, "no collision", not s.plant.violations)
+    _clear(s)
+    s.run(0.5)
+    s.reset()
+    ck(c, "alarm clears after reset", not s.alarms())
+    s.cmd("M111")
+    s.run(6)
+    ck(c, "X moves again with a healthy sensor", abs(s.xpos() - 495) < 0.6)
+
+
 SCENARIOS = {k: v for k, v in globals().items() if k[0] == "S" and k[1:3].isdigit()}
 LOGIN = {"S39", "S40"}
 

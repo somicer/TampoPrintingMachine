@@ -98,6 +98,9 @@ ORB
 LD      X20
 AND     X3
 ORB
+LD      X2
+ANI     X20
+ORB
 TMR     T6          K3
 LD      T6
 SET     M208
@@ -326,17 +329,10 @@ ANI     Y4
 TMR     T205        D545
 LD      T205
 OUT     M25
-LD      X2
-SET     M26
-LDP     X20
-ANI     Y4
-SET     M26
-LDF     X20
-AND     Y4
-RST     M26
-LD      X3
-OR      X17
-RST     M26
+LD      X20
+ANI     X3
+ANI     X17
+OUT     M26
 LD      X3
 LD      X17
 AND     M501

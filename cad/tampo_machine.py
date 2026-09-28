@@ -393,10 +393,30 @@ def build_z_head():
     cylz = comp(box(xc - 37.5, xc + 37.5, -37.5, 37.5, zb, zb + 30), box(xc - 33, xc + 33, -33, 33, zb + 30, zb + L - 30),
                 box(xc - 37.5, xc + 37.5, -37.5, 37.5, zb + L - 30, zb + L),
                 cyl("Y", (xc, zb + 15), 14, 37.5, 45), cyl("Y", (xc, zb + L - 15), 14, 37.5, 45))
-    buy("B21", "جک Airtac SC63×100-S", cylz, "pneu", g, 2.9, "SC63x100-S مگنت‌دار", mov="x")
-    for i, zz in enumerate((zb + 40, zb + 90, zb + L - 40)):
-        buy("B22", "سنسور مگنتی جک", box(xc - 44, xc - 37.5, -8, 8, zz, zz + 25), "red", g, 0.03, "CS1-J / D-M9N",
-            mov="x")
+    buy("B21", "جک Airtac SC63×100", cylz, "pneu", g, 2.9, "SC63x100 (بدون مگنت کافی است)", mov="x")
+    # Z position sensing: 3 inductive M12 sensors on a bracket under the carriage plate read ONE steel
+    # flag (3x20x40) screwed to the head plate. Flag length = safe zone, so X20 is ON from fully up
+    # down to the safe height (PLC: M26 = X20, fail-safe). Switch points match tools/plc_sim.py.
+    ft = HEAD_TOP
+    fl = 40.0
+    z_safe, z_down = 32.0, 94.5
+    fx = xc + 105
+    flag = Plate("P16", "تسمه‌ی آهنی سنسورهای Z", 20, fl, 3, "St37", holes=[(0, 5, 5.5), (0, 15, 5.5)],
+                 note="فولاد معمولی (باید آهنی باشد)؛ 2× M5 به لبه‌ی صفحه‌ی سر؛ طول آن = ناحیه‌ی امن")
+    plate(flag, "XZ", fx, ft - fl / 2, -63, g, "steel", mov="z")
+    zs = {"X2 بالا": ft - 2, "X20 ارتفاع امن": ft - z_safe, "X3 پایین": ft - fl - z_down}
+    zb0, zb1 = min(zs.values()) - 8, ZCP - 6
+    zcb = (zb0 + zb1) / 2
+    br = Plate("P17", "براکت سنسورهای Z", 50, zb1 - zb0, 6, "St37",
+               slots=[(0, z - zcb - 5, 0, z - zcb + 5, 12.5) for z in zs.values()],
+               note="شیار 12.5 با ±5 mm تنظیم برای بدنه‌ی M12 با دو مهره؛ نقطه‌ی قطع هر سنسور را تنظیم می‌کند")
+    plate(br, "XZ", fx, zcb, -93, g, "steel", mov="x")
+    tab = Plate("P18", "زبانه‌ی براکت سنسورهای Z", 50, 60, 6, "St37", holes=[(-15, 15, 6.6), (15, 15, 6.6)],
+                note="جوش به براکت؛ 2× M6 به صفحه‌ی کالسکه")
+    plate(tab, "XY", fx, -90, ZCP - 6, g, "steel", mov="x")
+    for nm, z in zs.items():
+        buy("B22", "سنسور القایی M12 (Autonics PR12-4DN)", cyl("Y", (fx, z), 12, -115, -65), "red", g, 0.05,
+            "M12، 4 mm، NPN نرمال‌باز، 10-30 VDC", mov="x")
     for zz in (zb + 17, zb + L - 17):   # ports face +Y (towards the valve), clear of the guide rods
         buy("B23", "شیر تخلیه‌ی سریع 3/8", cyl("Y", (xc, zz), 34, 45, 78), "pneu", g, 0.25, "SMC AQ5000", mov="x")
     # rod + floating joint (move with Z)
@@ -875,6 +895,12 @@ def write_report(inter, stat, extra):
           f"* گشتاور چرخشی (دور محور عمودی) در بیشترین شتاب: **{o['M']:.1f} N·m**.",
           f"* این گشتاور به‌صورت نیروی جانبی روی واگن‌ها می‌نشیند: **≈ {o['Fy']:.0f} N برای هر واگن**. ظرفیت هر واگن HGH20CA حدود **17,750 N** است، یعنی کمتر از **{o['pct']:.1f}٪** ظرفیت ✅",
           f"* در طرح قبلی که تسمه بیرون بود (Y = 215)، همین عدد {o['Fy_old']:.0f} N بود. با آوردن تسمه به داخل، نصف شد.", ""]
+    L += ["## ۸. سنسورهای القایی Z: کی روشن‌اند؟ (از روی هندسه‌ی مدل)", "",
+          "پد از 0 (کاملاً بالا) تا 100 mm (ته کورس) پایین می‌رود. هر سنسور وقتی روشن است که تسمه‌ی آهنی جلویش باشد.", "",
+          "| سنسور | روشن در پایین‌رفتن | لازم برای برنامه‌ی PLC |", "|---|---|---|"]
+    for nm, lo, hi, want in extra["sens"]:
+        L.append(f"| {nm} | از {lo:.1f} تا {hi:.1f} mm | {want} |")
+    L += ["", "حدود واقعی کمی (حدود ۱ تا ۲ mm) با این عددها فرق دارد، چون سطح حس سنسور ۱۲ mm قطر دارد. هنگام راه‌اندازی، هر سنسور را با شیار براکت طوری تنظیم کنید که چراغ آن دقیقاً در همین نقطه‌ها روشن و خاموش شود.", ""]
     with open(os.path.join(OUT, "check_report.md"), "w") as f:
         f.write("\n".join(L) + "\n")
     return "\n".join(L)
@@ -1094,6 +1120,14 @@ def main():
     Fy_old = Fdrv * abs(215 - ycg) / 1000 / 0.140 / 2
     extra = dict(dist=dist, stiff=stiffness(), tip=tipping(P["F_print"]), mass=mass, m_x=m_x, motor=x_motor_check(m_x),
                  offset=dict(ycg=ycg, yb=P["x_belt_y"], arm=arm, M=Mz, Fy=Fy, pct=Fy / 17750 * 100, Fy_old=Fy_old))
+    fb = find("P16")[0]["shape"].BoundingBox()
+    sens = []
+    for q, (nm, want) in zip(find("B22"), (("X2 بالا", "کمتر از 2 mm"), ("X20 ارتفاع امن", "از 0 تا 32 mm"),
+                                          ("X3 پایین", "از 94.5 mm به بعد"))):
+        zc_ = q["shape"].BoundingBox().center.z
+        lo, hi = max(0.0, fb.zmin - zc_), min(P["z_stroke"], fb.zmax - zc_)
+        sens.append((nm, lo, hi, want))
+    extra["sens"] = sens
     rep = write_report(inter, stat, extra)
     print(rep)
     if not QUICK:
