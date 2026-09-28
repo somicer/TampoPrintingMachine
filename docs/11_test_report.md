@@ -6,9 +6,9 @@
 
 | مورد | نتیجه |
 |---|---|
-| سناریوها | **54 از 54** قبول |
-| بررسی‌ها | **276 از 276** قبول |
-| دستورهای خروجی اجراشده (پوشش کد) | **619 از 626** (99٪) |
+| سناریوها | **57 از 57** قبول |
+| بررسی‌ها | **298 از 298** قبول |
+| دستورهای خروجی اجراشده (پوشش کد) | **641 از 652** (98٪) |
 | مرحله‌های اتومات دیده‌شده | S0, S5, S10, S20, S50, S60, S70, S80, S90, S100, S110 (S5، S40 و S120 در همان اسکن تمام می‌شوند و با پوشش کد تأیید می‌شوند) |
 | مرحله‌های جوهرزنی / هومینگ | D1: [0, 10, 20] · D2: [0, 10, 30, 40] · D3: [0, 15, 20, 25] |
 | آلارم‌های آزموده‌شده | A01, A02, A03, A04, A05, A06, A07, A08, A09, A10, A11, A12, A13, A14, A15, A16, A17, A18, A19, A20, A21 (21 از 21) |
@@ -453,16 +453,51 @@
 - ✅ alarm clears after reset
 - ✅ X moves again with a healthy sensor
 
+### ✅ S53: X axis jammed: stop, driver limp, back off 5 mm on reset
+
+- ✅ homing
+- ✅ jam detected while moving (A02/A03)
+- ✅ pulses stopped at once
+- ✅ stall and direction remembered
+- ✅ backed off 5 mm the other way
+- ✅ back-off done once, flags cleared
+- ✅ axis unhomed (position not trusted)
+- ✅ no new alarm, no collision
+- ✅ re-home works
+
+### ✅ S54: Cup axis (Y) jammed: stop, back off 5 mm on reset
+
+- ✅ homing
+- ✅ jam detected while moving (A02/A03)
+- ✅ pulses stopped at once
+- ✅ stall and direction remembered
+- ✅ backed off 5 mm the other way
+- ✅ back-off done once, flags cleared
+- ✅ axis unhomed (position not trusted)
+- ✅ no new alarm, no collision
+- ✅ re-home works
+
+### ✅ S55: X jammed on the way back (-): backs off in + direction
+
+- ✅ homing
+- ✅ jam detected, direction = -
+- ✅ backed off 5 mm in + direction
+- ✅ no alarm, no collision
+
 ## خط‌های اجرانشده
 
 دستورهای خروجی که در هیچ سناریویی اجرا نشدند (شماره‌ی خط در فایل IL):
 
 ```
-  214  SET     M211
-  933  MOV     K10         D0
- 1529  DMOV    D30         D200
- 1550  DMOV    D30         D200
- 1599  SET     M65
- 1623  DMOV    D34         D204
- 1644  DMOV    D34         D204
+  120  DMOV    K200        D690
+  122  DMOV    K0          D690
+  124  DMOV    K200        D692
+  126  DMOV    K0          D692
+  247  SET     M211
+  966  MOV     K10         D0
+ 1626  DMOV    D30         D200
+ 1647  DMOV    D30         D200
+ 1696  SET     M65
+ 1720  DMOV    D34         D204
+ 1741  DMOV    D34         D204
 ```

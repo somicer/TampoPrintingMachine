@@ -51,7 +51,11 @@ HMI_HEARTBEAT,D60,Word,W,,,,,Cycle macro 500 ms,-,D60 = D60 + 1
 X_PICK_POS,D500,DWord,RW,mm,0,6200,1,Numeric,3,Pick-up position
 X_PRINT_POS,D502,DWord,RW,mm,0,6200,1,Numeric,3,Print position
 X_PARK_POS,D504,DWord,RW,mm,0,6200,1,Numeric,3,Park position after homing
-X_SOFT_MAX,D506,DWord,RW,mm,0,6200,1,Numeric (lvl 2),3,X soft limit
+X_SOFT_MAX,D506,DWord,RW,mm,0,10100,1,Numeric (lvl 2),3,X soft limit
+X_STALL_BACKOFF,D690,DWord,RW,mm,0,200,1,Numeric (lvl 2),3,X back-off after a jam (A02)
+Y_STALL_BACKOFF,D692,DWord,RW,mm,0,200,1,Numeric (lvl 2),3,Cup back-off after a jam (A03)
+X_STALLED,M180,Bit,R,,,,,Indicator,12,X jammed during a move (back-off on reset)
+Y_STALLED,M182,Bit,R,,,,,Indicator,12,Cup jammed during a move (back-off on reset)
 X_ZONE_MIN,D508,DWord,RW,mm,0,6200,1,Numeric (lvl 2),3,Cliche zone start
 X_ZONE_MAX,D510,DWord,RW,mm,0,6200,1,Numeric (lvl 2),3,Cliche zone end
 Y_PARK_POS,D512,DWord,RW,mm,0,4000,1,Numeric,3,Cup park

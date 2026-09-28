@@ -43,6 +43,14 @@ DLD>    D502        D506
 DMOV    D506        D502
 DLD<    D502        K0
 DMOV    K0          D502
+DLD>    D690        K200
+DMOV    K200        D690
+DLD<    D690        K0
+DMOV    K0          D690
+DLD>    D692        K200
+DMOV    K200        D692
+DLD<    D692        K0
+DMOV    K0          D692
 DLD>    D504        D506
 DOR>    D508        D510
 DOR>    D514        D516
@@ -70,6 +78,26 @@ SET     M201
 LDI     X5
 ANI     M36
 SET     M202
+LDI     X4
+ANI     M36
+AND     M50
+SET     M180
+LDP     M180
+DAND>   D200        D30
+SET     M181
+LDP     M180
+DAND<=  D200        D30
+RST     M181
+LDI     X5
+ANI     M36
+AND     M52
+SET     M182
+LDP     M182
+DAND>   D204        D34
+SET     M183
+LDP     M182
+DAND<=  D204        D34
+RST     M183
 LDI     X6
 SET     M203
 LDI     X7
@@ -823,6 +851,66 @@ LDI     M106
 ANI     M107
 ORI     M38
 RST     M48
+LDP     X14
+ORP     M102
+AND     M180
+SET     M184
+LDP     X14
+ORP     M102
+AND     M182
+SET     M185
+LD      M184
+ANI     M36
+AND     X4
+AND     M58
+AND     M40
+ANI     M45
+AND     M181
+DSUB    D30         D690        D200
+LD      M184
+ANI     M36
+AND     X4
+AND     M58
+AND     M40
+ANI     M45
+ANI     M181
+DADD    D30         D690        D200
+LD      M184
+ANI     M36
+AND     X4
+AND     M58
+AND     M40
+ANI     M45
+MOV     D525        D202
+SET     M45
+RST     M184
+RST     M180
+LD      M185
+ANI     M36
+AND     X5
+AND     M59
+AND     M42
+ANI     M47
+AND     M183
+DSUB    D34         D692        D204
+LD      M185
+ANI     M36
+AND     X5
+AND     M59
+AND     M42
+ANI     M47
+ANI     M183
+DADD    D34         D692        D204
+LD      M185
+ANI     M36
+AND     X5
+AND     M59
+AND     M42
+ANI     M47
+MOV     D531        D206
+SET     M47
+RST     M185
+RST     M182
 LD      M110
 AND     M38
 AND     M24
@@ -1361,6 +1449,8 @@ DMOV    K2000       D510
 DMOV    K50         D512
 DMOV    K3500       D514
 DMOV    K3750       D516
+DMOV    K50         D690
+DMOV    K50         D692
 MOV     K800        D522
 MOV     K100        D523
 MOV     K60         D524

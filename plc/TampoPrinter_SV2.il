@@ -115,6 +115,15 @@ DLD>    D502        D506
 DMOV    D506        D502
 DLD<    D502        K0
 DMOV    K0          D502
+// Stall back-off distance: 0 .. 20.0 mm
+DLD>    D690        K200
+DMOV    K200        D690
+DLD<    D690        K0
+DMOV    K0          D690
+DLD>    D692        K200
+DMOV    K200        D692
+DLD<    D692        K0
+DMOV    K0          D692
 
 // A15 - parameter invalid
 DLD>    D504        D506
@@ -153,6 +162,30 @@ SET     M201                        // A02 X drive alarm
 LDI     X5
 ANI     M36
 SET     M202                        // A03 Y drive alarm
+// Stall capture (Rev 2.3): a closed-loop driver ALM while its axis runs a
+// DDRVA move = jammed axis. The driver cuts motor current itself (motor
+// goes limp, no more force); remember the axis and direction so the
+// reset can back off D690 / D692 the other way.
+LDI     X4
+ANI     M36
+AND     M50
+SET     M180                        // X stalled
+LDP     M180
+DAND>   D200        D30
+SET     M181                        // ...while moving +
+LDP     M180
+DAND<=  D200        D30
+RST     M181
+LDI     X5
+ANI     M36
+AND     M52
+SET     M182                        // Y stalled
+LDP     M182
+DAND>   D204        D34
+SET     M183                        // ...while moving +
+LDP     M182
+DAND<=  D204        D34
+RST     M183
 LDI     X6
 SET     M203                        // A04 X over-travel
 LDI     X7
@@ -1073,6 +1106,70 @@ ORI     M38
 RST     M48
 
 // ---- Go-to buttons (manual speed) --------------------------------
+// ---- Stall back-off (Rev 2.3): after the reset that clears A02/A03,
+//      move the jammed axis back D690 / D692 at creep speed, once. The
+//      axis stays unhomed (class A); re-home after removing the obstacle.
+LDP     X14
+ORP     M102
+AND     M180
+SET     M184                        // X back-off armed
+LDP     X14
+ORP     M102
+AND     M182
+SET     M185                        // Y back-off armed
+LD      M184
+ANI     M36
+AND     X4
+AND     M58
+AND     M40
+ANI     M45
+AND     M181
+DSUB    D30         D690        D200    // stalled going + -> back to -
+LD      M184
+ANI     M36
+AND     X4
+AND     M58
+AND     M40
+ANI     M45
+ANI     M181
+DADD    D30         D690        D200    // stalled going - -> back to +
+LD      M184
+ANI     M36
+AND     X4
+AND     M58
+AND     M40
+ANI     M45
+MOV     D525        D202
+SET     M45
+RST     M184
+RST     M180
+LD      M185
+ANI     M36
+AND     X5
+AND     M59
+AND     M42
+ANI     M47
+AND     M183
+DSUB    D34         D692        D204
+LD      M185
+ANI     M36
+AND     X5
+AND     M59
+AND     M42
+ANI     M47
+ANI     M183
+DADD    D34         D692        D204
+LD      M185
+ANI     M36
+AND     X5
+AND     M59
+AND     M42
+ANI     M47
+MOV     D531        D206
+SET     M47
+RST     M185
+RST     M182
+
 LD      M110                        // X -> pick
 AND     M38
 AND     M24
@@ -1709,6 +1806,8 @@ DMOV    K2000       D510            // X cliche zone max 200.0 mm
 DMOV    K50         D512            // Y park pos        5.0 mm
 DMOV    K3500       D514            // Y end pos       350.0 mm
 DMOV    K3750       D516            // Y soft max      375.0 mm
+DMOV    K50         D690            // X back-off after a stall  5.0 mm
+DMOV    K50         D692            // Y back-off after a stall  5.0 mm
 MOV     K800        D522            // X auto speed    mm/s
 MOV     K100        D523            // X jog / manual  mm/s
 MOV     K60         D524            // X home speed    mm/s

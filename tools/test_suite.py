@@ -860,6 +860,60 @@ def S52(s, c):
     ck(c, "X moves again with a healthy sensor", abs(s.xpos() - 495) < 0.6)
 
 
+def _stall(s, c, axis):
+    """Jam an axis in the middle of a manual go-to, then reset: it must stop, back off, stay unhomed."""
+    X = axis == "X"
+    pos = s.xpos if X else s.ypos
+    ck(c, "homing", s.home())
+    s.cmd("M111" if X else "M113")           # X -> print (+) / Y -> end (+)
+    s.run(1.5)
+    moving = s.b("M1336" if X else "M1337")
+    p_jam = pos()
+    s.plant.force = {"X4" if X else "X5": False}     # closed-loop driver ALM: jammed
+    s.run(0.3)
+    ck(c, "jam detected while moving (A02/A03)", moving and s.b("M201" if X else "M202"))
+    ck(c, "pulses stopped at once", abs(pos() - p_jam) < 3 and not s.b("M1336" if X else "M1337"))
+    ck(c, "stall and direction remembered", s.b("M180" if X else "M182") and s.b("M181" if X else "M183"))
+    _clear(s)                                # obstacle still there, driver ready again after ENA pulse
+    p0 = pos()
+    s.reset()
+    s.run(3)
+    ck(c, "backed off 5 mm the other way", abs((p0 - pos()) - 5.0) < 0.3)
+    ck(c, "back-off done once, flags cleared",
+       not s.b("M184" if X else "M185") and not s.b("M180" if X else "M182"))
+    ck(c, "axis unhomed (position not trusted)", not s.b("M22" if X else "M23"))
+    ck(c, "no new alarm, no collision", not s.alarms() and not s.plant.violations)
+    ck(c, "re-home works", s.home())
+
+
+def S53(s, c):
+    """X axis jammed: stop, driver limp, back off 5 mm on reset"""
+    _stall(s, c, "X")
+
+
+def S54(s, c):
+    """Cup axis (Y) jammed: stop, back off 5 mm on reset"""
+    _stall(s, c, "Y")
+
+
+def S55(s, c):
+    """X jammed on the way back (-): backs off in + direction"""
+    ck(c, "homing", s.home())
+    s.cmd("M111")
+    s.run(6)                                 # at print
+    s.cmd("M110")                            # back to pick (-)
+    s.run(1.5)
+    s.plant.force = {"X4": False}
+    s.run(0.3)
+    ck(c, "jam detected, direction = -", s.b("M201") and s.b("M180") and not s.b("M181"))
+    _clear(s)
+    p0 = s.xpos()
+    s.reset()
+    s.run(3)
+    ck(c, "backed off 5 mm in + direction", abs((s.xpos() - p0) - 5.0) < 0.3)
+    ck(c, "no alarm, no collision", not s.alarms() and not s.plant.violations)
+
+
 SCENARIOS = {k: v for k, v in globals().items() if k[0] == "S" and k[1:3].isdigit()}
 LOGIN = {"S39", "S40"}
 
