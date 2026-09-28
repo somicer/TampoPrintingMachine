@@ -97,6 +97,31 @@ table.t td.v{font:600 13px var(--mono);direction:ltr;text-align:left;font-varian
 .alrow.act{background:#FBE5E2;border:1px solid #EDB3AB}
 .alrow code{font:700 12px var(--mono);color:var(--red)}
 .alrow time{font:500 11px var(--mono);color:var(--scr-mute);direction:ltr;text-align:left}
+.banner{grid-column:1;background:#E4F2E8;border:2px solid var(--green);border-radius:6px;display:flex;align-items:center;gap:12px;padding:0 14px;font-size:17px}
+.banner b{font-weight:800}
+.bdot{width:16px;height:16px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px rgba(47,143,78,.2);flex:none}
+.burst{margin-inline-start:auto;background:var(--blue);color:#fff;border-radius:5px;padding:4px 12px;font-size:15px}
+.burst b{font:700 18px var(--mono)}
+.modes{grid-column:1;display:grid;grid-template-columns:1fr 1.25fr 1fr;gap:8px}
+.mode{font-family:var(--fa);background:var(--scr-2);border:2px solid var(--scr-line);border-radius:8px;color:var(--scr-ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:8px;box-shadow:inset 0 -4px 0 #DCE2E8}
+.mode b{font-size:19px;font-weight:800}
+.mode small{font-size:11.5px;color:var(--scr-mute)}
+.mode.on{border-color:var(--blue);background:#E3EDF9;box-shadow:inset 0 -4px 0 var(--blue)}
+.mico{display:flex;align-items:center;gap:8px;height:34px;direction:rtl}
+.ped{background:#34495E;color:#fff;border-radius:4px;font-size:11px;padding:3px 7px}
+.arr{font-size:20px;color:var(--scr-mute)}
+.dot1{width:22px;height:22px;border-radius:50%;background:var(--blue)}
+.dotn{width:52px;height:22px;background:radial-gradient(circle,var(--blue) 10px,transparent 11px) 0 0/18px 22px repeat-x}
+.inf{font-size:38px;line-height:1;color:var(--blue)}
+.nstep{display:flex;align-items:center;gap:8px}
+.nb{width:52px;height:44px;border-radius:6px;background:#34495E;color:#fff;font:700 26px var(--mono);display:flex;align-items:center;justify-content:center}
+.nv{min-width:46px;text-align:center;font:700 30px var(--mono);color:var(--blue)}
+.counts{grid-column:1;display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:8px}
+.cnt{background:var(--scr-2);border:1px solid var(--scr-line);border-radius:6px;padding:6px 10px;display:flex;flex-direction:column;gap:3px;justify-content:center}
+.cnt span{font-size:12px;color:var(--scr-mute)}
+.cv{font:700 28px var(--mono);direction:ltr;text-align:left;font-variant-numeric:tabular-nums;line-height:1.1}
+.cv small{font-size:16px;color:var(--scr-mute)}
+.big{font-size:30px;line-height:1}
 .pop{position:absolute;inset:0;background:rgba(20,28,36,.45);display:flex;align-items:center;justify-content:center}
 .popc{width:360px;background:var(--scr-2);border-radius:6px;padding:14px;display:flex;flex-direction:column;gap:10px;border-top:5px solid var(--blue)}
 .keys{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
@@ -136,7 +161,7 @@ table.t td.v{font:600 13px var(--mono);direction:ltr;text-align:left;font-varian
 
 <script>
 const S = [
- {id:"main", no:1, name:"اصلی", lvl:"۰ اپراتور", desc:"وضعیت دستگاه، موقعیت محورها، مرحله‌ی سکانس، تولید و فرمان‌های اصلی."},
+ {id:"main", no:1, name:"اصلی", lvl:"۰ اپراتور", desc:"صفحه‌ی کارگر: دکمه‌های بزرگ برای انتخاب حالت چاپ (۱ پدال = ۱ چاپ، ۱ پدال = N چاپ، پیوسته)، شروع و توقف، و شمارنده‌ها. گزینه‌های فنی در صفحه‌ی ۴ (سرپرست) هستند."},
  {id:"manual", no:2, name:"دستی", lvl:"۱ سرپرست", desc:"Jog و Go-To محورها، فرمان Z و ثبت موقعیت‌ها (Teach). فقط وقتی M38 = 1 باشد فعال است."},
  {id:"motion", no:3, name:"حرکت", lvl:"۲ مهندس", desc:"موقعیت‌ها، ناحیه‌ی کلیشه، سرعت‌ها و شتاب‌ها. همه بر حسب میلی‌متر."},
  {id:"process", no:4, name:"فرایند", lvl:"۱ سرپرست", desc:"زمان‌های مکث، فرود زودهنگام، برداشت زودتر و بچ."},
@@ -163,46 +188,25 @@ const nav=(cur)=>`<div class="nav">${S.slice(0,8).map(s=>`<button class="navb${s
 
 const V = {
 main:()=>bar("اصلی")+`
-<div class="body" style="grid-template-columns:230px 1fr 170px;grid-template-rows:1fr auto">
-  <div class="panel">
-    <div class="ph">محورها</div>
-    <div class="row"><span class="lbl">X کالسکه</span>${num("D30 (DW)","548.6","mm","موقعیت واقعی X، 0.1 mm، ۳۲ بیتی. فرمت 4.1.")}</div>
-    <div class="row"><span class="lbl">Y کاپ</span>${num("D34 (DW)","212.4","mm","موقعیت واقعی Y، 0.1 mm.")}</div>
-    <div class="zcol">
-      <div class="zbar" style="height:110px">${o("X2 / X20 / X3","Graphic (سه حالت)","موقعیت تقریبی پد از روی سه سنسور: بالا، ارتفاع امن، پایین. خط زرد = ارتفاع امن.","", "<i style='top:6px'></i><s style='top:42px'></s>","span","style='position:absolute;inset:0'")}</div>
-      <div style="display:flex;flex-direction:column;gap:6px;justify-content:center">
-        ${lamp("X2","g","Z بالا","سنسور بالای جک Z.")}
-        ${lamp("M26","g","بالای ارتفاع امن","M26: پد از ارتفاع امن بالاتر است. شرط حرکت X.")}
-        ${lamp("X3","","Z پایین","سنسور پایین (پد فشرده).")}
-        ${lamp("M93","b","پد پر","M93: پد رنگ برداشته و منتظر چاپ است.")}
-      </div>
-    </div>
+<div class="body" style="grid-template-columns:1fr 176px;grid-template-rows:62px 1fr 92px;gap:8px">
+  ${o("D0 / D9","Text by Value","پیام بزرگ وضعیت از روی D9 و مرحله‌ی D0. رنگ: سبز تولید، زرد آماده یا دستی، قرمز آلارم.","banner",`<span class="bdot"></span><span><b>در حال چاپ</b> · کالسکه به محل چاپ می‌رود</span>${o("D556 / D555","Numeric Display","شمارش چاپ‌های همین پدال در حالت «۱ پدال = N چاپ».","burst","چاپ <b>2</b> از <b>3</b>","span")}`)}
+  <div style="grid-row:1/3;grid-column:2;display:flex;flex-direction:column;gap:8px">
+    ${o("M100","Set ON Button (بزرگ)","شروع کار. شرط: هوم‌شده، بدون آلارم، پرده‌ی نوری سالم. PLC بیت را بعد از یک اسکن Reset می‌کند.","btn b-green","<span class='big'>▶</span>شروع","button","style='flex:1.3;font-size:24px;flex-direction:column'")}
+    ${o("M101","Set ON Button (بزرگ)","توقف در پایان چاپ فعلی. برای توقف فوری: شستی قارچی E-Stop.","btn b-red","<span class='big'>■</span>توقف","button","style='flex:1;font-size:22px;flex-direction:column'")}
   </div>
-  <div class="panel">
-    <div class="ph">مرحله و تولید ${o("D0","Text by Value","شماره‌ی مرحله‌ی سکانس اتومات به متن: S5 رفتن به شروع … S120 برگشت X.","","<span style='font:600 11px var(--mono);color:var(--blue)'>D0 = 80</span>","span")}</div>
-    ${o("D0","Text by Value","متن مرحله‌ی فعلی از روی D0.","","<div style='font-size:17px;font-weight:800'>S80 · کالسکه به محل چاپ می‌رود</div>")}
-    <div class="row" style="gap:12px">
-      <div style="flex:1;display:flex;flex-direction:column;gap:4px"><span class="lbl">شمارنده‌ی کل</span>${num("D560 (DW)","12,540","عدد","شمارنده‌ی کل، ماندگار. ریست فقط در سطح ۲.")}</div>
-      <div style="flex:1;display:flex;flex-direction:column;gap:4px"><span class="lbl">بچ / هدف</span>${num("D562 / D564","340 / 500","","بچ فعلی و هدف. با M504 پس از رسیدن به هدف، در پایان سیکل می‌ایستد.")}</div>
-    </div>
-    ${o("D562 ÷ D564","Bar Graph","پیشرفت بچ.","bar2","<i style='width:68%'></i>")}
-    <div class="row" style="gap:12px">
-      <div style="flex:1;display:flex;flex-direction:column;gap:4px"><span class="lbl">فاصله‌ی دو چاپ</span>${num("D566 (DW)","4.40","s","زمان بین دو چاپ پشت سر هم، واحد 10 ms، فرمت 2 رقم اعشار.")}</div>
-      <div style="flex:1;display:flex;flex-direction:column;gap:4px"><span class="lbl">ظرفیت</span>${num("D568","818","عدد/ساعت","چاپ در ساعت، از روی آخرین فاصله‌ی چاپ.")}</div>
-    </div>
+  <div class="modes">
+    ${o("D554 = 0","Set Value Button + Lamp","حالت ۰: هر بار پدال = یک چاپ. فقط وقتی دستگاه متوقف است عوض می‌شود (M90 = 0).","mode","<div class='mico'><span class='ped'>پدال</span><span class='arr'>←</span><span class='dot1'></span></div><b>۱ پدال = ۱ چاپ</b><small>برای چرخاندن قطعه بین چاپ‌ها</small>","button")}
+    ${o("D554 = 1","Set Value Button + Lamp","حالت ۱: هر بار پدال = N چاپ پشت سر هم روی همان نقطه (چند ضرب برای رنگ پررنگ‌تر). N با دکمه‌های + و − تنظیم می‌شود.","mode on","<div class='mico'><span class='ped'>پدال</span><span class='arr'>←</span><span class='dotn'></span></div><b>۱ پدال = N چاپ</b><div class='nstep'>"+o("D555 − 1","Set Value Button (Dec, min 1)","کم کردن N.","nb","−","span")+o("D555","Numeric Display (بزرگ)","تعداد چاپ در هر پدال، ۱ تا ۹.","nv","3","span")+o("D555 + 1","Set Value Button (Inc, max 9)","زیاد کردن N.","nb","+","span")+"</div>","button")}
+    ${o("D554 = 2","Set Value Button + Lamp","حالت ۲: پیوسته، بدون پدال، با مکث D546 بین چاپ‌ها. پرده‌ی نوری الزامی است.","mode","<div class='mico'><span class='inf'>∞</span></div><b>پیوسته</b><small>بدون پدال · مکث ۰.۵ ثانیه</small>","button")}
+  </div>
+  <div class="counts">
+    <div class="cnt">${o("D562 / D564","Numeric Display (بزرگ)","بچ فعلی و هدف.","cv","340<small> / 500</small>")}<span>بچ</span>${o("D562 ÷ D564","Bar Graph","پیشرفت بچ.","bar2","<i style='width:68%'></i>")}</div>
+    <div class="cnt">${o("D560 (DW)","Numeric Display","شمارنده‌ی کل.","cv","12,540")}<span>کل</span></div>
+    <div class="cnt">${o("D568","Numeric Display","چاپ در ساعت از روی آخرین فاصله‌ی دو چاپ (D566).","cv","818")}<span>چاپ در ساعت</span></div>
   </div>
   <div style="display:flex;flex-direction:column;gap:8px">
-    ${o("M100","Set ON Button","شروع اتومات. شرط: حالت اتومات، هوم‌شده، بدون آلارم، پرده‌ی نوری سالم. PLC بیت را بعد از یک اسکن Reset می‌کند.","btn b-green","شروع","button","style='height:64px;font-size:19px'")}
-    ${o("M101","Set ON Button","توقف در پایان سیکل (M91).","btn b-red","توقف","button","style='height:52px'")}
-    ${o("M102","Set ON Button","ریست آلارم‌ها و پالس ENA درایورها.","btn b-amber","ریست","button","style='height:40px'")}
-    ${o("M103","Set ON Button","هومینگ. فقط وقتی اتومات در حال اجرا نیست.","btn b-blue","هومینگ","button","style='height:40px'")}
-  </div>
-  <div style="grid-column:1/-1;display:grid;grid-template-columns:repeat(5,1fr);gap:6px">
-    ${tog("M500",1,"جوهرزنی موازی","جوهرزنی هم‌زمان با حرکت X. پیش‌فرض روشن.")}
-    ${tog("M506",1,"برداشت زودتر","پد بعد از هر چاپ رنگ برمی‌دارد و منتظر پدال می‌ماند.")}
-    ${tog("M507",1,"فرود زودهنگام","Z قبل از رسیدن X پایین آمدن را شروع می‌کند (فاصله D550). فقط سطح ۲.","L2")}
-    ${tog("M502",0,"سیکل پیوسته","بدون پدال، با مکث D546 بین سیکل‌ها.")}
-    ${tog("M503",0,"اجرای خشک","سیکل بدون فرود Z برای تست.")}
+    ${o("M102","Set ON Button","ریست آلارم.","btn b-amber","ریست","button","style='flex:1;font-size:17px'")}
+    ${o("M103","Set ON Button","هومینگ. فقط وقتی دستگاه متوقف است.","btn b-blue","هومینگ","button","style='flex:1;font-size:17px'")}
   </div>
 </div>`+nav("main"),
 
@@ -281,6 +285,7 @@ process:()=>bar("پارامترهای فرایند")+`
    ${tog("M506",1,"برداشت زودتر","بعد از راه‌اندازی روشن شود.")}
    ${tog("M507",1,"فرود زودهنگام","بعد از تنظیم D550 روشن شود.","L2")}
    <div class="row"><span class="lbl">فاصله‌ی فرود زودهنگام <span class="lock">L2</span></span>${inp("D550 (DW)","5.0 mm","فاصله‌ی X تا مقصد که Z از آن پایین آمدن را شروع می‌کند. از 5 mm شروع کنید، هر بار 5 mm اضافه کنید، اولین A10 یا سایه = ۲۰٪ عقب.")}</div>
+   ${tog("M503",0,"اجرای خشک (بدون فرود پد)","برای تست سیکل.")}
    ${tog("M504",1,"توقف پس از بچ","در پایان بچ دستگاه در پایان سیکل می‌ایستد.")}
    <div class="row"><span class="lbl">هدف بچ</span>${inp("D564 (DW)","500","هدف بچ. 0 = خاموش.")}</div>
   </div>
@@ -394,12 +399,18 @@ function show(id){
 tabs.innerHTML=S.map(s=>`<button data-go="${s.id}">${s.no}. ${s.name}</button>`).join("");
 document.addEventListener("click",e=>{
   const g=e.target.closest("[data-go]"); if(g){show(g.dataset.go);return}
-  const el=e.target.closest(".o"); if(el&&hmi.contains(el)){pick(el)}
+  const el=e.target.closest(".nb")||e.target.closest(".o"); if(el&&hmi.contains(el)){pick(el)}
 });
 document.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.classList&&e.target.classList.contains("o")){e.preventDefault();pick(e.target)}});
 function pick(el){
   hmi.querySelectorAll(".o.sel").forEach(x=>x.classList.remove("sel")); el.classList.add("sel");
   if(el.classList.contains("tog")) el.classList.toggle("on");
+  const nb=el.classList.contains("nb")?el:null;
+  if(nb){const v=nb.parentNode.querySelector(".nv");let n=+v.textContent+(nb.textContent.trim()==="+"?1:-1);v.textContent=Math.min(9,Math.max(1,n));
+    const bb=hmi.querySelector(".burst");if(bb)bb.innerHTML=`چاپ <b>1</b> از <b>${v.textContent}</b>`;}
+  const md=el.closest(".mode");
+  if(md&&(el===md||nb)){hmi.querySelectorAll(".mode").forEach(m=>m.classList.toggle("on",m===md));
+    const bb=hmi.querySelector(".burst");if(bb)bb.hidden=!md.dataset.a.endsWith("1");}
   const s=S.find(x=>x.id===cur);
   insp.innerHTML=`<h2>${(el.textContent||"").trim().slice(0,40)||"شیء"}</h2>
    <div class="addr">${el.dataset.a}</div>

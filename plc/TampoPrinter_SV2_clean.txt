@@ -32,6 +32,8 @@ MOV     K150        D543
 MOV     K150        D544
 MOV     K10         D545
 MOV     K50         D546
+MOV     K0          D554
+MOV     K2          D555
 MOV     K300        D547
 DMOV    K5          D548
 DMOV    K50         D550
@@ -60,6 +62,14 @@ LD<     D532        K100
 MOV     K100        D532
 LD>     D552        K1000
 MOV     K1000       D552
+LD<     D554        K0
+MOV     K0          D554
+LD>     D554        K2
+MOV     K0          D554
+LD<     D555        K1
+MOV     K1          D555
+LD>     D555        K9
+MOV     K9          D555
 DLD>    D500        D506
 DOR>    D502        D506
 DOR>    D504        D506
@@ -461,6 +471,8 @@ RST     M56
 DMOV    K0          D1336
 SET     M23
 MOV     K0          D4
+LD=     D554        K2
+OUT     M502
 LD=     D0          K5
 ANI     M31
 ANI     M45
@@ -487,6 +499,7 @@ RST     M90
 RST     M91
 RST     M93
 RST     M94
+MOV     K0          D556
 MOV     K0          D0
 LD=     D0          K10
 AND     M502
@@ -612,7 +625,19 @@ DINC    D562
 MOV     T210        D566
 MOV     K0          D567
 SET     M99
+INC     D556
 MOV     K110        D0
+LD      M99
+AND=    D554        K1
+AND<    D556        D555
+ANI     M91
+SET     M94
+LD      M99
+LD<>    D554        K1
+OR>=    D556        D555
+OR      M91
+ANB
+MOV     K0          D556
 LD=     D0          K110
 AND     M26
 MOV     K120        D0

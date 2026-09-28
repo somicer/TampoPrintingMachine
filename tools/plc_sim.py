@@ -187,6 +187,8 @@ class PLC:
                     self.put("D%d" % (int(a[2][1:]) + 2), x - q * y, True)
             elif op == "DABS":
                 self.put(a[0], abs(self.val(a[0], True)), True)
+            elif op == "INC":
+                self.put(a[0], self.val(a[0]) + 1)
             elif op == "DINC":
                 self.put(a[0], self.val(a[0], True) + 1, True)
             elif op == "DZCP":
@@ -362,12 +364,16 @@ class Sim:
         return self.plc.val(d, dbl)
 
 
-def scenario(name, options, cycles=5, pedal=True, lead=None):
+def scenario(name, options, cycles=5, pedal=True, lead=None, mode=None, n=None):
     s = Sim()
     p = s.plc
     s.run(0.1)
     for m, v in options.items():
         p.bits[m] = v
+    if mode is not None:
+        p.put("D554", mode)
+    if n is not None:
+        p.put("D555", n)
     if lead is not None:
         p.put("D550", int(lead * 10), True)
     ok = []
@@ -383,13 +389,15 @@ def scenario(name, options, cycles=5, pedal=True, lead=None):
     t0 = s.plant.t
     done = 0
     for _ in range(cycles * 400):
-        if pedal and s.w("D0") == 10 and not p.bits["M94"]:
+        if pedal and s.w("D0") == 10 and not p.bits["M94"] and s.plant.t > s.plant.pedal_until + 0.2:
             s.pedal()
+            s.pedals = getattr(s, "pedals", 0) + 1
         s.run(0.05)
         done = s.w("D560", True) - start_count
         if done >= cycles or p.bits["M21"]:
             break
     dt = s.plant.t - t0
+    s.pedals = getattr(s, "pedals", 0)
     alarms = [i for i in range(200, 217) if p.bits["M%d" % i]]
     ok.append(("%d prints" % cycles, done >= cycles))
     ok.append(("no alarms", not alarms))
@@ -398,8 +406,8 @@ def scenario(name, options, cycles=5, pedal=True, lead=None):
     print("== %s ==" % name)
     for k, v in ok:
         print("   %-14s %s" % (k, "OK" if v else "FAIL"))
-    print("   prints=%d in %.1fs, last print interval %.2fs, alarms=%s"
-          % (done, dt, interval, ["A%02d" % (i - 199) for i in alarms]))
+    print("   prints=%d pedals=%d in %.1fs, last print interval %.2fs, alarms=%s"
+          % (done, s.pedals, dt, interval, ["A%02d" % (i - 199) for i in alarms]))
     for v in s.plant.violations[:5]:
         print("   VIOLATION", v)
     return all(v for _, v in ok), s
@@ -432,6 +440,11 @@ if __name__ == "__main__":
     results.append(scenario("parallel inking", {"M500": True, "M506": False, "M507": False})[0])
     results.append(scenario("parallel inking + early Z (default lead 5 mm)", {"M500": True, "M506": False, "M507": True})[0])
     results.append(scenario("all options + pre-pick", {"M500": True, "M506": True, "M507": True})[0])
+    ok, sm = scenario("mode 1: one pedal = 3 prints (multi-hit)", {"M500": True, "M506": False, "M507": False}, cycles=6, mode=1, n=3)
+    ratio_ok = ok and sm.pedals == 2
+    print("   expected 2 pedals for 6 prints: %s" % ratio_ok)
+    results.append(ratio_ok)
+    results.append(scenario("mode 2: continuous, no pedal", {"M500": True, "M506": False, "M507": False}, cycles=4, mode=2, pedal=False)[0])
     print("\n(next scenario is EXPECTED to stop with A10 - FAIL lines are normal)")
     ok30, s30 = scenario("early Z lead 30 mm (too long: must alarm, not crash)",
                          {"M500": True, "M506": False, "M507": True}, lead=30)

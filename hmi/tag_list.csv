@@ -20,7 +20,6 @@ Y_TEST_STROKE,M117,Bit,W,,,,,Set ON button,2,One ink stroke out+back
 AIR_LOTO,M119,Bit,RW,,,,,Toggle (lvl 2),9,Dump main air for maintenance
 OPT_PARALLEL_INK,M500,Bit,RW,,,,,Toggle,1/4,Re-ink during X travel (default ON)
 OPT_Z_DOWN2,M501,Bit,RW,,,,,Toggle (lvl 2),9,Second down sensor X17 installed
-OPT_CONTINUOUS,M502,Bit,RW,,,,,Toggle,1/4,Cycle without pedal
 OPT_DRY_RUN,M503,Bit,RW,,,,,Toggle (lvl 1),4,No Z down
 OPT_BATCH_STOP,M504,Bit,RW,,,,,Toggle,4,Stop when batch reached
 OPT_WATCHDOG,M505,Bit,RW,,,,,Toggle (lvl 2),9,HMI heartbeat supervision
@@ -37,6 +36,9 @@ ST_PERMIT_Y,M42,Bit,R,,,,,Lamp,2,Y motion permitted
 ST_MANUAL_EN,M38,Bit,R,,,,,Visibility/enable,2,Manual controls enabled
 ST_AUTO,M90,Bit,R,,,,,Lamp,1,Auto active
 ST_BATCH_DONE,M95,Bit,R,,,,,Lamp,1/6,Batch complete
+PRINT_MODE,D554,Word,RW,,0,2,0,Set Value buttons x3 (disabled when M90=1),1,0=1 pedal:1 print 1=1 pedal:N prints 2=continuous
+MULTI_HIT_N,D555,Word,RW,,1,9,0,Inc/Dec buttons + big display,1,Prints per pedal in mode 1
+BURST_COUNT,D556,Word,R,,,,0,Numeric,1,Prints done in current pedal burst
 AUTO_STEP,D0,Word,R,,,,,Text by value,1/8,Auto step (S5..S130)
 INK_STEP,D1,Word,R,,,,,Numeric,8,Ink sub-step
 HOME_STEP,D2,Word,R,,,,,Numeric,8,Homing step

@@ -93,6 +93,8 @@ MOV     K150        D543            // Z down timeout  1.50 s
 MOV     K150        D544            // Z up timeout    1.50 s
 MOV     K10         D545            // Z settle after UP 0.10 s
 MOV     K50         D546            // Continuous pause 0.50 s
+MOV     K0          D554            // Print mode 0 = 1 pedal : 1 print
+MOV     K2          D555            // Multi-hit count N
 MOV     K300        D547            // Homing timeout 30.0 s (100 ms units)
 DMOV    K5          D548            // In-position tolerance 0.5 mm
 DMOV    K50         D550            // Early Z descent lead 5.0 mm
@@ -126,6 +128,14 @@ LD<     D532        K100
 MOV     K100        D532
 LD>     D552        K1000           // pre-pick wait max 10 s
 MOV     K1000       D552
+LD<     D554        K0              // print mode 0..2
+MOV     K0          D554
+LD>     D554        K2
+MOV     K0          D554
+LD<     D555        K1              // multi-hit N 1..9
+MOV     K1          D555
+LD>     D555        K9
+MOV     K9          D555
 
 // A15 - parameter invalid
 DLD>    D500        D506
@@ -628,6 +638,11 @@ MOV     K0          D4
 // =====================================================================
 // N07  AUTO SEQUENCE (D0)
 // =====================================================================
+// Print mode (HMI D554): 0 = 1 pedal : 1 print
+//                        1 = 1 pedal : N prints (N = D555, multi-hit)
+//                        2 = continuous, no pedal (pause D546)
+LD=     D554        K2
+OUT     M502
 // S5  : go to start position (X pick, Y park)
 LD=     D0          K5
 ANI     M31
@@ -661,6 +676,7 @@ RST     M90
 RST     M91
 RST     M93                         // a waiting pad is discarded (dries)
 RST     M94
+MOV     K0          D556
 MOV     K0          D0
 LD=     D0          K10
 AND     M502
@@ -803,7 +819,21 @@ DINC    D562
 MOV     T210        D566            // time between prints (10 ms)
 MOV     K0          D567
 SET     M99                         // restart print-interval timer
+INC     D556                        // prints in this burst
 MOV     K110        D0
+
+// Multi-hit: request the next print by itself until N prints are done
+LD      M99
+AND=    D554        K1
+AND<    D556        D555
+ANI     M91
+SET     M94
+LD      M99                         // burst finished -> reset counter
+LD<>    D554        K1
+OR>=    D556        D555
+OR      M91
+ANB
+MOV     K0          D556
 
 // S110 : pad above safe height -> X may leave
 LD=     D0          K110
