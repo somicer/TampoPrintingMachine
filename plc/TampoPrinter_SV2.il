@@ -95,6 +95,10 @@ MOV     K10         D545            // Z settle after UP 0.10 s
 MOV     K50         D546            // Continuous pause 0.50 s
 MOV     K0          D554            // Print mode 0 = 1 pedal : 1 print
 MOV     K2          D555            // Multi-hit count N
+MOV     K600        D603            // Shift 1 start 06:00
+MOV     K1400       D604            // Shift 2 start 14:00
+MOV     K2200       D605            // Shift 3 start 22:00 (ends 06:00)
+SET     M508                        // login required to start
 MOV     K300        D547            // Homing timeout 30.0 s (100 ms units)
 DMOV    K5          D548            // In-position tolerance 0.5 mm
 DMOV    K50         D550            // Early Z descent lead 5.0 mm
@@ -156,6 +160,8 @@ DOR>=   D512        D514
 DOR<=   D518        K0
 DOR<=   D520        K0
 DOR<    D550        K0
+OR>=    D603        D604            // shift starts (16-bit)
+OR>=    D604        D605
 SET     M214
 
 
@@ -489,11 +495,22 @@ AND     M20
 AND     X16
 ANI     M90
 AND=    D2          K0
+LD      M132                        // operator logged in
+ORI     M508                        // (or login not required)
+ANB
 SET     M90
 RST     M91
 RST     M94
 RST     M95
 MOV     K5          D0
+
+// Start pressed without login -> HMI message "log in first"
+LD      M100
+ANI     M132
+AND     M508
+SET     M137
+LD      M132
+RST     M137
 
 // Stop at end of cycle (NC stop PB, HMI stop, or leaving auto mode)
 LDI     X13
@@ -876,6 +893,14 @@ DAND>   D564        K0
 SET     M95
 SET     M91
 
+// Per-operator / per-shift counting (N13 keeps E1 = operator index)
+LD      M99
+AND     M132
+DINC    D606                        // this session
+INC     D3040E1                     // this operator, this shift
+LD      M99
+DINC    D611                        // machine, this shift
+
 // Print-interval timer (10 ms base), restarted by M99
 LD      M90
 ANI     M99
@@ -1219,5 +1244,145 @@ RST     M113
 RST     M115
 RST     M116
 RST     M117
+
+// =====================================================================
+// N13  OPERATORS, SHIFTS, SESSION LOG, ERP LIVE BLOCK
+//      Operator = last 4 digits of the national ID (1..9999).
+//      Registry D3000..D3039 (40 operators, written from HMI or ERP).
+//      Per-operator count this shift D3040..D3079 (same index).
+//      Session log ring D3100..D3739: 64 records x 10 words.
+//      Live block for ERP D3080..D3095 (one Modbus read).
+//      RTC registers D1314 min, D1315 hour, D1316 day, D1317 month,
+//      D1319 year (00-99): VERIFY with the SV2 manual.
+// =====================================================================
+LD      M1000
+MOV     D626        E1              // current operator index
+MUL     D1315       K100        D620
+ADD     D620        D1314       D620    // D620 = now hhmm
+MUL     D1317       K100        D630
+ADD     D630        D1316       D623    // D623 = today MMDD
+
+// Shift from clock: 1 = [D603,D604), 2 = [D604,D605), 3 = otherwise
+MOV     K3          D622
+LD>=    D620        D603
+AND<    D620        D604
+MOV     K1          D622
+LD>=    D620        D604
+AND<    D620        D605
+MOV     K2          D622
+
+// Shift change: close the running session, clear shift counters,
+// and open a new session for the same operator
+LD<>    D622        D602
+OUT     M134
+LD      M134
+AND     M132
+CALL    P1
+LD      M134
+ZRST    D3040       D3079
+DMOV    K0          D611
+MOV     D622        D602
+DMOV    K0          D606
+MOV     D620        D608
+MOV     D623        D609
+MOV     D1319       D610
+
+// ---- Login (HMI writes the 4 digits to D600, then pulses M130) ----
+LDP     M130
+OUT     M135
+LDI     M135
+CJ      P10
+LD      M1000                       // new rung: reset search result
+MOV     K-1         D625
+MOV     K0          E0
+FOR     K40
+LD=     D3000E0     D600
+AND>    D600        K0
+MOV     E0          D625
+LD      M1000
+INC     E0
+NEXT
+P10
+LD      M135
+AND>=   D625        K0
+OUT     M136                        // code found in the registry
+LD      M135
+AND<    D625        K0
+SET     M133                        // code not found
+LD      M133
+TMR     T208        K300            // message for 3 s
+LD      T208
+RST     M133
+LD      M136
+AND     M132
+CALL    P1                          // close the previous operator
+LD      M136
+RST     M133
+SET     M132
+MOV     D600        D601
+MOV     D625        D626
+MOV     D625        E1
+DMOV    K0          D606
+MOV     D620        D608
+MOV     D623        D609
+MOV     D1319       D610
+MOV     K0          D600
+
+// ---- Logout (HMI M131) ---------------------------------------------
+LDP     M131
+AND     M132
+CALL    P1
+LDP     M131
+RST     M132
+MOV     K0          D601
+LD      M1000                       // HMI Set-ON commands handled
+RST     M130
+RST     M131
+
+// ---- Display and ERP live block ------------------------------------
+LD      M132
+MOV     D3040E1     D616            // this operator's prints this shift
+LDI     M132
+MOV     K0          D616
+LD      M1000
+MOV     D9          D3080           // machine state
+MOV     D601        D3081           // operator code
+MOV     D602        D3082           // shift
+DMOV    D606        D3083           // session prints
+DMOV    D611        D3085           // machine prints this shift
+DMOV    D560        D3087           // total counter
+MOV     D568        D3089           // prints per hour
+MOV     D50         D3090           // alarm word 1
+MOV     D51         D3091           // alarm word 2
+MOV     D554        D3092           // print mode
+MOV     D3097       D3093           // last record sequence number
+MOV     D627        D3094           // next record slot
+MOV     D616        D3095           // operator prints this shift
+
+FEND
+
+// =====================================================================
+// P1  Close session: write one record into the ring buffer
+//     [0] operator  [1] shift  [2] start MMDD  [3] start year
+//     [4] start hhmm  [5] end hhmm  [6..7] prints (DW)  [8] seq  [9] 0
+// =====================================================================
+P1
+LD      M1000
+MUL     D627        K10         D628
+MOV     D628        E2
+MOV     D601        D3100E2
+MOV     D602        D3101E2
+MOV     D609        D3102E2
+MOV     D610        D3103E2
+MOV     D608        D3104E2
+MOV     D620        D3105E2
+DMOV    D606        D3106E2
+INC     D3097
+MOV     D3097       D3108E2
+MOV     K0          D3109E2
+INC     D627
+LD>=    D627        K64
+MOV     K0          D627
+SRET
 
 END

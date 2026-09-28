@@ -32,10 +32,15 @@ def s32(v):
 class PLC:
     def __init__(self, path):
         self.prog = []
+        self.labels = {}
         for raw in open(path, encoding="utf-8"):
             line = raw.split("//")[0].strip()
             if line:
                 p = line.split()
+                if re.fullmatch(r"P\d+", p[0]) and len(p) == 1:
+                    self.labels[p[0]] = len(self.prog)
+                    self.prog.append(("LABEL", []))
+                    continue
                 self.prog.append((p[0], p[1:]))
         self.bits = defaultdict(bool)      # X, Y, M, T(contact)
         self.words = defaultdict(int)      # D, T(value) - 16-bit signed
@@ -51,7 +56,14 @@ class PLC:
     def setbit(self, name, v):
         self.bits[name] = bool(v)
 
+    def ix(self, op):
+        m = re.fullmatch(r"([A-Z])(\d+)([EF]\d)?", op)
+        if m and m.group(3):
+            return "%s%d" % (m.group(1), int(m.group(2)) + s16(self.words[m.group(3)]))
+        return op
+
     def val(self, op, dbl=False):
+        op = self.ix(op)
         if op.startswith("K"):
             if op.startswith("K4M"):
                 base = int(op[3:])
@@ -59,6 +71,8 @@ class PLC:
             return int(op[1:])
         if op.startswith("T"):
             return int(self.tacc[op] / self.tbase(op))
+        if op[0] in "EF":
+            return s16(self.words[op])
         n = int(op[1:])
         if dbl:
             lo = self.words["D%d" % n] & 0xFFFF
@@ -67,6 +81,10 @@ class PLC:
         return s16(self.words[op])
 
     def put(self, op, v, dbl=False):
+        op = self.ix(op)
+        if op[0] in "EF":
+            self.words[op] = s16(v)
+            return
         n = int(op[1:])
         if dbl:
             v &= 0xFFFFFFFF
@@ -96,7 +114,37 @@ class PLC:
         acc = False
         stack = []          # block stack for ANB/ORB
         mps = []
-        for idx, (op, a) in enumerate(self.prog):
+        idx = -1
+        calls = []
+        loops = []
+        while True:
+            idx += 1
+            if idx >= len(self.prog):
+                break
+            op, a = self.prog[idx]
+            if op == "LABEL":
+                continue
+            if op == "FEND" and not calls:
+                break
+            if op == "SRET":
+                idx = calls.pop()
+                continue
+            if op == "FOR":
+                loops.append([idx, self.val(a[0])])
+                continue
+            if op == "NEXT":
+                loops[-1][1] -= 1
+                if loops[-1][1] > 0:
+                    idx = loops[-1][0]
+                else:
+                    loops.pop()
+                continue
+            if op in ("CJ", "CALL"):
+                if acc:
+                    if op == "CALL":
+                        calls.append(idx)
+                    idx = self.labels[a[0]]
+                continue
             m = re.match(r"^(D?)(LD|AND|OR)(=|<>|>=|<=|>|<)$", op)
             if m:
                 dbl = m.group(1) == "D"
@@ -189,6 +237,10 @@ class PLC:
                 self.put(a[0], abs(self.val(a[0], True)), True)
             elif op == "INC":
                 self.put(a[0], self.val(a[0]) + 1)
+            elif op == "ADD":
+                self.put(a[2], self.val(a[0]) + self.val(a[1]))
+            elif op == "MUL":
+                self.put(a[2], self.val(a[0]) * self.val(a[1]), True)
             elif op == "DINC":
                 self.put(a[0], self.val(a[0], True) + 1, True)
             elif op == "DZCP":
@@ -280,6 +332,7 @@ class Plant:
         self.prints = 0
         self.pedal_until = -1
         self.hb = 0.0
+        self.clock0 = 10 * 3600 + 30 * 60     # 10:30 -> shift 1
 
     def rehome(self, out):
         # counts were zeroed when DOG turned off at true = DOG[0]
@@ -299,6 +352,11 @@ class Plant:
         for n in ("X4", "X5", "X6", "X7", "X10", "X13", "X15", "X16"):
             b[n] = True
         b["X11"] = self.t < self.pedal_until
+        clk = self.clock0 + self.t * getattr(self, "clock_speed", 1.0)
+        w = self.plc.words
+        w["D1314"] = int(clk // 60) % 60
+        w["D1315"] = int(clk // 3600) % 24
+        w["D1316"], w["D1317"], w["D1319"] = 28, 9, 26
 
     def step(self):
         b = self.plc.bits
@@ -368,6 +426,7 @@ def scenario(name, options, cycles=5, pedal=True, lead=None, mode=None, n=None):
     s = Sim()
     p = s.plc
     s.run(0.1)
+    p.bits["M508"] = False              # these scenarios run without login
     for m, v in options.items():
         p.bits[m] = v
     if mode is not None:
@@ -418,6 +477,7 @@ def interlock_test():
     s = Sim()
     p = s.plc
     s.run(0.1)
+    p.bits["M508"] = False
     s.cmd("M103")
     s.run(20, until=lambda: p.bits["M24"] and s.w("D2") == 0)
     s.run(0.1)
@@ -432,6 +492,55 @@ def interlock_test():
     print("   X was moving %s, A10 raised %s, X stopped %s"
           % (moving, a10, stopped))
     return moving and a10 and stopped
+
+
+def operators_test():
+    """Login, per-operator counting, session log, shift change."""
+    s = Sim()
+    p = s.plc
+    s.run(0.1)
+    p.put("D3000", 1234); p.put("D3001", 5678)       # registry
+    s.cmd("M103")
+    s.run(20, until=lambda: p.bits["M24"] and s.w("D2") == 0)
+    p.bits["M120"] = True
+    checks = []
+    s.cmd("M100"); s.run(0.3)
+    checks.append(("start blocked without login", not p.bits["M90"] and p.bits["M137"]))
+    p.put("D600", 9999); s.cmd("M130"); s.run(0.1)
+    checks.append(("unknown code rejected", p.bits["M133"] and not p.bits["M132"]))
+    p.put("D600", 1234); s.cmd("M130"); s.run(0.1)
+    checks.append(("operator 1234 logged in", p.bits["M132"] and s.w("D601") == 1234))
+
+    def prints(n):
+        start = s.w("D560", True)
+        s.cmd("M100"); s.run(0.2)
+        t_end = s.plant.t + 60
+        while s.w("D560", True) - start < n and s.plant.t < t_end:
+            if s.w("D0") == 10 and not p.bits["M94"] and s.plant.t > s.plant.pedal_until + 0.2:
+                s.pedal()
+            s.run(0.05)
+        s.cmd("M101"); s.run(3)
+    prints(3)
+    checks.append(("3 prints on 1234 this shift", s.w("D616") == 3))
+    p.put("D600", 5678); s.cmd("M130"); s.run(0.1)
+    rec0 = [s.w("D%d" % (3100 + i)) for i in range(8)]
+    checks.append(("record written for 1234 (3 prints)", rec0[0] == 1234 and rec0[6] == 3 and rec0[1] == 1))
+    prints(2)
+    checks.append(("2 prints on 5678", s.w("D616") == 2))
+    s.plant.clock0 += 4 * 3600           # jump to 14:30 -> shift 2
+    s.run(0.2)
+    rec1 = [s.w("D%d" % (3110 + i)) for i in range(9)]
+    checks.append(("shift change closed 5678 session", rec1[0] == 5678 and rec1[6] == 2 and rec1[8] == 2))
+    checks.append(("new shift 2, counters cleared", s.w("D602") == 2 and s.w("D616") == 0))
+    checks.append(("live block operator/shift", s.w("D3081") == 5678 and s.w("D3082") == 2))
+    s.cmd("M131"); s.run(0.1)
+    checks.append(("logout", not p.bits["M132"] and s.w("D601") == 0 and s.w("D3093") == 3))
+    alarms = [i for i in range(200, 217) if p.bits["M%d" % i]]
+    checks.append(("no alarms / collisions", not alarms and not s.plant.violations))
+    print("== operators, shifts, session log ==")
+    for k, v in checks:
+        print("   %-38s %s" % (k, "OK" if v else "FAIL"))
+    return all(v for _, v in checks)
 
 
 if __name__ == "__main__":
@@ -452,5 +561,6 @@ if __name__ == "__main__":
     print("   expected A10/A17 raised: %s" % a10)
     results.append(a10)
     results.append(interlock_test())
+    results.append(operators_test())
     print("\nALL PASS" if all(results) else "\nSOME FAILED")
     sys.exit(0 if all(results) else 1)

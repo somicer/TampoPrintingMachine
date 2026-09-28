@@ -55,7 +55,7 @@ header.top p{margin:4px 0 0;color:var(--page-mute);font-size:13.5px;max-width:70
 .bar .t{margin-inline-start:auto;font:600 12px var(--mono);color:#AFBBC8}
 .bar .ttl{font-weight:700;font-size:14px}
 .body{position:absolute;top:38px;bottom:52px;left:0;right:0;padding:10px;display:grid;gap:8px}
-.nav{position:absolute;bottom:0;left:0;right:0;height:52px;background:#FFFFFF;border-top:1px solid var(--scr-line);display:grid;grid-template-columns:repeat(8,1fr);padding:5px;gap:4px}
+.nav{position:absolute;bottom:0;left:0;right:0;height:52px;background:#FFFFFF;border-top:1px solid var(--scr-line);display:grid;grid-template-columns:repeat(9,1fr);padding:5px;gap:3px}
 .navb{font:600 12.5px var(--fa);border:0;border-radius:8px;background:transparent;color:var(--scr-mute);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0}
 .navb b{font:600 10px var(--mono);color:#8995A2}
 .navb.on{background:#E4EDF9;color:var(--blue);font-weight:800}
@@ -131,6 +131,20 @@ table.t td.v{font:600 13px var(--mono);direction:ltr;text-align:left;font-varian
 .cv{font:800 30px var(--fa);direction:ltr;text-align:left;font-variant-numeric:tabular-nums;line-height:1.1}
 .cv small{font-size:16px;color:var(--scr-mute)}
 .big{font-size:30px;line-height:1}
+.opchip{font:600 12.5px var(--fa);background:#26384A;color:#E8EDF2;border:1px solid #3B5166;border-radius:999px;padding:3px 12px 3px 4px;display:flex;align-items:center;gap:6px}
+.opchip b{font-weight:800;color:#fff}
+.opav{width:24px;height:24px;border-radius:50%;background:#1C5DB0;color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center}
+.cnt.me{background:#EAF2FC;border-color:#B9D0EE}
+.login{width:420px;background:#fff;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 10px 40px rgba(0,0,0,.25)}
+.login h3{margin:0;font-size:18px;font-weight:800}
+.login p{margin:0;font-size:12.5px;color:var(--scr-mute)}
+.pin{display:flex;gap:10px;justify-content:center;direction:ltr}
+.pin span{width:62px;height:62px;border-radius:12px;border:2px solid var(--scr-line);display:flex;align-items:center;justify-content:center;font:900 32px var(--fa);color:var(--scr-ink);background:#F4F7FA}
+.pin span.f{border-color:var(--blue)}
+.kp{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;direction:ltr}
+.kp span{height:52px;border-radius:10px;background:#EDF1F5;display:flex;align-items:center;justify-content:center;font:800 24px var(--fa);color:var(--scr-ink);box-shadow:inset 0 -3px 0 #D5DDE6}
+.kp span.ok{background:var(--green);color:#fff;font-size:18px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.2)}
+.kp span.del{background:#D9DFE6;font-size:18px}
 .pop{position:absolute;inset:0;background:rgba(20,28,36,.45);display:flex;align-items:center;justify-content:center}
 .popc{width:360px;background:var(--scr-2);border-radius:6px;padding:14px;display:flex;flex-direction:column;gap:10px;border-top:5px solid var(--blue)}
 .keys{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
@@ -178,8 +192,9 @@ const S = [
  {id:"recipe", no:5, name:"دستور کار", lvl:"۱ سرپرست", desc:"ذخیره و بارگذاری پارامترهای هر محصول (Recipe، ۳۲ Word از D500)."},
  {id:"count", no:6, name:"شمارنده", lvl:"۰ اپراتور", desc:"شمارنده‌ی کل و بچ، فاصله‌ی چاپ‌ها و روند آن."},
  {id:"alarm", no:7, name:"آلارم", lvl:"۰ اپراتور", desc:"آلارم‌های فعال با علت و راه‌حل، و تاریخچه."},
- {id:"io", no:8, name:"ورودی/خروجی", lvl:"۰ اپراتور", desc:"وضعیت زنده‌ی همه‌ی ورودی‌ها و خروجی‌ها و رجیسترهای مرحله."},
- {id:"setup", no:9, name:"تنظیمات", lvl:"۲ مهندس", desc:"مقیاس محورها، کالیبراسیون، Watchdog، زمان‌های هومینگ و رمزها. از آیکون چرخ‌دنده در نوار بالا باز می‌شود."}
+ {id:"io", no:8, name:"I/O", lvl:"۰ اپراتور", desc:"وضعیت زنده‌ی همه‌ی ورودی‌ها و خروجی‌ها و رجیسترهای مرحله."},
+ {id:"ops", no:9, name:"کارگران", lvl:"۱ سرپرست", desc:"فهرست کارگران (۴ رقم آخر کد ملی)، ساعت شیفت‌ها، ورود اجباری، کارکرد هر کارگر در شیفت، و آخرین جلسه‌های کاری که به ERP می‌روند."},
+ {id:"setup", no:10, name:"تنظیمات", lvl:"۲ مهندس", desc:"مقیاس محورها، کالیبراسیون، Watchdog، زمان‌های هومینگ و رمزها. از آیکون چرخ‌دنده در نوار بالا باز می‌شود."}
 ];
 const $=(q,r=document)=>r.querySelector(q);
 const o=(a,t,n,cls="",inner="",tag="div",extra="")=>`<${tag} class="o ${cls}" tabindex="0" data-a="${a}" data-t="${t}" data-n="${n}" ${extra}>${inner}</${tag}>`;
@@ -191,10 +206,11 @@ const bar=(title,st="run",stTxt="در حال تولید")=>`<div class="bar">
   ${o("D9","Multi-State Indicator","0 هوم نشده، 1 هومینگ، 2 آماده، 3 اتومات، 4 در حال توقف، 5 آلارم.",`pill ${st}`,stTxt,"span")}
   <span class="ttl">${title}</span>
   ${o("M120","Toggle (Text by state)","حالت دستگاه: 0 دستی، 1 اتومات. تغییر حالت حین کار = توقف در پایان سیکل (M91).","pill "+(st==="man"?"man":"run"),st==="man"?"دستی":"اتومات","span","style='background:#34495E'")}
+  ${o("D601 / D602","Numeric Display + Popup","کارگر واردشده (۴ رقم آخر کد ملی) و شیفت. لمس = پنجره‌ی ورود و خروج.","opchip","<span class='opav'>۱۲</span>کارگر <b>1234</b> · شیفت ۱","button","data-login='1'")}
   <span class="t">۱۴۰۵/۰۷/۰۶ · 10:42</span>
   ${o("—","Page Change (Setup, سطح ۲)","باز کردن صفحه‌ی ۹ (تنظیمات). نیاز به رمز سطح ۲.","","⚙","span","style='font-size:18px;color:#AFBBC8'")}
 </div>`;
-const nav=(cur)=>`<div class="nav">${S.slice(0,8).map(s=>`<button class="navb${s.id===cur?" on":""}" data-go="${s.id}">${s.name}<b>${s.no}</b></button>`).join("")}</div>`;
+const nav=(cur)=>`<div class="nav">${S.slice(0,9).map(s=>`<button class="navb${s.id===cur?" on":""}" data-go="${s.id}">${s.name}<b>${s.no}</b></button>`).join("")}</div>`;
 
 const V = {
 main:()=>{
@@ -227,7 +243,7 @@ main:()=>{
   </div>
   <div class="counts">
     <div class="cnt">${o("D562 / D564","Numeric Display","بچ فعلی و هدف.","cv","340<small> / 500</small>")}${o("D562 ÷ D564","Bar Graph","پیشرفت بچ.","bar2","<i style='width:68%'></i>")}<span>بچ</span></div>
-    <div class="cnt">${o("D560 (DW)","Numeric Display","شمارنده‌ی کل.","cv","12,540")}<span>کل</span></div>
+    <div class="cnt me">${o("D616","Numeric Display","ضرب‌های کارگر واردشده در شیفت فعلی (D3040 + اندیس کارگر).","cv","186")}<span>ضرب‌های شما در این شیفت</span></div>
     <div class="cnt">${o("D568","Numeric Display","چاپ در ساعت از روی آخرین فاصله‌ی دو چاپ.","cv","818")}<span>چاپ در ساعت</span></div>
   </div>
   <div style="display:flex;flex-direction:column;gap:8px">
@@ -389,6 +405,37 @@ io:()=>{
   </div>
 </div>`+nav("io")},
 
+ops:()=>bar("کارگران و شیفت","man","آماده")+`
+<div class="body" style="grid-template-columns:1fr 1.25fr;grid-template-rows:auto 1fr">
+  <div class="panel"><div class="ph">شیفت‌ها <span class="lock">L1</span></div>
+   <div class="row"><span class="lbl">شیفت ۱ از</span>${inp("D603","06:00","شروع شیفت ۱، به صورت hhmm (600).")}</div>
+   <div class="row"><span class="lbl">شیفت ۲ از</span>${inp("D604","14:00","شروع شیفت ۲ (1400).")}</div>
+   <div class="row"><span class="lbl">شیفت ۳ از</span>${inp("D605","22:00","شروع شیفت ۳ تا شروع شیفت ۱ روز بعد.")}</div>
+   ${tog("M508",1,"ورود کارگر برای شروع الزامی است","بدون ورود، دکمه‌ی شروع کار نمی‌کند و پیام «ابتدا وارد شوید» (M137) نشان داده می‌شود.")}
+   <div class="row"><span class="lbl">ضرب‌های دستگاه در این شیفت</span>${num("D611 (DW)","1,240","","مجموع ضرب‌های شیفت فعلی.")}</div>
+  </div>
+  <div class="panel" style="grid-row:1/3"><div class="ph">کارکرد شیفت فعلی (شیفت ۱) <span style="font-weight:500;font-size:11px">نمونه</span></div>
+   ${o("D3000–D3039 / D3040–D3079","Table (Numeric Input + Display)","فهرست ۴۰ کارگر: کد (۴ رقم آخر کد ملی) و ضرب‌های هر کدام در شیفت فعلی. کدها از HMI یا از ERP نوشته می‌شوند.","","",`div`,"style='display:none'")}
+   <table class="t"><tr><th>#</th><th>کد کارگر</th><th>ضرب در شیفت</th><th></th></tr>
+    <tr style="background:#EAF2FC"><td class="v">1</td><td>${inp("D3000","1234","کد کارگر ۱.")}</td><td class="v">186</td><td><span class="lamp g"><i></i>واردشده</span></td></tr>
+    <tr><td class="v">2</td><td>${inp("D3001","5678","کد کارگر ۲.")}</td><td class="v">412</td><td></td></tr>
+    <tr><td class="v">3</td><td>${inp("D3002","0421","کد کارگر ۳.")}</td><td class="v">0</td><td></td></tr>
+    <tr><td class="v">4</td><td>${inp("D3003","3390","کد کارگر ۴.")}</td><td class="v">96</td><td></td></tr>
+    <tr><td class="v">5</td><td>${inp("D3004","—","خالی = 0.")}</td><td class="v">—</td><td></td></tr>
+   </table>
+   <div class="ph" style="margin-top:4px">آخرین جلسه‌های کاری (ارسال به ERP)</div>
+   ${o("D3100–D3739","Table (Numeric Display, 64 records × 10 words)","هر جلسه: کارگر، شیفت، تاریخ، ساعت شروع و پایان، تعداد ضرب، شماره‌ی ترتیب. با خروج، ورود کارگر دیگر یا تغییر شیفت ثبت می‌شود. دروازه‌ی ERP آن‌ها را از طریق شبکه می‌خواند.","","",`div`,"style='display:none'")}
+   <table class="t"><tr><th>#</th><th>کارگر</th><th>شیفت</th><th>از</th><th>تا</th><th>ضرب</th></tr>
+    <tr><td class="v">118</td><td class="v">5678</td><td class="v">1</td><td class="v">06:02</td><td class="v">09:40</td><td class="v">412</td></tr>
+    <tr><td class="v">117</td><td class="v">3390</td><td class="v">3</td><td class="v">22:05</td><td class="v">05:58</td><td class="v">1,730</td></tr>
+   </table>
+  </div>
+  <div class="panel"><div class="ph">اتصال ERP</div>
+   ${lamp("—","g","دروازه‌ی ERP در حال خواندن","شبکه: ماژول DVP-EN01-SL روی PLC، Modbus TCP پورت 502. بلوک زنده D3080–D3095.")}
+   <div class="row"><span class="lbl">آخرین شماره‌ی جلسه</span>${num("D3097","118","","شماره‌ی ترتیب آخرین جلسه‌ی ثبت‌شده.")}</div>
+  </div>
+</div>`+nav("ops"),
+
 setup:()=>bar("تنظیمات مهندسی","man","آماده")+`
 <div class="body" style="grid-template-columns:1fr 1fr">
   <div class="panel"><div class="ph">مقیاس محورها <span class="lock">L2</span></div>
@@ -423,7 +470,18 @@ function show(id){
   try{localStorage.setItem("hmi-screen",id)}catch(e){}
 }
 tabs.innerHTML=S.map(s=>`<button data-go="${s.id}">${s.no}. ${s.name}</button>`).join("");
+function loginPop(){
+  if(hmi.querySelector(".pop"))return;
+  hmi.insertAdjacentHTML("beforeend",`<div class="pop"><div class="login">
+   <h3>ورود کارگر</h3><p>چهار رقم آخر کد ملی را بزنید. (D600، سپس M130)</p>
+   <div class="pin"><span class="f">1</span><span class="f">2</span><span class="f">3</span><span>–</span></div>
+   <div class="kp">${["1","2","3","4","5","6","7","8","9"].map(k=>`<span>${k}</span>`).join("")}<span class="del">پاک</span><span>0</span><span class="ok">ورود</span></div>
+   <div style="display:flex;gap:8px"><span class="btn b-grey" style="flex:1;height:40px" data-close="1">بستن</span><span class="btn b-red" style="flex:1;height:40px" data-close="1">خروج کارگر (M131)</span></div>
+  </div></div>`);
+}
 document.addEventListener("click",e=>{
+  if(e.target.closest("[data-login]")){loginPop();}
+  if(e.target.closest("[data-close]")){const p=hmi.querySelector(".pop");if(p)p.remove();return}
   const g=e.target.closest("[data-go]"); if(g){show(g.dataset.go);return}
   const el=e.target.closest(".nb")||e.target.closest(".st")||e.target.closest(".o"); if(el&&hmi.contains(el)){pick(el)}
 });
