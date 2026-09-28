@@ -1,5 +1,7 @@
 # ۵. ساختار HMI (Delta DOP-107BV)
 
+> **نمونه‌ی تعاملی صفحات:** [`hmi/hmi_mockup.html`](../hmi/hmi_mockup.html). هر شیء با آدرس PLC و نوع شیء DOPSoft مشخص شده است.
+
 ## ۵-۱ ارتباط
 
 | مورد | مقدار |

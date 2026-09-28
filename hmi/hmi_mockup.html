@@ -1,0 +1,419 @@
+<title>Tampo HMI Screens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --page:#EEF1F4; --page-ink:#1C2631; --page-mute:#5B6878; --page-line:#CDD5DE; --page-card:#FFFFFF;
+  --accent:#1D5FA8; --accent-soft:#DCE8F6;
+  /* HMI screen: one deliberate industrial look in both themes */
+  --bezel:#23282D; --scr:#EEF1F3; --scr-2:#FFFFFF; --scr-ink:#1B2530; --scr-mute:#5E6B79; --scr-line:#C9D1D9;
+  --blue:#1D5FA8; --green:#2F8F4E; --amber:#C98A06; --red:#C33B2E; --off:#AEB7C1;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  --fa:"Vazirmatn",Tahoma,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --page:#12171D; --page-ink:#E4E9EF; --page-mute:#93A1B1; --page-line:#2C3642; --page-card:#1A212A;
+  --accent:#6FA8E8; --accent-soft:#1D2E44; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --page:#12171D; --page-ink:#E4E9EF; --page-mute:#93A1B1; --page-line:#2C3642; --page-card:#1A212A;
+  --accent:#6FA8E8; --accent-soft:#1D2E44; color-scheme:dark;}
+*{box-sizing:border-box}
+body{background:var(--page);color:var(--page-ink);font-family:var(--fa);margin:0;padding-inline:16px;padding-block:20px 40px}
+.wrap{direction:rtl;max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+header.top{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:12px}
+header.top h1{margin:0;font-size:22px;font-weight:800;text-wrap:balance}
+header.top p{margin:4px 0 0;color:var(--page-mute);font-size:13.5px;max-width:70ch;line-height:1.7}
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.chip{font:500 13px var(--fa);border:1px solid var(--page-line);background:var(--page-card);color:var(--page-ink);border-radius:999px;padding:6px 14px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.chip:focus-visible,.o:focus-visible,.navb:focus-visible{outline:3px solid #F5B400;outline-offset:2px}
+.screens{display:flex;gap:6px;flex-wrap:wrap}
+.screens button{font:500 12.5px var(--fa);padding:5px 10px;border-radius:6px;border:1px solid var(--page-line);background:var(--page-card);color:var(--page-mute);cursor:pointer}
+.screens button[aria-current="true"]{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px;align-items:start}
+@media (max-width:980px){.stage{grid-template-columns:1fr}}
+.device{background:var(--bezel);border-radius:18px;padding:18px 22px 26px;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+.brand{display:flex;justify-content:space-between;color:#8C97A3;font:600 10px var(--mono);letter-spacing:.14em;margin-bottom:8px;direction:ltr}
+.fit{width:100%;aspect-ratio:800/480;max-width:100%;position:relative;overflow:hidden;border-radius:3px;background:#000}
+.hmi{position:absolute;top:0;left:0;width:800px;height:480px;transform-origin:0 0;background:var(--scr);color:var(--scr-ink);direction:rtl;font-family:var(--fa);font-size:13px}
+.inspector{background:var(--page-card);border:1px solid var(--page-line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;position:sticky;top:env(safe-area-inset-top,0px)}
+.inspector h2{margin:0;font-size:15px}
+.inspector .kv{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:13px}
+.inspector .kv dt{color:var(--page-mute)} .inspector .kv dd{margin:0}
+.inspector .addr{font:600 15px var(--mono);color:var(--accent);direction:ltr;text-align:right}
+.inspector .note{font-size:13px;line-height:1.8;color:var(--page-ink);margin:0}
+.inspector .hint{font-size:12px;color:var(--page-mute);margin:0;line-height:1.7}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--page-mute)}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:10px;height:10px;border-radius:50%;display:inline-block}
+
+/* ---------- HMI internals (800x480) ---------- */
+.bar{height:38px;background:#1B2530;color:#E8EDF2;display:flex;align-items:center;gap:10px;padding:0 10px}
+.pill{font:700 12px var(--fa);padding:3px 10px;border-radius:4px;color:#fff}
+.pill.run{background:var(--green)} .pill.alm{background:var(--red)} .pill.man{background:var(--amber)}
+.bar .t{margin-inline-start:auto;font:600 12px var(--mono);color:#AFBBC8}
+.bar .ttl{font-weight:700;font-size:14px}
+.body{position:absolute;top:38px;bottom:52px;left:0;right:0;padding:10px;display:grid;gap:8px}
+.nav{position:absolute;bottom:0;left:0;right:0;height:52px;background:#DCE2E8;border-top:1px solid var(--scr-line);display:grid;grid-template-columns:repeat(8,1fr)}
+.navb{font:600 12px var(--fa);border:0;border-inline-start:1px solid var(--scr-line);background:transparent;color:var(--scr-mute);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.navb b{font:600 10px var(--mono);color:#8995A2}
+.navb.on{background:var(--scr-2);color:var(--blue);box-shadow:inset 0 3px 0 var(--blue)}
+.panel{background:var(--scr-2);border:1px solid var(--scr-line);border-radius:4px;padding:8px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.ph{font-weight:700;font-size:12.5px;color:var(--scr-mute);display:flex;justify-content:space-between;align-items:center}
+.o{position:relative;cursor:pointer}
+.o:hover{outline:2px dashed rgba(29,95,168,.55);outline-offset:1px}
+.o.sel{outline:2px solid var(--blue);outline-offset:1px}
+.show .o::after{content:attr(data-a);position:absolute;top:-7px;left:-4px;background:#F5B400;color:#1B2530;font:600 9px/1.25 var(--mono);padding:0 3px;border-radius:2px;direction:ltr;pointer-events:none;z-index:3;white-space:nowrap}
+.num{font:600 20px var(--mono);direction:ltr;text-align:left;background:#F6F8FA;border:1px solid var(--scr-line);border-radius:3px;padding:2px 8px;font-variant-numeric:tabular-nums}
+.num small{font:500 11px var(--fa);color:var(--scr-mute);margin-inline-start:4px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.lbl{font-size:12.5px;color:var(--scr-ink)}
+.btn{font:700 15px var(--fa);border:0;border-radius:5px;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 -3px 0 rgba(0,0,0,.22)}
+.b-green{background:var(--green)} .b-red{background:var(--red)} .b-blue{background:var(--blue)} .b-grey{background:#6B7784} .b-amber{background:var(--amber)}
+.lamp{display:inline-flex;align-items:center;gap:6px;font-size:12px}
+.lamp i{width:12px;height:12px;border-radius:50%;background:var(--off);box-shadow:inset 0 -2px 0 rgba(0,0,0,.2)}
+.lamp.g i{background:var(--green)} .lamp.a i{background:var(--amber)} .lamp.r i{background:var(--red)} .lamp.b i{background:var(--blue)}
+.tog{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#F6F8FA;border:1px solid var(--scr-line);border-radius:4px;padding:5px 8px;font-size:12px}
+.sw{width:34px;height:18px;border-radius:9px;background:var(--off);position:relative;flex:none}
+.sw::before{content:"";position:absolute;top:2px;right:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:right .15s}
+.tog.on .sw{background:var(--green)} .tog.on .sw::before{right:18px}
+.lock{font:600 10px var(--mono);color:var(--amber)}
+.bar2{height:10px;background:#E1E6EB;border-radius:5px;overflow:hidden}
+.bar2 i{display:block;height:100%;background:var(--blue)}
+table.t{width:100%;border-collapse:collapse;font-size:12px}
+table.t th{font-weight:700;color:var(--scr-mute);text-align:right;padding:4px 6px;border-bottom:1px solid var(--scr-line);background:#F2F5F7}
+table.t td{padding:3px 6px;border-bottom:1px solid #E3E8ED;vertical-align:middle}
+table.t td.v{font:600 13px var(--mono);direction:ltr;text-align:left;font-variant-numeric:tabular-nums}
+.inp{display:inline-block;min-width:78px;background:#FFFDE7;border:1px solid #D8CC7A;border-radius:3px;padding:1px 6px;font:600 13px var(--mono);direction:ltr;text-align:left}
+.zcol{display:flex;gap:10px;align-items:stretch}
+.zbar{width:26px;background:#E6EBF0;border:1px solid var(--scr-line);border-radius:3px;position:relative}
+.zbar i{position:absolute;left:2px;right:2px;height:14px;background:var(--blue);border-radius:2px}
+.zbar s{position:absolute;left:-4px;right:-4px;height:0;border-top:2px dashed var(--amber)}
+.io{display:grid;grid-template-columns:repeat(4,1fr);gap:3px 8px}
+.io .lamp{font-size:11px;white-space:nowrap;overflow:hidden}
+.io .lamp code{font:600 10.5px var(--mono);direction:ltr;min-width:26px;display:inline-block}
+.alrow{display:grid;grid-template-columns:44px 1fr 118px;gap:8px;align-items:center;padding:5px 8px;border-radius:4px;font-size:12.5px}
+.alrow.act{background:#FBE5E2;border:1px solid #EDB3AB}
+.alrow code{font:700 12px var(--mono);color:var(--red)}
+.alrow time{font:500 11px var(--mono);color:var(--scr-mute);direction:ltr;text-align:left}
+.pop{position:absolute;inset:0;background:rgba(20,28,36,.45);display:flex;align-items:center;justify-content:center}
+.popc{width:360px;background:var(--scr-2);border-radius:6px;padding:14px;display:flex;flex-direction:column;gap:10px;border-top:5px solid var(--blue)}
+.keys{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.keys span{background:#E7ECF1;border-radius:4px;text-align:center;padding:8px 0;font:600 15px var(--mono)}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>صفحات HMI دستگاه تامپو (DOP-107BV، ۸۰۰×۴۸۰)</h1>
+      <p>روی هر دکمه، عدد یا چراغ بزنید تا آدرس PLC، نوع شیء در DOPSoft و بازه‌ی مجازش در پنل کناری دیده شود. «نمایش آدرس‌ها» همه‌ی آدرس‌ها را روی صفحه نشان می‌دهد. مقدارها نمونه‌اند.</p>
+    </div>
+    <div class="tools">
+      <button class="chip" id="t-addr" aria-pressed="false">نمایش آدرس‌ها</button>
+      <button class="chip" id="t-pop" aria-pressed="false">نمونه‌ی کیبورد عددی</button>
+    </div>
+  </header>
+
+  <nav class="screens" id="tabs" aria-label="صفحات"></nav>
+
+  <div class="stage">
+    <div class="device">
+      <div class="brand"><span>DELTA · DOP-107BV</span><span>COM2 RS-485 · DVP PLC · STATION 1</span></div>
+      <div class="fit" id="fit"><div class="hmi" id="hmi"></div></div>
+    </div>
+    <aside class="inspector" id="insp" aria-live="polite"></aside>
+  </div>
+
+  <div class="legend">
+    <span><i style="background:var(--green)"></i>سالم یا در حال کار</span>
+    <span><i style="background:var(--amber)"></i>هشدار یا حالت دستی</span>
+    <span><i style="background:var(--red)"></i>آلارم</span>
+    <span><i style="background:var(--blue)"></i>فعال یا انتخاب‌شده</span>
+    <span><i style="background:#FFFDE7;border:1px solid #D8CC7A"></i>قابل ویرایش (Numeric Input)</span>
+  </div>
+</div>
+
+<script>
+const S = [
+ {id:"main", no:1, name:"اصلی", lvl:"۰ اپراتور", desc:"وضعیت دستگاه، موقعیت محورها، مرحله‌ی سکانس، تولید و فرمان‌های اصلی."},
+ {id:"manual", no:2, name:"دستی", lvl:"۱ سرپرست", desc:"Jog و Go-To محورها، فرمان Z و ثبت موقعیت‌ها (Teach). فقط وقتی M38 = 1 باشد فعال است."},
+ {id:"motion", no:3, name:"حرکت", lvl:"۲ مهندس", desc:"موقعیت‌ها، ناحیه‌ی کلیشه، سرعت‌ها و شتاب‌ها. همه بر حسب میلی‌متر."},
+ {id:"process", no:4, name:"فرایند", lvl:"۱ سرپرست", desc:"زمان‌های مکث، فرود زودهنگام، برداشت زودتر و بچ."},
+ {id:"recipe", no:5, name:"دستور کار", lvl:"۱ سرپرست", desc:"ذخیره و بارگذاری پارامترهای هر محصول (Recipe، ۳۲ Word از D500)."},
+ {id:"count", no:6, name:"شمارنده", lvl:"۰ اپراتور", desc:"شمارنده‌ی کل و بچ، فاصله‌ی چاپ‌ها و روند آن."},
+ {id:"alarm", no:7, name:"آلارم", lvl:"۰ اپراتور", desc:"آلارم‌های فعال با علت و راه‌حل، و تاریخچه."},
+ {id:"io", no:8, name:"ورودی/خروجی", lvl:"۰ اپراتور", desc:"وضعیت زنده‌ی همه‌ی ورودی‌ها و خروجی‌ها و رجیسترهای مرحله."},
+ {id:"setup", no:9, name:"تنظیمات", lvl:"۲ مهندس", desc:"مقیاس محورها، کالیبراسیون، Watchdog، زمان‌های هومینگ و رمزها. از آیکون چرخ‌دنده در نوار بالا باز می‌شود."}
+];
+const $=(q,r=document)=>r.querySelector(q);
+const o=(a,t,n,cls="",inner="",tag="div",extra="")=>`<${tag} class="o ${cls}" tabindex="0" data-a="${a}" data-t="${t}" data-n="${n}" ${extra}>${inner}</${tag}>`;
+const num=(a,v,u,n,t="Numeric Display")=>o(a,t,n,"num",`${v}<small>${u}</small>`);
+const lamp=(a,c,l,n)=>o(a,"Bit Lamp",n,"lamp "+c,`<i></i>${l}`,"span");
+const tog=(a,on,l,n,lock="")=>o(a,"Toggle Switch",n,"tog"+(on?" on":""),`<span>${l} ${lock?`<span class="lock">${lock}</span>`:""}</span><span class="sw"></span>`);
+const inp=(a,v,n)=>o(a,"Numeric Input",n,"inp",v,"span");
+const bar=(title,st="run",stTxt="در حال تولید")=>`<div class="bar">
+  ${o("D9","Multi-State Indicator","0 هوم نشده، 1 هومینگ، 2 آماده، 3 اتومات، 4 در حال توقف، 5 آلارم.",`pill ${st}`,stTxt,"span")}
+  <span class="ttl">${title}</span>
+  ${o("M120","Toggle (Text by state)","حالت دستگاه: 0 دستی، 1 اتومات. تغییر حالت حین کار = توقف در پایان سیکل (M91).","pill "+(st==="man"?"man":"run"),st==="man"?"دستی":"اتومات","span","style='background:#34495E'")}
+  <span class="t">۱۴۰۵/۰۷/۰۶ · 10:42</span>
+  ${o("—","Page Change (Setup, سطح ۲)","باز کردن صفحه‌ی ۹ (تنظیمات). نیاز به رمز سطح ۲.","","⚙","span","style='font-size:18px;color:#AFBBC8'")}
+</div>`;
+const nav=(cur)=>`<div class="nav">${S.slice(0,8).map(s=>`<button class="navb${s.id===cur?" on":""}" data-go="${s.id}">${s.name}<b>${s.no}</b></button>`).join("")}</div>`;
+
+const V = {
+main:()=>bar("اصلی")+`
+<div class="body" style="grid-template-columns:230px 1fr 170px;grid-template-rows:1fr auto">
+  <div class="panel">
+    <div class="ph">محورها</div>
+    <div class="row"><span class="lbl">X کالسکه</span>${num("D30 (DW)","548.6","mm","موقعیت واقعی X، 0.1 mm، ۳۲ بیتی. فرمت 4.1.")}</div>
+    <div class="row"><span class="lbl">Y کاپ</span>${num("D34 (DW)","212.4","mm","موقعیت واقعی Y، 0.1 mm.")}</div>
+    <div class="zcol">
+      <div class="zbar" style="height:110px">${o("X2 / X20 / X3","Graphic (سه حالت)","موقعیت تقریبی پد از روی سه سنسور: بالا، ارتفاع امن، پایین. خط زرد = ارتفاع امن.","", "<i style='top:6px'></i><s style='top:42px'></s>","span","style='position:absolute;inset:0'")}</div>
+      <div style="display:flex;flex-direction:column;gap:6px;justify-content:center">
+        ${lamp("X2","g","Z بالا","سنسور بالای جک Z.")}
+        ${lamp("M26","g","بالای ارتفاع امن","M26: پد از ارتفاع امن بالاتر است. شرط حرکت X.")}
+        ${lamp("X3","","Z پایین","سنسور پایین (پد فشرده).")}
+        ${lamp("M93","b","پد پر","M93: پد رنگ برداشته و منتظر چاپ است.")}
+      </div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="ph">مرحله و تولید ${o("D0","Text by Value","شماره‌ی مرحله‌ی سکانس اتومات به متن: S5 رفتن به شروع … S120 برگشت X.","","<span style='font:600 11px var(--mono);color:var(--blue)'>D0 = 80</span>","span")}</div>
+    ${o("D0","Text by Value","متن مرحله‌ی فعلی از روی D0.","","<div style='font-size:17px;font-weight:800'>S80 · کالسکه به محل چاپ می‌رود</div>")}
+    <div class="row" style="gap:12px">
+      <div style="flex:1;display:flex;flex-direction:column;gap:4px"><span class="lbl">شمارنده‌ی کل</span>${num("D560 (DW)","12,540","عدد","شمارنده‌ی کل، ماندگار. ریست فقط در سطح ۲.")}</div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:4px"><span class="lbl">بچ / هدف</span>${num("D562 / D564","340 / 500","","بچ فعلی و هدف. با M504 پس از رسیدن به هدف، در پایان سیکل می‌ایستد.")}</div>
+    </div>
+    ${o("D562 ÷ D564","Bar Graph","پیشرفت بچ.","bar2","<i style='width:68%'></i>")}
+    <div class="row" style="gap:12px">
+      <div style="flex:1;display:flex;flex-direction:column;gap:4px"><span class="lbl">فاصله‌ی دو چاپ</span>${num("D566 (DW)","4.40","s","زمان بین دو چاپ پشت سر هم، واحد 10 ms، فرمت 2 رقم اعشار.")}</div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:4px"><span class="lbl">ظرفیت</span>${num("D568","818","عدد/ساعت","چاپ در ساعت، از روی آخرین فاصله‌ی چاپ.")}</div>
+    </div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:8px">
+    ${o("M100","Set ON Button","شروع اتومات. شرط: حالت اتومات، هوم‌شده، بدون آلارم، پرده‌ی نوری سالم. PLC بیت را بعد از یک اسکن Reset می‌کند.","btn b-green","شروع","button","style='height:64px;font-size:19px'")}
+    ${o("M101","Set ON Button","توقف در پایان سیکل (M91).","btn b-red","توقف","button","style='height:52px'")}
+    ${o("M102","Set ON Button","ریست آلارم‌ها و پالس ENA درایورها.","btn b-amber","ریست","button","style='height:40px'")}
+    ${o("M103","Set ON Button","هومینگ. فقط وقتی اتومات در حال اجرا نیست.","btn b-blue","هومینگ","button","style='height:40px'")}
+  </div>
+  <div style="grid-column:1/-1;display:grid;grid-template-columns:repeat(5,1fr);gap:6px">
+    ${tog("M500",1,"جوهرزنی موازی","جوهرزنی هم‌زمان با حرکت X. پیش‌فرض روشن.")}
+    ${tog("M506",1,"برداشت زودتر","پد بعد از هر چاپ رنگ برمی‌دارد و منتظر پدال می‌ماند.")}
+    ${tog("M507",1,"فرود زودهنگام","Z قبل از رسیدن X پایین آمدن را شروع می‌کند (فاصله D550). فقط سطح ۲.","L2")}
+    ${tog("M502",0,"سیکل پیوسته","بدون پدال، با مکث D546 بین سیکل‌ها.")}
+    ${tog("M503",0,"اجرای خشک","سیکل بدون فرود Z برای تست.")}
+  </div>
+</div>`+nav("main"),
+
+manual:()=>bar("دستی","man","آماده")+`
+<div class="body" style="grid-template-columns:1fr 1fr 190px">
+  <div class="panel">
+    <div class="ph">محور X ${num("D30 (DW)","100.0","mm","موقعیت X.")}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+      ${o("M105","Momentary Button","Jog منفی، نگه‌دار (Hold-to-run). با قطع ارتباط، Watchdog بیت را پاک می‌کند.","btn b-blue","◀ X−","button","style='height:58px;font-size:18px'")}
+      ${o("M104","Momentary Button","Jog مثبت تا Soft-Limit. هوم نشده: حداکثر ۵۰ mm با سرعت Creep.","btn b-blue","X+ ▶","button","style='height:58px;font-size:18px'")}
+      ${o("M110","Set ON Button","رفتن X به محل برداشت با سرعت دستی D523.","btn b-grey","→ برداشت","button","style='height:40px'")}
+      ${o("M111","Set ON Button","رفتن X به محل چاپ.","btn b-grey","→ چاپ","button","style='height:40px'")}
+      ${o("D30 → D500","Macro Button (تأیید دوبار)","ثبت موقعیت فعلی به‌عنوان محل برداشت: D500 = D30.","btn b-amber","ثبت برداشت","button","style='height:36px;font-size:13px'")}
+      ${o("D30 → D502","Macro Button (تأیید دوبار)","ثبت موقعیت فعلی به‌عنوان محل چاپ: D502 = D30.","btn b-amber","ثبت چاپ","button","style='height:36px;font-size:13px'")}
+    </div>
+  </div>
+  <div class="panel">
+    <div class="ph">محور Y (کاپ) ${num("D34 (DW)","5.0","mm","موقعیت Y.")}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+      ${o("M107","Momentary Button","Jog منفی Y.","btn b-blue","◀ Y−","button","style='height:58px;font-size:18px'")}
+      ${o("M106","Momentary Button","Jog مثبت Y.","btn b-blue","Y+ ▶","button","style='height:58px;font-size:18px'")}
+      ${o("M112","Set ON Button","کاپ به محل پارک.","btn b-grey","→ پارک","button","style='height:40px'")}
+      ${o("M113","Set ON Button","کاپ به انتهای کورس.","btn b-grey","→ انتها","button","style='height:40px'")}
+      ${o("M117","Set ON Button","یک رفت و برگشت کامل جوهرزنی برای تست.","btn b-amber","تست جوهرزنی","button","style='height:36px;grid-column:1/-1;font-size:13px'")}
+    </div>
+  </div>
+  <div class="panel">
+    <div class="ph">پد (Z)</div>
+    ${o("M108","Set ON Button","پد پایین. فقط با X ایستاده در محل برداشت (کاپ پارک) یا چاپ (پرده‌ی نوری سالم).","btn b-red","▼ پایین","button","style='height:48px'")}
+    ${o("M109","Set ON Button","پد بالا.","btn b-green","▲ بالا","button","style='height:48px'")}
+    <div class="ph" style="margin-top:4px">مجوزها</div>
+    ${lamp("M40","g","حرکت X مجاز","M40: پد بالای ارتفاع امن و سنسورهای پایین خاموش.")}
+    ${lamp("M42","g","حرکت Y مجاز","M42: پد بالای ارتفاع امن یا X بیرون از ناحیه‌ی کلیشه.")}
+    ${lamp("M41","g","فرود Z مجاز","M41: X در برداشت (کاپ پارک) یا در چاپ (پرده‌ی نوری سالم).")}
+    ${lamp("M38","a","حالت دستی فعال","M38: دستی، بدون آلارم، بدون سکانس فعال.")}
+  </div>
+</div>`+nav("manual"),
+
+motion:()=>bar("پارامترهای حرکت","man","آماده")+`
+<div class="body" style="grid-template-columns:1fr 1fr">
+  <div class="panel"><div class="ph">موقعیت‌ها (mm) <span class="lock">L2</span></div>
+  <table class="t"><tr><th>پارامتر</th><th>مقدار</th><th>بازه</th></tr>
+   <tr><td>محل برداشت X</td><td>${inp("D500 (DW)","100.0","محل برداشت. فرمت 4.1. بازه 0 تا Soft Max.")}</td><td class="v">0–620</td></tr>
+   <tr><td>محل چاپ X</td><td>${inp("D502 (DW)","550.0","محل چاپ.")}</td><td class="v">0–620</td></tr>
+   <tr><td>پارک X پس از هوم</td><td>${inp("D504 (DW)","100.0","موقعیت بعد از هومینگ.")}</td><td class="v">0–620</td></tr>
+   <tr><td>حد نرم‌افزاری X</td><td>${inp("D506 (DW)","615.0","Soft-limit X.")}</td><td class="v">≤ 620</td></tr>
+   <tr><td>ناحیه‌ی کلیشه</td><td>${inp("D508/D510","0.0 – 250.0","ابتدا و انتهای ناحیه‌ای که پد بالای کلیشه است. نصف قطر پد بزرگ‌تر از کاپ.")}</td><td class="v">mm</td></tr>
+   <tr><td>پارک / انتهای کاپ Y</td><td>${inp("D512/D514","5.0 – 350.0","پارک و انتهای کورس کاپ.")}</td><td class="v">0–375</td></tr>
+   <tr><td>تلرانس رسیدن</td><td>${inp("D548 (DW)","0.5","پنجره‌ی «در موقعیت».")}</td><td class="v">0.1–2.0</td></tr>
+  </table></div>
+  <div class="panel"><div class="ph">سرعت و شتاب</div>
+  <table class="t"><tr><th>پارامتر</th><th>مقدار</th><th>بازه</th></tr>
+   <tr><td>X اتومات (mm/s)</td><td>${inp("D522","800","سرعت X در سیکل. سقف PLC 900.")}</td><td class="v">50–900</td></tr>
+   <tr><td>X دستی</td><td>${inp("D523","100","سرعت Jog و Go-To.")}</td><td class="v">5–200</td></tr>
+   <tr><td>شتاب X (ms)</td><td>${inp("D526","300","زمان شتاب و ترمز X.")}</td><td class="v">100–1000</td></tr>
+   <tr><td>Y رفت / برگشت</td><td>${inp("D527/D528","400 / 400","سرعت کاپ. برگشت همان تیغه‌کشی نهایی است.")}</td><td class="v">50–600</td></tr>
+   <tr><td>شتاب Y (ms)</td><td>${inp("D532","300","شتاب کاپ. برای چسبندگی کاپ کمتر از 300 نشود.")}</td><td class="v">100–1000</td></tr>
+   <tr><td>هوم / Creep X</td><td>${inp("D524/D525","60 / 8","سرعت‌های هومینگ.")}</td><td class="v">mm/s</td></tr>
+   <tr><td>هوم / Creep Y</td><td>${inp("D530/D531","60 / 8","سرعت‌های هومینگ Y.")}</td><td class="v">mm/s</td></tr>
+  </table></div>
+</div>`+nav("motion"),
+
+process:()=>bar("پارامترهای فرایند")+`
+<div class="body" style="grid-template-columns:1.2fr 1fr">
+  <div class="panel"><div class="ph">زمان‌ها (ثانیه)</div>
+  <table class="t"><tr><th>پارامتر</th><th>مقدار</th><th>بازه</th></tr>
+   <tr><td><b>مکث روی کلیشه</b></td><td>${inp("D540","0.50","Dwell1، واحد 10 ms، از لحظه‌ی تأیید سنسور پایین و ایستادن X.")}</td><td class="v">0.20–1.00</td></tr>
+   <tr><td><b>مکث روی قطعه</b></td><td>${inp("D541","0.50","Dwell2.")}</td><td class="v">0.20–1.00</td></tr>
+   <tr><td>تأخیر بعد از جوهرزنی</td><td>${inp("D542","0.00","Flash-off: فرصت برای چسبناک شدن رنگ.")}</td><td class="v">0.00–2.00</td></tr>
+   <tr><td>حداکثر انتظار پد پر</td><td>${inp("D552","3.00","برداشت زودتر: اگر پدال دیرتر زده شود، پد دوباره رنگ برمی‌دارد.")}</td><td class="v">0.50–10.0</td></tr>
+   <tr><td>مکث سیکل پیوسته</td><td>${inp("D546","0.50","فقط با M502.")}</td><td class="v">0–10.0</td></tr>
+   <tr><td>Timeout پایین / بالا Z</td><td>${inp("D543/D544","1.50 / 1.50","اگر Z در این زمان نرسد: A07 یا A08.")}</td><td class="v">0.5–5.0</td></tr>
+  </table></div>
+  <div class="panel"><div class="ph">سرعت‌دهی و بچ</div>
+   ${tog("M500",1,"جوهرزنی موازی","پیش‌فرض روشن.")}
+   ${tog("M506",1,"برداشت زودتر","بعد از راه‌اندازی روشن شود.")}
+   ${tog("M507",1,"فرود زودهنگام","بعد از تنظیم D550 روشن شود.","L2")}
+   <div class="row"><span class="lbl">فاصله‌ی فرود زودهنگام <span class="lock">L2</span></span>${inp("D550 (DW)","5.0 mm","فاصله‌ی X تا مقصد که Z از آن پایین آمدن را شروع می‌کند. از 5 mm شروع کنید، هر بار 5 mm اضافه کنید، اولین A10 یا سایه = ۲۰٪ عقب.")}</div>
+   ${tog("M504",1,"توقف پس از بچ","در پایان بچ دستگاه در پایان سیکل می‌ایستد.")}
+   <div class="row"><span class="lbl">هدف بچ</span>${inp("D564 (DW)","500","هدف بچ. 0 = خاموش.")}</div>
+  </div>
+</div>`+nav("process"),
+
+recipe:()=>bar("دستور کار")+`
+<div class="body" style="grid-template-columns:1.4fr 1fr">
+  <div class="panel"><div class="ph">دستور کارهای ذخیره‌شده <span style="font-size:11px;font-weight:500">نمونه</span></div>
+  ${o("RCP D500–D531","Recipe Table (DOPSoft Recipe)","۵۰ دستور کار × ۳۲ Word، شروع از D500. مقیاس‌ها (D518، D520) جزو Recipe نیستند.","","",`div`,"style='display:none'")}
+  <table class="t"><tr><th>#</th><th>نام محصول</th><th>برداشت</th><th>چاپ</th><th>مکث‌ها</th></tr>
+   <tr style="background:#DCE8F6"><td class="v">01</td><td><b>درب سطل ۲۰ لیتری · ۳ جهت</b></td><td class="v">100.0</td><td class="v">550.0</td><td class="v">0.50/0.50</td></tr>
+   <tr><td class="v">02</td><td>بدنه‌ی سطل ۱۰ لیتری</td><td class="v">100.0</td><td class="v">520.0</td><td class="v">0.40/0.60</td></tr>
+   <tr><td class="v">03</td><td>درب گالن ۴ لیتری</td><td class="v">110.0</td><td class="v">545.0</td><td class="v">0.40/0.40</td></tr>
+   <tr><td class="v">04</td><td>آرم روی قوطی فلزی</td><td class="v">95.0</td><td class="v">560.0</td><td class="v">0.60/0.70</td></tr>
+   <tr><td class="v">05</td><td>—</td><td class="v">—</td><td class="v">—</td><td class="v">—</td></tr>
+  </table></div>
+  <div class="panel"><div class="ph">عملیات</div>
+   ${o("RCP No.","Numeric Input (Recipe No.)","شماره‌ی دستور کار انتخاب‌شده.","num","01<small>از ۵۰</small>")}
+   ${o("RCP Name","ASCII Input (16 کاراکتر)","نام محصول، در حافظه‌ی HMI.","num","درب سطل ۲۰ لیتری","div","style='font:600 13px var(--fa);direction:rtl;text-align:right'")}
+   ${o("RCP Load","Recipe Load Button","بارگذاری در PLC. فقط در حالت دستی و متوقف (M38 = 1).","btn b-blue","بارگذاری در دستگاه","button","style='height:44px'")}
+   ${o("RCP Save","Recipe Save Button (تأیید)","ذخیره‌ی مقادیر فعلی PLC در این دستور کار.","btn b-green","ذخیره","button","style='height:44px'")}
+   ${o("RCP SaveAs","Recipe Copy","ذخیره در شماره‌ی جدید.","btn b-grey","ذخیره با نام جدید","button","style='height:38px'")}
+  </div>
+</div>`+nav("recipe"),
+
+count:()=>{
+  const pts=[5.1,4.9,4.6,4.5,4.6,4.4,4.8,4.4,4.3,4.4,4.5,4.4,4.2,4.4,4.4];
+  const W=430,H=130,px=30,py=14, min=4,max=5.5;
+  const x=i=>px+i*(W-px-8)/(pts.length-1), y=v=>py+(max-v)*(H-2*py)/(max-min);
+  const path=pts.map((v,i)=>(i?"L":"M")+x(i).toFixed(1)+" "+y(v).toFixed(1)).join(" ");
+  const grid=[4,4.5,5,5.5].map(v=>`<line x1="${px}" x2="${W-8}" y1="${y(v)}" y2="${y(v)}" stroke="#DCE2E8"/><text x="${px-4}" y="${y(v)+4}" font-size="10" text-anchor="end" fill="#5E6B79" font-family="IBM Plex Mono">${v.toFixed(1)}</text>`).join("");
+  return bar("شمارنده‌ها")+`
+<div class="body" style="grid-template-columns:1fr 1.5fr">
+  <div class="panel"><div class="ph">شمارنده‌ها</div>
+   <div class="row"><span class="lbl">کل</span>${num("D560 (DW)","12,540","","شمارنده‌ی کل.")}</div>
+   <div class="row"><span class="lbl">بچ</span>${num("D562 (DW)","340","","شمارنده‌ی بچ.")}</div>
+   <div class="row"><span class="lbl">هدف</span>${num("D564 (DW)","500","","هدف بچ.")}</div>
+   ${lamp("M95","","بچ کامل شد","M95.")}
+   ${o("M116","Set ON Button (سطح ۱)","ریست شمارنده‌ی بچ.","btn b-amber","ریست بچ","button","style='height:40px'")}
+   ${o("M115","Set ON Button (سطح ۲ + تأیید)","ریست شمارنده‌ی کل.","btn b-grey","ریست کل","button","style='height:36px;font-size:13px'")}
+  </div>
+  <div class="panel"><div class="ph">فاصله‌ی چاپ‌ها (ثانیه)، ۱۵ چاپ آخر <span style="font-weight:500;font-size:11px">نمونه</span></div>
+   ${o("D566 (Trend)","Trend Graph","نمونه‌برداری از D566 در هر چاپ. خط پایین‌تر = سریع‌تر.","",`<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" role="img" aria-label="روند فاصله‌ی چاپ‌ها">${grid}<path d="${path} L${x(pts.length-1)} ${H-py} L${px} ${H-py}Z" fill="rgba(29,95,168,.10)"/><path d="${path}" fill="none" stroke="#1D5FA8" stroke-width="2"/><circle cx="${x(pts.length-1)}" cy="${y(pts[pts.length-1])}" r="4" fill="#1D5FA8"/></svg>`)}
+   <div class="row"><span class="lbl">آخرین</span>${num("D566","4.40","s","فاصله‌ی آخرین دو چاپ.")}<span class="lbl">ظرفیت</span>${num("D568","818","/h","چاپ در ساعت.")}</div>
+  </div>
+</div>`+nav("count")},
+
+alarm:()=>bar("آلارم‌ها","alm","آلارم")+`
+<div class="body" style="grid-template-rows:auto 1fr">
+  <div class="panel"><div class="ph">فعال ${o("D50 / D51","Alarm (bit) – Pop-up","۱۶ بیت D50 = A01…A16، بیت 0 از D51 = A17. پنجره‌ی پاپ‌آپ وقتی D50 ≠ 0.","","<span style='font:600 11px var(--mono);color:var(--red)'>D50 = 0x0200</span>","span")}</div>
+   <div class="alrow act">${o("M209","Alarm","A10","","<code>A10</code>","span")}<div><b>پد حین حرکت X زیر ارتفاع امن رفت.</b><br><span style="color:#6B3B35">فاصله‌ی فرود زودهنگام (D550) را کم کنید، سنسور X20 را بررسی کنید، بعد هومینگ.</span></div><time>10:41:07</time></div>
+   <div class="row" style="justify-content:flex-start;gap:8px">${o("M102","Set ON Button","ریست. اگر علت باقی باشد، آلارم دوباره فعال می‌شود.","btn b-amber","ریست","button","style='height:36px;width:120px'")}${o("M103","Set ON Button","هومینگ بعد از آلارم کلاس A.","btn b-blue","هومینگ","button","style='height:36px;width:120px'")}</div>
+  </div>
+  <div class="panel" style="overflow:hidden"><div class="ph">تاریخچه ${o("History","Alarm History","ذخیره در حافظه‌ی HMI با زمان وقوع، رفع و تعداد.","","","span")}</div>
+   <table class="t"><tr><th>کد</th><th>پیام</th><th>وقوع</th><th>رفع</th></tr>
+    <tr><td class="v" style="color:var(--red)">A10</td><td>پد حین حرکت X زیر ارتفاع امن رفت</td><td class="v">10:41:07</td><td class="v">—</td></tr>
+    <tr><td class="v" style="color:var(--red)">A06</td><td>فشار هوا کم</td><td class="v">09:12:44</td><td class="v">09:14:02</td></tr>
+    <tr><td class="v" style="color:var(--red)">A13</td><td>پرده‌ی نوری حین حرکت قطع شد</td><td class="v">08:55:10</td><td class="v">08:55:13</td></tr>
+    <tr><td class="v" style="color:var(--red)">A16</td><td>Timeout مرحله‌ی سکانس</td><td class="v">دیروز 16:20</td><td class="v">16:21</td></tr>
+   </table></div>
+</div>`+nav("alarm"),
+
+io:()=>{
+  const X=[["X0","هوم X",0],["X1","هوم Y",0],["X2","Z بالا",0],["X3","Z پایین",1],["X4","درایور X سالم",1],["X5","درایور Y سالم",1],["X6","لیمیت X سالم",1],["X7","لیمیت Y سالم",1],["X10","E-Stop سالم",1],["X11","پدال",0],["X12","شستی شروع",0],["X13","شستی توقف (NC)",1],["X14","ریست",0],["X15","فشار هوا",1],["X16","پرده‌ی نوری",1],["X17","Z پایین ۲",0],["X20","ارتفاع امن Z",0],["X21","رزرو",0]];
+  const Y=[["Y0","پالس X",1],["Y1","جهت X",0],["Y2","پالس Y",0],["Y3","جهت Y",0],["Y4","Z پایین",1],["Y5","Z بالا",0],["Y6","فعال X",1],["Y7","فعال Y",1],["Y10","چراغ سبز",1],["Y11","چراغ زرد",0],["Y12","چراغ قرمز",0],["Y13","هوای اصلی",1]];
+  const L=(a,c)=>a.map(([k,n,on])=>o(k,"Bit Lamp",n,"lamp "+(on?c:""),`<i></i><code>${k}</code>${n}`,"span")).join("");
+  return bar("ورودی و خروجی")+`
+<div class="body" style="grid-template-columns:1.5fr 1fr">
+  <div class="panel"><div class="ph">ورودی‌ها</div><div class="io">${L(X,"g")}</div></div>
+  <div class="panel"><div class="ph">خروجی‌ها</div><div class="io" style="grid-template-columns:repeat(2,1fr)">${L(Y,"b")}</div>
+   <div class="ph" style="margin-top:6px">رجیسترها</div>
+   <table class="t"><tr><td>مرحله‌ی اتومات</td><td class="v">${o("D0","Numeric Display","D0","","90","span")}</td><td>جوهرزنی</td><td class="v">${o("D1","Numeric Display","D1","","10","span")}</td></tr>
+   <tr><td>هومینگ</td><td class="v">${o("D2","Numeric Display","D2","","0","span")}</td><td>Heartbeat</td><td class="v">${o("D60","Numeric Display","باید مدام زیاد شود.","","3412","span")}</td></tr>
+   <tr><td>پالس X</td><td class="v">${o("D1030 (DW)","Numeric Display","موقعیت خام CH0.","","54860","span")}</td><td>پالس Y</td><td class="v">${o("D1336 (DW)","Numeric Display","موقعیت خام CH1.","","7080","span")}</td></tr></table>
+  </div>
+</div>`+nav("io")},
+
+setup:()=>bar("تنظیمات مهندسی","man","آماده")+`
+<div class="body" style="grid-template-columns:1fr 1fr">
+  <div class="panel"><div class="ph">مقیاس محورها <span class="lock">L2</span></div>
+   <table class="t"><tr><th>محور</th><th>پالس در ۱۰۰۰ mm</th><th>مبنا</th></tr>
+   <tr><td>X</td><td>${inp("D518 (DW)","100000","گیربکس ۱:۳، پولی ۲۴T HTD5M، 4000 p/rev = 100 p/mm.")}</td><td style="font-size:11px">40 mm/دور موتور</td></tr>
+   <tr><td>Y</td><td>${inp("D520 (DW)","33333","پولی ۲۴T گام ۵، مستقیم، 4000 p/rev.")}</td><td style="font-size:11px">120 mm/دور</td></tr></table>
+   <div class="ph">جادوی کالیبراسیون</div>
+   <div class="row"><span class="lbl">۱. حرکت ۶۰۰ mm، ۲. اندازه‌ی واقعی:</span>${inp("Macro tmp","598.6","عدد اندازه‌گیری‌شده با خط‌کش. ماکرو: SCALE = SCALE × 600 / اندازه.")}</div>
+   ${o("Macro","Macro Button","محاسبه و نوشتن مقیاس جدید.","btn b-blue","محاسبه و ذخیره‌ی مقیاس","button","style='height:38px'")}
+  </div>
+  <div class="panel"><div class="ph">سیستم</div>
+   ${tog("M505",1,"Watchdog ارتباط HMI","اگر D60 دو ثانیه تغییر نکند: A14 و پاک شدن بیت‌های HMI.")}
+   ${tog("M501",0,"سنسور پایین دوم (X17)","وقتی ارتفاع کلیشه و قطعه یکی نیست.")}
+   <div class="row"><span class="lbl">Timeout هومینگ (s)</span>${inp("D547","30.0","واحد 100 ms.")}</div>
+   <div class="row"><span class="lbl">نشست Z بالا (s)</span>${inp("D545","0.10","زمان بعد از سنسور بالا.")}</div>
+   ${o("Password","Password Setup","سطح ۱ سرپرست، سطح ۲ مهندس.","btn b-grey","تغییر رمزها","button","style='height:36px'")}
+   ${o("M119","Toggle (سطح ۲ + تأیید)","تخلیه‌ی هوای اصلی برای تعمیرات (LOTO).","btn b-red","تخلیه‌ی هوا برای تعمیر","button","style='height:36px'")}
+  </div>
+</div>`+nav("")
+};
+
+const tabs=$("#tabs"), hmi=$("#hmi"), fit=$("#fit"), insp=$("#insp");
+let cur="main";
+function info(s){insp.innerHTML=`<h2>صفحه‌ی ${s.no}: ${s.name}</h2>
+ <dl class="kv"><dt>سطح دسترسی</dt><dd>${s.lvl}</dd><dt>اندازه</dt><dd style="direction:ltr;text-align:right">800 × 480</dd></dl>
+ <p class="note">${s.desc}</p>
+ <p class="hint">روی یک شیء بزنید تا آدرس و نوع آن اینجا دیده شود.</p>`;}
+function show(id){
+  cur=id; const s=S.find(x=>x.id===id);
+  hmi.innerHTML=V[id](); info(s);
+  [...tabs.children].forEach(b=>b.setAttribute("aria-current",b.dataset.go===id));
+  try{localStorage.setItem("hmi-screen",id)}catch(e){}
+}
+tabs.innerHTML=S.map(s=>`<button data-go="${s.id}">${s.no}. ${s.name}</button>`).join("");
+document.addEventListener("click",e=>{
+  const g=e.target.closest("[data-go]"); if(g){show(g.dataset.go);return}
+  const el=e.target.closest(".o"); if(el&&hmi.contains(el)){pick(el)}
+});
+document.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.classList&&e.target.classList.contains("o")){e.preventDefault();pick(e.target)}});
+function pick(el){
+  hmi.querySelectorAll(".o.sel").forEach(x=>x.classList.remove("sel")); el.classList.add("sel");
+  if(el.classList.contains("tog")) el.classList.toggle("on");
+  const s=S.find(x=>x.id===cur);
+  insp.innerHTML=`<h2>${(el.textContent||"").trim().slice(0,40)||"شیء"}</h2>
+   <div class="addr">${el.dataset.a}</div>
+   <dl class="kv"><dt>نوع در DOPSoft</dt><dd>${el.dataset.t}</dd><dt>صفحه</dt><dd>${s.no}. ${s.name}</dd></dl>
+   <p class="note">${el.dataset.n}</p>
+   <p class="hint">آدرس‌ها مطابق plc/TampoPrinter_SV2.il و docs/02_io_map.md هستند. (DW) یعنی Double Word ۳۲ بیتی.</p>`;
+}
+function scale(){hmi.style.transform=`scale(${fit.clientWidth/800})`}
+new ResizeObserver(scale).observe(fit); scale();
+$("#t-addr").onclick=e=>{const on=e.currentTarget.getAttribute("aria-pressed")!=="true";e.currentTarget.setAttribute("aria-pressed",on);hmi.classList.toggle("show",on)};
+$("#t-pop").onclick=e=>{const on=e.currentTarget.getAttribute("aria-pressed")!=="true";e.currentTarget.setAttribute("aria-pressed",on);
+  const p=hmi.querySelector(".pop"); if(p){p.remove();return}
+  hmi.insertAdjacentHTML("beforeend",`<div class="pop"><div class="popc"><div class="ph">مکث روی قطعه (D541) <span class="lock">0.20 – 1.00 s</span></div><div class="num" style="font-size:26px">0.55</div><div class="keys">${["7","8","9","⌫","4","5","6","C","1","2","3","−","0",".","ESC","OK"].map(k=>`<span>${k}</span>`).join("")}</div></div></div>`)};
+let start="main"; try{start=localStorage.getItem("hmi-screen")||"main"}catch(e){}
+if(location.hash&&V[location.hash.slice(1)]) start=location.hash.slice(1);
+show(V[start]?start:"main");
+</script>

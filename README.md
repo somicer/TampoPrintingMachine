@@ -12,6 +12,9 @@
 | [docs/06_electrical_safety_troubleshooting.md](docs/06_electrical_safety_troubleshooting.md) | تغذیه، ضد نویز، گراندینگ، مدار ایمنی، جدول آلارم‌ها و عیب‌یابی |
 | [plc/TampoPrinter_SV2.il](plc/TampoPrinter_SV2.il) | برنامه‌ی کامل PLC (Instruction List) |
 | [hmi/tag_list.csv](hmi/tag_list.csv) | فهرست Tagهای HMI |
+| [hmi/hmi_mockup.html](hmi/hmi_mockup.html) | **نمونه‌ی تعاملی ۹ صفحه‌ی HMI** با آدرس هر شیء |
+| [plc/TampoPrinter_SV2_clean.txt](plc/TampoPrinter_SV2_clean.txt) | برنامه‌ی PLC بدون توضیحات برای WPLSoft |
+| [tools/plc_sim.py](tools/plc_sim.py) | شبیه‌ساز و تست خودکار برنامه‌ی PLC |
 | [docs/07_bom_cost_estimate.md](docs/07_bom_cost_estimate.md) | برآورد هزینه‌ی قطعات (BOM) |
 | [bom/bom_estimate.csv](bom/bom_estimate.csv) | فهرست قطعات و قیمت برای Excel |
 | [docs/08_field_data_redesign.md](docs/08_field_data_redesign.md) | **داده‌های دستگاه موجود و طراحی از صفر** (معتبرترین بخش) |
