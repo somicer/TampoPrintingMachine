@@ -33,15 +33,26 @@ class PLC:
     def __init__(self, path):
         self.prog = []
         self.labels = {}
-        for raw in open(path, encoding="utf-8"):
+        self.src = []                      # IL line number per instruction
+        for lineno, raw in enumerate(open(path, encoding="utf-8"), 1):
             line = raw.split("//")[0].strip()
             if line:
                 p = line.split()
                 if re.fullmatch(r"P\d+", p[0]) and len(p) == 1:
                     self.labels[p[0]] = len(self.prog)
                     self.prog.append(("LABEL", []))
+                    self.src.append(lineno)
                     continue
                 self.prog.append((p[0], p[1:]))
+                self.src.append(lineno)
+        self.cov = set()                   # outputs executed with power flow
+        # precompile compare instructions (speed)
+        self.cmp = []
+        for op, a in self.prog:
+            m = re.match(r"^(D?)(LD|AND|OR)(=|<>|>=|<=|>|<)$", op)
+            self.cmp.append((m.group(1) == "D", m.group(2), self.CMP[m.group(3)]) if m else None)
+        self._ixc = {}
+        self._kc = {}
         self.bits = defaultdict(bool)      # X, Y, M, T(contact)
         self.words = defaultdict(int)      # D, T(value) - 16-bit signed
         self.tacc = defaultdict(float)     # timer accumulators (s)
@@ -51,24 +62,32 @@ class PLC:
 
     # --- operand access -------------------------------------------------
     def bit(self, name):
-        return self.bits[name]
+        return self.bits[self.ix(name)]
 
     def setbit(self, name, v):
-        self.bits[name] = bool(v)
+        self.bits[self.ix(name)] = bool(v)
 
     def ix(self, op):
-        m = re.fullmatch(r"([A-Z])(\d+)([EF]\d)?", op)
-        if m and m.group(3):
-            return "%s%d" % (m.group(1), int(m.group(2)) + s16(self.words[m.group(3)]))
+        p = self._ixc.get(op)
+        if p is None:
+            m = re.fullmatch(r"([A-Z])(\d+)([EF]\d)", op)
+            p = (m.group(1), int(m.group(2)), m.group(3)) if m else False
+            self._ixc[op] = p
+        if p:
+            return "%s%d" % (p[0], p[1] + s16(self.words[p[2]]))
         return op
 
     def val(self, op, dbl=False):
+        k = self._kc.get(op)
+        if k is not None:
+            return k
         op = self.ix(op)
         if op.startswith("K"):
             if op.startswith("K4M"):
                 base = int(op[3:])
                 return sum((1 << i) for i in range(16) if self.bits["M%d" % (base + i)])
-            return int(op[1:])
+            self._kc[op] = int(op[1:])
+            return self._kc[op]
         if op.startswith("T"):
             return int(self.tacc[op] / self.tbase(op))
         if op[0] in "EF":
@@ -141,15 +160,15 @@ class PLC:
                 continue
             if op in ("CJ", "CALL"):
                 if acc:
+                    self.cov.add(idx)
                     if op == "CALL":
                         calls.append(idx)
                     idx = self.labels[a[0]]
                 continue
-            m = re.match(r"^(D?)(LD|AND|OR)(=|<>|>=|<=|>|<)$", op)
-            if m:
-                dbl = m.group(1) == "D"
-                r = self.CMP[m.group(3)](self.val(a[0], dbl), self.val(a[1], dbl))
-                kind = m.group(2)
+            c = self.cmp[idx]
+            if c:
+                dbl, kind, fn = c
+                r = fn(self.val(a[0], dbl), self.val(a[1], dbl))
                 if kind == "LD":
                     stack.append(acc); acc = r
                 elif kind == "AND":
@@ -189,6 +208,8 @@ class PLC:
             if op == "END":
                 break
             # ---- outputs / applied instructions (use acc) ----------
+            if acc:
+                self.cov.add(idx)
             if op == "OUT":
                 self.setbit(a[0], acc); continue
             if op == "TMR":
@@ -278,6 +299,8 @@ class PLC:
     def pulse_step(self, plant):
         for out, (pos_d, done_m, busy_m, pause_m, acc_d) in self.CH.items():
             ch = self.pulse.get(out)
+            if out in getattr(self, "stall", ()):
+                continue                 # simulated mechanical stall
             if not ch or ch["active"] is None or self.bits[pause_m]:
                 if ch and ch["active"] is not None and self.bits[pause_m]:
                     ch["v"] = 0.0
@@ -352,6 +375,8 @@ class Plant:
         for n in ("X4", "X5", "X6", "X7", "X10", "X13", "X15", "X16"):
             b[n] = True
         b["X11"] = self.t < self.pedal_until
+        for k, v in getattr(self, "force", {}).items():
+            b[k] = v
         clk = self.clock0 + self.t * getattr(self, "clock_speed", 1.0)
         w = self.plc.words
         w["D1314"] = int(clk // 60) % 60
@@ -367,11 +392,11 @@ class Plant:
         if getattr(self, "fault_down", False):
             self.valve_down = True      # simulated valve / air fault
         tgt = self.Z_DOWN if self.valve_down else 0.0
-        dz = self.Z_SPEED * SCAN
+        dz = 0.0 if getattr(self, "z_stuck", False) else self.Z_SPEED * SCAN
         self.z = min(tgt, self.z + dz) if tgt > self.z else max(tgt, self.z - dz)
         self.t += SCAN
         self.hb += SCAN
-        if self.hb >= 0.5:
+        if self.hb >= 0.5 and not getattr(self, "hb_stop", False):
             self.hb = 0
             self.plc.words["D60"] = s16(self.plc.words["D60"] + 1)
         self.check()

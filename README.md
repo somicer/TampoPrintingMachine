@@ -21,6 +21,9 @@
 | [docs/09_final_bom.md](docs/09_final_bom.md) | **لیست خرید نهایی طرح جدید** |
 | [docs/10_operators_shifts_erp.md](docs/10_operators_shifts_erp.md) | **ورود کارگر، شیفت‌ها و ارسال آمار به ERP** |
 | [tools/erp_gateway.py](tools/erp_gateway.py) | دروازه‌ی Modbus TCP به ERP |
+| [docs/11_test_report.md](docs/11_test_report.md) | **گزارش تست نقطه‌به‌نقطه** (خودکار) |
+| [docs/12_zones_error_handling.md](docs/12_zones_error_handling.md) | **مناطق ممنوع، مدیریت خطا و بازیابی نرم‌افزاری** |
+| [tools/test_suite.py](tools/test_suite.py) | مجموعه‌ی تست (۴۶ سناریو، موازی) |
 | [tools/axis_sizing.py](tools/axis_sizing.py) | محاسبه‌ی سرعت پیک، گشتاور، نسبت اینرسی و نیروی جک |
 
 ## مهم‌ترین نتیجه‌ها (طرح نهایی بر اساس دستگاه موجود)

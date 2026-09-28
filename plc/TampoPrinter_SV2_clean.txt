@@ -3,49 +3,10 @@ MOV     K200        D1340
 MOV     K200        D1352
 SET     M505
 DLD=    D518        K0
-DMOV    K100000     D518
-DMOV    K33333      D520
-DMOV    K1000       D500
-DMOV    K5500       D502
-DMOV    K1000       D504
-DMOV    K6150       D506
-DMOV    K0          D508
-DMOV    K2500       D510
-DMOV    K50         D512
-DMOV    K3500       D514
-DMOV    K3750       D516
-MOV     K800        D522
-MOV     K100        D523
-MOV     K60         D524
-MOV     K8          D525
-MOV     K300        D526
-MOV     K400        D527
-MOV     K400        D528
-MOV     K80         D529
-MOV     K60         D530
-MOV     K8          D531
-MOV     K300        D532
-MOV     K50         D540
-MOV     K50         D541
-MOV     K0          D542
-MOV     K150        D543
-MOV     K150        D544
-MOV     K10         D545
-MOV     K50         D546
-MOV     K0          D554
-MOV     K2          D555
-MOV     K600        D603
-MOV     K1400       D604
-MOV     K2200       D605
-SET     M508
-MOV     K300        D547
-DMOV    K5          D548
-DMOV    K50         D550
-MOV     K300        D552
-DMOV    K0          D564
-SET     M500
-RST     M506
-RST     M507
+CALL    P9
+LD      M140
+ANI     M90
+CALL    P9
 LD<     D540        K20
 MOV     K20         D540
 LD>     D540        K100
@@ -95,7 +56,7 @@ SET     M214
 LDP     X14
 ORP     M102
 SET     M36
-ZRST    M200        M216
+ZRST    M200        M220
 RST     M95
 LD      M36
 TMR     T7          K3
@@ -185,6 +146,10 @@ LD      M1336
 OR      M50
 ANB
 SET     M216
+LD      M1067
+SET     M219
+MOV     D1067       D683
+MOV     D1068       D684
 LD      M1000
 MOV     K4M200      D50
 MOV     K4M216      D51
@@ -202,6 +167,7 @@ OUT     M28
 LD      M28
 OR      M212
 OR      M213
+OR      M218
 OUT     M29
 LD      M28
 RST     M22
@@ -218,6 +184,8 @@ ANI     M54
 ANI     M55
 RST     M1078
 RST     M1104
+LDP     M21
+CALL    P11
 LD      M21
 RST     M90
 RST     M91
@@ -231,6 +199,63 @@ RST     M47
 RST     M54
 RST     M55
 ZRST    D0          D4
+LD=     D0          K0
+OR=     D0          K5
+OR=     D0          K10
+OR=     D0          K20
+OR=     D0          K40
+OR=     D0          K50
+OR=     D0          K60
+OR=     D0          K70
+OR=     D0          K80
+OR=     D0          K90
+OR=     D0          K100
+OR=     D0          K110
+OR=     D0          K120
+LD=     D1          K0
+OR=     D1          K10
+OR=     D1          K20
+ANB
+LD=     D2          K0
+OR=     D2          K10
+OR=     D2          K20
+OR=     D2          K30
+OR=     D2          K40
+ANB
+LD=     D3          K0
+OR=     D3          K10
+OR=     D3          K15
+OR=     D3          K20
+OR=     D3          K25
+ANB
+LD=     D4          K0
+OR=     D4          K10
+OR=     D4          K15
+OR=     D4          K20
+OR=     D4          K25
+ANB
+OUT     M170
+LDI     M170
+SET     M220
+ZRST    D0          D4
+LD      M141
+RST     M90
+RST     M91
+RST     M92
+RST     M93
+RST     M94
+RST     M60
+RST     M61
+RST     M45
+RST     M46
+RST     M47
+RST     M48
+RST     M54
+RST     M55
+ZRST    D0          D4
+ZRST    M200        M220
+RST     M1067
+SET     M36
 LD      X10
 AND     X15
 AND     X4
@@ -335,6 +360,10 @@ LD      M507
 AND     M97
 DAND<=  D90         D550
 OUT     M64
+LD      M22
+CALL    P8
+LDI     M22
+RST     M67
 LD      M31
 OR      M63
 AND     M33
@@ -344,6 +373,7 @@ AND     X16
 ORB
 AND     M24
 AND     M20
+ANI     M67
 OUT     M41
 LDI     M41
 RST     M60
@@ -359,10 +389,10 @@ AND=    D2          K0
 LD      M132
 ORI     M508
 ANB
+ANI     M95
 SET     M90
 RST     M91
 RST     M94
-RST     M95
 MOV     K5          D0
 LD      M100
 ANI     M132
@@ -625,6 +655,10 @@ LD      M32
 OR      M64
 ANB
 MOV     K90         D0
+LD=     D0          K50
+OR=     D0          K90
+AND     M67
+SET     M217
 LD=     D0          K90
 ANI     M503
 AND     M41
@@ -725,6 +759,7 @@ AND     M22
 DMOV    D506        D200
 MOV     D523        D202
 SET     M46
+CALL    P2
 LDP     M104
 AND     M38
 AND     M58
@@ -741,6 +776,7 @@ AND     M22
 DMOV    K0          D200
 MOV     D523        D202
 SET     M46
+CALL    P3
 LDP     M105
 AND     M38
 AND     M58
@@ -761,6 +797,7 @@ AND     M23
 DMOV    D516        D204
 MOV     D529        D206
 SET     M48
+CALL    P6
 LDP     M106
 AND     M38
 AND     M59
@@ -777,6 +814,7 @@ AND     M23
 DMOV    K0          D204
 MOV     D529        D206
 SET     M48
+CALL    P7
 LDP     M107
 AND     M38
 AND     M59
@@ -878,6 +916,30 @@ DMUL    D48         D520        D40
 DDIV    D40         K1000       D44
 DMOV    D44         D24
 MOV     D532        D1353
+LD      M22
+CALL    P4
+LDI     M22
+RST     M68
+RST     M66
+LD      M23
+CALL    P5
+LDI     M23
+RST     M69
+RST     M65
+LD      M45
+AND     M68
+SET     M217
+RST     M45
+LD      M47
+AND     M69
+SET     M217
+RST     M47
+LDP     M66
+AND     M22
+LDP     M65
+AND     M23
+ORB
+SET     M218
 LD      M50
 AND     M40
 ANI     M54
@@ -952,6 +1014,35 @@ LD      M21
 OUT     Y12
 LDI     M119
 OUT     Y13
+LDI     M24
+OUT     M150
+LD      M21
+OUT     M151
+LDI     M120
+OUT     M152
+LDI     X16
+OUT     M153
+LDI     X15
+OUT     M154
+LDI     X10
+OUT     M155
+LD      M508
+ANI     M132
+OUT     M156
+LDI     M26
+OUT     M157
+LD>     D2          K0
+OUT     M158
+LD      M68
+OUT     M159
+LD      M69
+OUT     M160
+LD      M67
+OUT     M161
+LD      M219
+OUT     M162
+LD      M1000
+MOV     K4M150      D680
 LD      M1000
 MOV     K0          D9
 LD      M24
@@ -983,6 +1074,8 @@ RST     M113
 RST     M115
 RST     M116
 RST     M117
+RST     M140
+RST     M141
 LD      M1000
 MOV     D626        E1
 MUL     D1315       K100        D620
@@ -1093,5 +1186,219 @@ MOV     K0          D3109E2
 INC     D627
 LD>=    D627        K64
 MOV     K0          D627
+SRET
+P2
+LD      M1000
+MOV     K0          E3
+FOR     K4
+LD      M1000
+RST     M171
+DLD>    D642E3      D640E3
+DAND>   D640E3      D30
+SET     M171
+DSUB    D640E3      D672        D678
+LD      M171
+DAND<   D678        D200
+DMOV    D678        D200
+LD      M1000
+ADD     E3          K4          E3
+NEXT
+DLD<    D200        D30
+DMOV    D30         D200
+SRET
+P3
+LD      M1000
+MOV     K0          E3
+FOR     K4
+LD      M1000
+RST     M171
+DLD>    D642E3      D640E3
+DAND<   D642E3      D30
+SET     M171
+DADD    D642E3      D672        D678
+LD      M171
+DAND>   D678        D200
+DMOV    D678        D200
+LD      M1000
+ADD     E3          K4          E3
+NEXT
+DLD>    D200        D30
+DMOV    D30         D200
+SRET
+P4
+LD      M1000
+RST     M68
+RST     M66
+DMOV    D30         D674
+DMOV    D200        D676
+DLD<    D30         D200
+DMOV    D200        D674
+DMOV    D30         D676
+LD      M1000
+MOV     K0          E3
+FOR     K4
+DLD>    D642E3      D640E3
+DAND>=  D674        D640E3
+DAND<=  D676        D642E3
+SET     M68
+DLD>    D642E3      D640E3
+DAND>=  D30         D640E3
+DAND<=  D30         D642E3
+SET     M66
+LD      M1000
+ADD     E3          K4          E3
+NEXT
+SRET
+P5
+LD      M1000
+RST     M69
+RST     M65
+DMOV    D34         D674
+DMOV    D204        D676
+DLD<    D34         D204
+DMOV    D204        D674
+DMOV    D34         D676
+LD      M1000
+MOV     K0          E3
+FOR     K2
+DLD>    D658E3      D656E3
+DAND>=  D674        D656E3
+DAND<=  D676        D658E3
+SET     M69
+DLD>    D658E3      D656E3
+DAND>=  D34         D656E3
+DAND<=  D34         D658E3
+SET     M65
+LD      M1000
+ADD     E3          K4          E3
+NEXT
+SRET
+P6
+LD      M1000
+MOV     K0          E3
+FOR     K2
+LD      M1000
+RST     M171
+DLD>    D658E3      D656E3
+DAND>   D656E3      D34
+SET     M171
+DSUB    D656E3      D672        D678
+LD      M171
+DAND<   D678        D204
+DMOV    D678        D204
+LD      M1000
+ADD     E3          K4          E3
+NEXT
+DLD<    D204        D34
+DMOV    D34         D204
+SRET
+P7
+LD      M1000
+MOV     K0          E3
+FOR     K2
+LD      M1000
+RST     M171
+DLD>    D658E3      D656E3
+DAND<   D658E3      D34
+SET     M171
+DADD    D658E3      D672        D678
+LD      M171
+DAND>   D678        D204
+DMOV    D678        D204
+LD      M1000
+ADD     E3          K4          E3
+NEXT
+DLD>    D204        D34
+DMOV    D34         D204
+SRET
+P8
+LD      M1000
+RST     M67
+MOV     K0          E3
+FOR     K2
+DLD>    D666E3      D664E3
+DAND>=  D30         D664E3
+DAND<=  D30         D666E3
+SET     M67
+LD      M1000
+ADD     E3          K4          E3
+NEXT
+SRET
+P11
+LD      M1000
+MOV     K0          D685
+MOV     K0          E4
+FOR     K21
+LD      M200E4
+AND=    D685        K0
+MOV     E4          D685
+INC     D685
+LD      M1000
+INC     E4
+NEXT
+LD      M1000
+MUL     D681        K8          D686
+MOV     D686        E5
+MOV     D685        D3750E5
+MOV     D0          D3751E5
+MOV     D1          D3752E5
+MOV     D2          D3753E5
+MOV     D620        D3754E5
+MOV     D623        D3755E5
+MOV     D30         D3756E5
+MOV     D680        D3757E5
+INC     D682
+INC     D681
+LD>=    D681        K16
+MOV     K0          D681
+SRET
+P9
+LD      M1000
+DMOV    K100000     D518
+DMOV    K33333      D520
+DMOV    K1000       D500
+DMOV    K5500       D502
+DMOV    K1000       D504
+DMOV    K6150       D506
+DMOV    K0          D508
+DMOV    K2500       D510
+DMOV    K50         D512
+DMOV    K3500       D514
+DMOV    K3750       D516
+MOV     K800        D522
+MOV     K100        D523
+MOV     K60         D524
+MOV     K8          D525
+MOV     K300        D526
+MOV     K400        D527
+MOV     K400        D528
+MOV     K80         D529
+MOV     K60         D530
+MOV     K8          D531
+MOV     K300        D532
+MOV     K50         D540
+MOV     K50         D541
+MOV     K0          D542
+MOV     K150        D543
+MOV     K150        D544
+MOV     K10         D545
+MOV     K50         D546
+MOV     K0          D554
+MOV     K2          D555
+MOV     K600        D603
+MOV     K1400       D604
+MOV     K2200       D605
+SET     M508
+MOV     K300        D547
+DMOV    K5          D548
+DMOV    K50         D550
+MOV     K300        D552
+DMOV    K0          D564
+SET     M500
+RST     M506
+RST     M507
+DMOV    K0          D640
+ZRST    D640        D671
+DMOV    K20         D672
 SRET
 END

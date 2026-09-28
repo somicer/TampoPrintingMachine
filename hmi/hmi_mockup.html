@@ -145,6 +145,8 @@ table.t td.v{font:600 13px var(--mono);direction:ltr;text-align:left;font-varian
 .kp span{height:52px;border-radius:10px;background:#EDF1F5;display:flex;align-items:center;justify-content:center;font:800 24px var(--fa);color:var(--scr-ink);box-shadow:inset 0 -3px 0 #D5DDE6}
 .kp span.ok{background:var(--green);color:#fff;font-size:18px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.2)}
 .kp span.del{background:#D9DFE6;font-size:18px}
+.zr td{padding:2px 5px}
+.zr .inp{min-width:64px}
 .pop{position:absolute;inset:0;background:rgba(20,28,36,.45);display:flex;align-items:center;justify-content:center}
 .popc{width:360px;background:var(--scr-2);border-radius:6px;padding:14px;display:flex;flex-direction:column;gap:10px;border-top:5px solid var(--blue)}
 .keys{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
@@ -194,7 +196,9 @@ const S = [
  {id:"alarm", no:7, name:"آلارم", lvl:"۰ اپراتور", desc:"آلارم‌های فعال با علت و راه‌حل، و تاریخچه."},
  {id:"io", no:8, name:"I/O", lvl:"۰ اپراتور", desc:"وضعیت زنده‌ی همه‌ی ورودی‌ها و خروجی‌ها و رجیسترهای مرحله."},
  {id:"ops", no:9, name:"کارگران", lvl:"۱ سرپرست", desc:"فهرست کارگران (۴ رقم آخر کد ملی)، ساعت شیفت‌ها، ورود اجباری، کارکرد هر کارگر در شیفت، و آخرین جلسه‌های کاری که به ERP می‌روند."},
- {id:"setup", no:10, name:"تنظیمات", lvl:"۲ مهندس", desc:"مقیاس محورها، کالیبراسیون، Watchdog، زمان‌های هومینگ و رمزها. از آیکون چرخ‌دنده در نوار بالا باز می‌شود."}
+ {id:"diag", no:10, name:"عیب‌یابی", lvl:"۰ اپراتور / دکمه‌ها ۱", desc:"چرا دستگاه کار نمی‌کند، مرحله‌ی سکانس‌ها، خطای برنامه‌ی PLC، جعبه‌سیاه ۱۶ خطای آخر، و بازنشانی نرم‌افزاری بدون خاموش کردن دستگاه."},
+ {id:"zones", no:11, name:"مناطق ممنوع", lvl:"۲ مهندس", desc:"محدوده‌هایی که محورها هرگز وارد آن نمی‌شوند و محدوده‌هایی که پد هرگز در آن پایین نمی‌آید. هر منطقه با شروع < پایان فعال است."},
+ {id:"setup", no:12, name:"تنظیمات", lvl:"۲ مهندس", desc:"مقیاس محورها، کالیبراسیون، Watchdog، زمان‌های هومینگ و رمزها. از آیکون چرخ‌دنده در نوار بالا باز می‌شود."}
 ];
 const $=(q,r=document)=>r.querySelector(q);
 const o=(a,t,n,cls="",inner="",tag="div",extra="")=>`<${tag} class="o ${cls}" tabindex="0" data-a="${a}" data-t="${t}" data-n="${n}" ${extra}>${inner}</${tag}>`;
@@ -210,7 +214,8 @@ const bar=(title,st="run",stTxt="در حال تولید")=>`<div class="bar">
   <span class="t">۱۴۰۵/۰۷/۰۶ · 10:42</span>
   ${o("—","Page Change (Setup, سطح ۲)","باز کردن صفحه‌ی ۹ (تنظیمات). نیاز به رمز سطح ۲.","","⚙","span","style='font-size:18px;color:#AFBBC8'")}
 </div>`;
-const nav=(cur)=>`<div class="nav">${S.slice(0,9).map(s=>`<button class="navb${s.id===cur?" on":""}" data-go="${s.id}">${s.name}<b>${s.no}</b></button>`).join("")}</div>`;
+const NAV=["main","manual","motion","process","recipe","count","alarm","ops","diag"];
+const nav=(cur)=>`<div class="nav">${NAV.map(id=>S.find(x=>x.id===id)).map(s=>`<button class="navb${s.id===cur?" on":""}" data-go="${s.id}">${s.name}<b>${s.no}</b></button>`).join("")}</div>`;
 
 const V = {
 main:()=>{
@@ -384,6 +389,7 @@ alarm:()=>bar("آلارم‌ها","alm","آلارم")+`
   <div class="panel" style="overflow:hidden"><div class="ph">تاریخچه ${o("History","Alarm History","ذخیره در حافظه‌ی HMI با زمان وقوع، رفع و تعداد.","","","span")}</div>
    <table class="t"><tr><th>کد</th><th>پیام</th><th>وقوع</th><th>رفع</th></tr>
     <tr><td class="v" style="color:var(--red)">A10</td><td>پد حین حرکت X زیر ارتفاع امن رفت</td><td class="v">10:41:07</td><td class="v">—</td></tr>
+    <tr><td class="v" style="color:var(--red)">A18</td><td>حرکت رد شد: مسیر از منطقه‌ی ممنوع</td><td class="v">08:03:40</td><td class="v">08:04:02</td></tr>
     <tr><td class="v" style="color:var(--red)">A06</td><td>فشار هوا کم</td><td class="v">09:12:44</td><td class="v">09:14:02</td></tr>
     <tr><td class="v" style="color:var(--red)">A13</td><td>پرده‌ی نوری حین حرکت قطع شد</td><td class="v">08:55:10</td><td class="v">08:55:13</td></tr>
     <tr><td class="v" style="color:var(--red)">A16</td><td>Timeout مرحله‌ی سکانس</td><td class="v">دیروز 16:20</td><td class="v">16:21</td></tr>
@@ -436,6 +442,53 @@ ops:()=>bar("کارگران و شیفت","man","آماده")+`
   </div>
 </div>`+nav("ops"),
 
+diag:()=>{
+  const R=[["b0","هوم نشده","هومینگ بزنید",1],["b1","آلارم فعال","صفحه‌ی آلارم",0],["b2","حالت دستی انتخاب شده","حالت اتومات",0],["b3","پرده‌ی نوری قطع است","دست را از محل چاپ بردارید",0],["b4","فشار هوا کم است","کمپرسور و شیر اصلی",0],["b5","توقف اضطراری","شستی را آزاد و ریست کنید",0],["b6","کارگر وارد نشده","ورود با ۴ رقم کد ملی",1],["b7","پد بالای ارتفاع امن نیست","صبر یا پد بالا",0],["b8","هومینگ در حال اجرا","صبر کنید",0],["b9","مسیر X از منطقه‌ی ممنوع","محل برداشت و چاپ را عوض کنید",0],["b10","مسیر Y از منطقه‌ی ممنوع","محدوده‌ی کاپ",0],["b11","X در منطقه‌ی ممنوع فرود","محل را عوض کنید",0],["b12","خطای برنامه‌ی PLC","بازنشانی نرم‌افزاری",0]];
+  return bar("عیب‌یابی","man","آماده")+`
+<div class="body" style="grid-template-columns:1.1fr 1fr">
+  <div class="panel"><div class="ph">چرا دستگاه شروع نمی‌کند؟ ${o("D680","Bit Lamps x13 + Text","هر بیت D680 یک دلیل؛ PLC هر اسکن محاسبه می‌کند (M150 تا M162).","","<span style='font:600 11px var(--mono);color:var(--blue)'>D680</span>","span")}</div>
+   <table class="t"><tr><th></th><th>دلیل</th><th>چه باید کرد</th></tr>
+   ${R.map(([b,t,f,on])=>`<tr${on?" style='background:#FFF4DC'":""}><td>${lamp("D680."+b.slice(1),on?"a":"",""," بیت "+b.slice(1)+" از D680: "+t)}</td><td${on?" style='font-weight:800'":""}>${t}</td><td style="color:var(--scr-mute)">${f}</td></tr>`).join("")}
+   </table></div>
+  <div style="display:flex;flex-direction:column;gap:8px;min-height:0">
+   <div class="panel"><div class="ph">وضعیت برنامه</div>
+    <table class="t"><tr><td>مرحله‌ی اتومات</td><td class="v">${o("D0","Numeric + Text","D0","","S10 · منتظر پدال","span")}</td></tr>
+    <tr><td>جوهرزنی / هومینگ</td><td class="v">${o("D1 / D2","Numeric","D1 و D2","","0 / 0","span")}</td></tr>
+    <tr><td>خطای برنامه‌ی PLC</td><td class="v">${o("D683 / D684","Numeric","کد خطا (D1067) و گام برنامه (D1068) هنگام A20.","","— / —","span")}</td></tr></table>
+   </div>
+   <div class="panel" style="flex:1;min-height:0;overflow:hidden"><div class="ph">جعبه‌سیاه: آخرین خطاها ${o("D3750–D3877","Table (16 × 8 words)","کد آلارم اول، مرحله‌ها، ساعت، تاریخ، موقعیت X و دلیل‌ها در لحظه‌ی خطا. D682 تعداد کل.","","<span style='font:600 11px var(--mono)'>D682 = 7</span>","span")}</div>
+    <table class="t"><tr><th>کد</th><th>مرحله</th><th>ساعت</th><th>X (mm)</th></tr>
+     <tr><td class="v" style="color:var(--red)">A13</td><td class="v">S80</td><td class="v">10:41</td><td class="v">412.6</td></tr>
+     <tr><td class="v" style="color:var(--red)">A06</td><td class="v">S60</td><td class="v">09:12</td><td class="v">100.0</td></tr>
+     <tr><td class="v" style="color:var(--red)">A18</td><td class="v">S80</td><td class="v">08:03</td><td class="v">100.0</td></tr></table>
+   </div>
+   <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+    ${o("M141","Set ON Button (سطح ۱ + تأیید)","بازنشانی نرم‌افزاری: توقف حرکت‌ها، لغو همه‌ی سکانس‌ها، پد بالا، پاک کردن آلارم‌ها و خطای PLC. هومینگ حفظ می‌شود مگر از دست رفته باشد. نیازی به خاموش کردن نیست.","btn b-blue","بازنشانی نرم‌افزاری","button","style='height:46px;font-size:13px'")}
+    ${o("M140","Set ON Button (سطح ۲ + تأیید دوبار)","بازگردانی همه‌ی پارامترها به مقدار کارخانه. فقط وقتی دستگاه متوقف است.","btn b-grey","تنظیمات کارخانه","button","style='height:46px;font-size:13px'")}
+    <button class="btn b-grey navb2" data-go="io" style="height:46px;font-size:13px">ورودی و خروجی</button>
+   </div>
+  </div>
+</div>`+nav("diag")},
+
+zones:()=>{
+  const W=740,x=v=>20+v*(W-40)/620;
+  const zX=[[300,320]], zD=[[520,528]];
+  const svg=`<svg viewBox="0 0 ${W} 74" width="100%" height="74" role="img" aria-label="نقشه‌ی مناطق ممنوع محور X"><line x1="20" x2="${W-20}" y1="30" y2="30" stroke="#C9D3DD" stroke-width="10" stroke-linecap="round"/>${zX.map(([a,b])=>`<rect x="${x(a)}" y="18" width="${x(b)-x(a)}" height="24" rx="3" fill="#C4382B"/><text x="${(x(a)+x(b))/2}" y="62" text-anchor="middle" font-size="11" fill="#C4382B" font-weight="700" font-family="Vazirmatn,Tahoma">X ممنوع ${a}–${b}</text>`).join("")}${zD.map(([a,b])=>`<rect x="${x(a)}" y="22" width="${x(b)-x(a)}" height="16" rx="3" fill="#E7A21A"/><text x="${(x(a)+x(b))/2}" y="62" text-anchor="middle" font-size="11" fill="#A36F00" font-weight="700" font-family="Vazirmatn,Tahoma">پد پایین ممنوع</text>`).join("")}<circle cx="${x(100)}" cy="30" r="7" fill="#fff" stroke="#1C5DB0" stroke-width="3"/><text x="${x(100)}" y="12" text-anchor="middle" font-size="11" fill="#1C5DB0" font-family="Vazirmatn,Tahoma">برداشت 100</text><circle cx="${x(550)}" cy="30" r="8" fill="#23874A"/><text x="${x(550)}" y="12" text-anchor="middle" font-size="11" fill="#23874A" font-family="Vazirmatn,Tahoma">چاپ 550</text>${[0,100,200,300,400,500,620].map(v=>`<text x="${x(v)}" y="72" text-anchor="middle" font-size="9" fill="#9AA7B5" font-family="IBM Plex Mono">${v}</text>`).join("")}</svg>`;
+  const row=(n,lo,hi,base,on)=>`<tr class="zr"><td class="v">${n}</td><td>${inp(`D${base} (DW)`,lo,"شروع منطقه (mm).")}</td><td>${inp(`D${base+2} (DW)`,hi,"پایان منطقه (mm). منطقه وقتی فعال است که پایان > شروع.")}</td><td>${lamp("—",on?"r":"",on?"فعال":"خاموش","فعال وقتی پایان بزرگ‌تر از شروع است.")}</td><td>${o("Macro","Macro Button","موقعیت فعلی X را در شروع و پایان منطقه بنویس (دو دکمه).","btn b-grey","ثبت X","span","style='height:24px;font-size:11px;padding:0 10px;white-space:nowrap'")}</td></tr>`;
+  return bar("مناطق ممنوع","man","آماده")+`
+<div class="body" style="grid-template-rows:auto 1fr;grid-template-columns:1fr 1fr">
+  <div class="panel" style="grid-column:1/-1"><div class="ph">نقشه‌ی محور X (میلی‌متر) <span class="lock">L2</span></div>${o("D640–D671","Graphic (from zone registers)","قرمز: X هرگز وارد نمی‌شود (حرکت رد می‌شود با A18، Jog قبل از لبه می‌ایستد). نارنجی: پد در این محدوده پایین نمی‌آید.","",svg)}</div>
+  <div class="panel"><div class="ph">X: محور هرگز وارد نمی‌شود</div>
+   <table class="t"><tr><th>#</th><th>از</th><th>تا</th><th></th><th></th></tr>
+   ${row(1,"300.0","320.0",640,1)}${row(2,"0.0","0.0",644,0)}${row(3,"0.0","0.0",648,0)}${row(4,"0.0","0.0",652,0)}</table>
+   <div class="row"><span class="lbl">فاصله‌ی ایمنی از لبه در Jog</span>${inp("D672 (DW)","2.0 mm","Jog این مقدار قبل از لبه‌ی منطقه می‌ایستد.")}</div>
+  </div>
+  <div class="panel"><div class="ph">Y (کاپ) و فرود پد</div>
+   <table class="t"><tr><th>Y</th><th>از</th><th>تا</th><th></th><th></th></tr>${row(1,"0.0","0.0",656,0)}${row(2,"0.0","0.0",660,0)}</table>
+   <table class="t"><tr><th>فرود ممنوع</th><th>از</th><th>تا</th><th></th><th></th></tr>${row(1,"520.0","528.0",664,1)}${row(2,"0.0","0.0",668,0)}</table>
+  </div>
+</div>`+nav("")},
+
 setup:()=>bar("تنظیمات مهندسی","man","آماده")+`
 <div class="body" style="grid-template-columns:1fr 1fr">
   <div class="panel"><div class="ph">مقیاس محورها <span class="lock">L2</span></div>
@@ -451,6 +504,7 @@ setup:()=>bar("تنظیمات مهندسی","man","آماده")+`
    ${tog("M501",0,"سنسور پایین دوم (X17)","وقتی ارتفاع کلیشه و قطعه یکی نیست.")}
    <div class="row"><span class="lbl">Timeout هومینگ (s)</span>${inp("D547","30.0","واحد 100 ms.")}</div>
    <div class="row"><span class="lbl">نشست Z بالا (s)</span>${inp("D545","0.10","زمان بعد از سنسور بالا.")}</div>
+   <button class="btn b-blue" data-go="zones" style="height:36px">مناطق ممنوع</button>
    ${o("Password","Password Setup","سطح ۱ سرپرست، سطح ۲ مهندس.","btn b-grey","تغییر رمزها","button","style='height:36px'")}
    ${o("M119","Toggle (سطح ۲ + تأیید)","تخلیه‌ی هوای اصلی برای تعمیرات (LOTO).","btn b-red","تخلیه‌ی هوا برای تعمیر","button","style='height:36px'")}
   </div>

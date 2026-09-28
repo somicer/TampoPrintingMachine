@@ -62,51 +62,13 @@ MOV     K200        D1340           // CH0 (Y0) start/end freq (Hz)
 MOV     K200        D1352           // CH1 (Y2) start/end freq (Hz)
 SET     M505                        // HMI watchdog enabled at power-up
 
-// Load default parameters on a blank PLC (scale = 0)
+// Load default parameters on a blank PLC (scale = 0), or on the HMI
+// "restore defaults" command (M140, only while stopped)
 DLD=    D518        K0
-DMOV    K100000     D518            // X pulses / 1000 mm (100 p/mm)
-DMOV    K33333      D520            // Y pulses / 1000 mm
-DMOV    K1000       D500            // X pick-up pos   100.0 mm
-DMOV    K5500       D502            // X print pos     550.0 mm
-DMOV    K1000       D504            // X park (homing) pos = pick
-DMOV    K6150       D506            // X soft max      615.0 mm
-DMOV    K0          D508            // X cliche zone min   0.0 mm
-DMOV    K2500       D510            // X cliche zone max 250.0 mm
-DMOV    K50         D512            // Y park pos        5.0 mm
-DMOV    K3500       D514            // Y end pos       350.0 mm
-DMOV    K3750       D516            // Y soft max      375.0 mm
-MOV     K800        D522            // X auto speed    mm/s
-MOV     K100        D523            // X jog / manual  mm/s
-MOV     K60         D524            // X home speed    mm/s
-MOV     K8          D525            // X creep speed   mm/s
-MOV     K300        D526            // X accel/decel   ms
-MOV     K400        D527            // Y out speed     mm/s
-MOV     K400        D528            // Y return speed  mm/s
-MOV     K80         D529            // Y jog           mm/s
-MOV     K60         D530            // Y home          mm/s
-MOV     K8          D531            // Y creep         mm/s
-MOV     K300        D532            // Y accel/decel   ms
-MOV     K50         D540            // Dwell-1 pick    0.50 s
-MOV     K50         D541            // Dwell-2 print   0.50 s
-MOV     K0          D542            // Flash-off delay 0.00 s
-MOV     K150        D543            // Z down timeout  1.50 s
-MOV     K150        D544            // Z up timeout    1.50 s
-MOV     K10         D545            // Z settle after UP 0.10 s
-MOV     K50         D546            // Continuous pause 0.50 s
-MOV     K0          D554            // Print mode 0 = 1 pedal : 1 print
-MOV     K2          D555            // Multi-hit count N
-MOV     K600        D603            // Shift 1 start 06:00
-MOV     K1400       D604            // Shift 2 start 14:00
-MOV     K2200       D605            // Shift 3 start 22:00 (ends 06:00)
-SET     M508                        // login required to start
-MOV     K300        D547            // Homing timeout 30.0 s (100 ms units)
-DMOV    K5          D548            // In-position tolerance 0.5 mm
-DMOV    K50         D550            // Early Z descent lead 5.0 mm
-MOV     K300        D552            // Pre-pick max wait 3.00 s
-DMOV    K0          D564            // Batch target (0 = off)
-SET     M500                        // parallel inking ON
-RST     M506                        // pre-pick OFF until commissioned
-RST     M507                        // early Z descent OFF until tuned
+CALL    P9
+LD      M140
+ANI     M90
+CALL    P9
 
 
 // =====================================================================
@@ -172,7 +134,7 @@ SET     M214
 LDP     X14
 ORP     M102
 SET     M36                         // ENA pulse -> clears drive alarm
-ZRST    M200        M216
+ZRST    M200        M220
 RST     M95
 
 LD      M36
@@ -278,6 +240,16 @@ OR      M50
 ANB
 SET     M216
 
+// A20 PLC operation error (e.g. index out of range): M1067 / D1067 /
+//     D1068 in the SV2 manual - VERIFY. Error code and step are kept
+//     for the HMI debug screen.
+LD      M1067
+SET     M219
+MOV     D1067       D683
+MOV     D1068       D684
+// A21 corrupted / impossible step register -> repaired (see N02b)
+// (set below by the state sanity checks)
+
 // --- Alarm words for HMI ------------------------------------------
 LD      M1000
 MOV     K4M200      D50
@@ -300,6 +272,7 @@ OUT     M28
 LD      M28
 OR      M212
 OR      M213
+OR      M218                        // axis inside a forbidden zone
 OUT     M29
 
 LD      M28
@@ -319,6 +292,10 @@ ANI     M55
 RST     M1078
 RST     M1104
 
+// --- Black box: log the first alarm with the step it happened in --
+LDP     M21
+CALL    P11
+
 // --- Any alarm: abort all sequences, pad up, drop move requests --
 LD      M21
 RST     M90
@@ -333,6 +310,69 @@ RST     M47
 RST     M54
 RST     M55
 ZRST    D0          D4
+
+// --- N02b State sanity: impossible step values are repaired ------
+LD=     D0          K0
+OR=     D0          K5
+OR=     D0          K10
+OR=     D0          K20
+OR=     D0          K40
+OR=     D0          K50
+OR=     D0          K60
+OR=     D0          K70
+OR=     D0          K80
+OR=     D0          K90
+OR=     D0          K100
+OR=     D0          K110
+OR=     D0          K120
+LD=     D1          K0
+OR=     D1          K10
+OR=     D1          K20
+ANB
+LD=     D2          K0
+OR=     D2          K10
+OR=     D2          K20
+OR=     D2          K30
+OR=     D2          K40
+ANB
+LD=     D3          K0
+OR=     D3          K10
+OR=     D3          K15
+OR=     D3          K20
+OR=     D3          K25
+ANB
+LD=     D4          K0
+OR=     D4          K10
+OR=     D4          K15
+OR=     D4          K20
+OR=     D4          K25
+ANB
+OUT     M170                        // all step registers valid
+LDI     M170
+SET     M220                        // A21 (alarm reaction resets steps)
+ZRST    D0          D4
+
+// --- Software safe reset (HMI M141): recover without power cycle ---
+//     stops motion, drops every request and sequence, pad up, clears
+//     alarms and the PLC error flag. Homing is kept unless lost.
+LD      M141
+RST     M90
+RST     M91
+RST     M92
+RST     M93
+RST     M94
+RST     M60
+RST     M61
+RST     M45
+RST     M46
+RST     M47
+RST     M48
+RST     M54
+RST     M55
+ZRST    D0          D4
+ZRST    M200        M220
+RST     M1067
+SET     M36                         // drive ENA pulse too
 
 // --- Safe-to-run summary ------------------------------------------
 LD      X10
@@ -466,6 +506,12 @@ AND     M97
 DAND<=  D90         D550
 OUT     M64                         // early window: print
 
+// Forbidden Z-drop zones on X (P8 -> M67)
+LD      M22
+CALL    P8
+LDI     M22
+RST     M67
+
 // Z may go down: (pick or early-pick) with cup parked,
 //                or (print or early-print) with light curtain clear
 LD      M31
@@ -477,6 +523,7 @@ AND     X16
 ORB
 AND     M24
 AND     M20
+ANI     M67                         // never in a no-drop zone
 OUT     M41
 LDI     M41
 RST     M60                         // permit lost -> never re-descend later
@@ -498,10 +545,10 @@ AND=    D2          K0
 LD      M132                        // operator logged in
 ORI     M508                        // (or login not required)
 ANB
+ANI     M95                         // batch done: reset the batch first
 SET     M90
 RST     M91
 RST     M94
-RST     M95
 MOV     K5          D0
 
 // Start pressed without login -> HMI message "log in first"
@@ -821,6 +868,12 @@ OR      M64
 ANB
 MOV     K90         D0
 
+// Pad-down step inside a no-drop zone: alarm at once (A18), do not wait
+LD=     D0          K50
+OR=     D0          K90
+AND     M67
+SET     M217
+
 // S90 : Z down on part; dwell starts only with pad down AND X stopped
 LD=     D0          K90
 ANI     M503
@@ -949,6 +1002,7 @@ AND     M22
 DMOV    D506        D200            // homed: jog up to soft max
 MOV     D523        D202
 SET     M46
+CALL    P2                          // ...but stop before a forbidden zone
 LDP     M104
 AND     M38
 AND     M58
@@ -965,6 +1019,7 @@ AND     M22
 DMOV    K0          D200
 MOV     D523        D202
 SET     M46
+CALL    P3
 LDP     M105
 AND     M38
 AND     M58
@@ -987,6 +1042,7 @@ AND     M23
 DMOV    D516        D204
 MOV     D529        D206
 SET     M48
+CALL    P6
 LDP     M106
 AND     M38
 AND     M59
@@ -1003,6 +1059,7 @@ AND     M23
 DMOV    K0          D204
 MOV     D529        D206
 SET     M48
+CALL    P7
 LDP     M107
 AND     M38
 AND     M59
@@ -1118,6 +1175,32 @@ DDIV    D40         K1000       D44
 DMOV    D44         D24
 MOV     D532        D1353           // Y accel/decel time
 
+// ---- Forbidden zones: path checks (only meaningful when homed) ----
+LD      M22
+CALL    P4
+LDI     M22
+RST     M68
+RST     M66
+LD      M23
+CALL    P5
+LDI     M23
+RST     M69
+RST     M65
+LD      M45                         // positioning move through a zone
+AND     M68
+SET     M217                        // A18: move rejected
+RST     M45
+LD      M47
+AND     M69
+SET     M217
+RST     M47
+LDP     M66                         // entered a zone anyway
+AND     M22
+LDP     M65
+AND     M23
+ORB
+SET     M218                        // A19: immediate stop
+
 // ---- X channel (Y0/Y1): one DDRVA + one DZRN, mutually exclusive --
 LD      M50
 AND     M40
@@ -1208,6 +1291,37 @@ OUT     Y12                         // red + buzzer
 LDI     M119
 OUT     Y13                         // main air soft-start valve
 
+// Why won't it run? (D680 bits, shown as text on the HMI debug page)
+LDI     M24
+OUT     M150                        // b0 not homed
+LD      M21
+OUT     M151                        // b1 alarm active
+LDI     M120
+OUT     M152                        // b2 manual mode selected
+LDI     X16
+OUT     M153                        // b3 light curtain / guard
+LDI     X15
+OUT     M154                        // b4 air pressure low
+LDI     X10
+OUT     M155                        // b5 E-stop
+LD      M508
+ANI     M132
+OUT     M156                        // b6 operator not logged in
+LDI     M26
+OUT     M157                        // b7 pad not above safe height
+LD>     D2          K0
+OUT     M158                        // b8 homing running
+LD      M68
+OUT     M159                        // b9 X path through a forbidden zone
+LD      M69
+OUT     M160                        // b10 Y path through a forbidden zone
+LD      M67
+OUT     M161                        // b11 X is in a no-drop zone
+LD      M219
+OUT     M162                        // b12 PLC operation error
+LD      M1000
+MOV     K4M150      D680
+
 // Machine state for HMI (D9): 0 not homed,1 homing,2 ready,3 auto,4 stopping,5 alarm
 LD      M1000
 MOV     K0          D9
@@ -1244,6 +1358,8 @@ RST     M113
 RST     M115
 RST     M116
 RST     M117
+RST     M140
+RST     M141
 
 // =====================================================================
 // N13  OPERATORS, SHIFTS, SESSION LOG, ERP LIVE BLOCK
@@ -1383,6 +1499,252 @@ MOV     K0          D3109E2
 INC     D627
 LD>=    D627        K64
 MOV     K0          D627
+SRET
+
+// =====================================================================
+// FORBIDDEN ZONES (HMI screen 10). A zone is enabled when hi > lo.
+//   X zones: 4 x [lo DW, hi DW] at D640 + 4k   (k = 0..3)
+//   Y zones: 2 x [lo DW, hi DW] at D656 + 4k
+//   Z no-drop zones on X: 2 x [lo, hi] at D664 + 4k
+//   D672 = margin kept from a zone edge when jogging (0.1 mm)
+// =====================================================================
+
+// P2  X jog+ : lower D200 to the first zone edge ahead (minus margin)
+P2
+LD      M1000
+MOV     K0          E3
+FOR     K4
+LD      M1000
+RST     M171
+DLD>    D642E3      D640E3
+DAND>   D640E3      D30
+SET     M171
+DSUB    D640E3      D672        D678
+LD      M171
+DAND<   D678        D200
+DMOV    D678        D200
+LD      M1000
+ADD     E3          K4          E3
+NEXT
+DLD<    D200        D30
+DMOV    D30         D200
+SRET
+
+// P3  X jog- : raise D200 to the first zone edge behind (plus margin)
+P3
+LD      M1000
+MOV     K0          E3
+FOR     K4
+LD      M1000
+RST     M171
+DLD>    D642E3      D640E3
+DAND<   D642E3      D30
+SET     M171
+DADD    D642E3      D672        D678
+LD      M171
+DAND>   D678        D200
+DMOV    D678        D200
+LD      M1000
+ADD     E3          K4          E3
+NEXT
+DLD>    D200        D30
+DMOV    D30         D200
+SRET
+
+// P4  X path check: M68 = path D30..D200 touches a zone, M66 = inside
+P4
+LD      M1000
+RST     M68
+RST     M66
+DMOV    D30         D674
+DMOV    D200        D676
+DLD<    D30         D200
+DMOV    D200        D674
+DMOV    D30         D676
+LD      M1000
+MOV     K0          E3
+FOR     K4
+DLD>    D642E3      D640E3
+DAND>=  D674        D640E3
+DAND<=  D676        D642E3
+SET     M68
+DLD>    D642E3      D640E3
+DAND>=  D30         D640E3
+DAND<=  D30         D642E3
+SET     M66
+LD      M1000
+ADD     E3          K4          E3
+NEXT
+SRET
+
+// P5  Y path check: M69 = path D34..D204 touches a zone, M65 = inside
+P5
+LD      M1000
+RST     M69
+RST     M65
+DMOV    D34         D674
+DMOV    D204        D676
+DLD<    D34         D204
+DMOV    D204        D674
+DMOV    D34         D676
+LD      M1000
+MOV     K0          E3
+FOR     K2
+DLD>    D658E3      D656E3
+DAND>=  D674        D656E3
+DAND<=  D676        D658E3
+SET     M69
+DLD>    D658E3      D656E3
+DAND>=  D34         D656E3
+DAND<=  D34         D658E3
+SET     M65
+LD      M1000
+ADD     E3          K4          E3
+NEXT
+SRET
+
+// P6  Y jog+ clamp
+P6
+LD      M1000
+MOV     K0          E3
+FOR     K2
+LD      M1000
+RST     M171
+DLD>    D658E3      D656E3
+DAND>   D656E3      D34
+SET     M171
+DSUB    D656E3      D672        D678
+LD      M171
+DAND<   D678        D204
+DMOV    D678        D204
+LD      M1000
+ADD     E3          K4          E3
+NEXT
+DLD<    D204        D34
+DMOV    D34         D204
+SRET
+
+// P7  Y jog- clamp
+P7
+LD      M1000
+MOV     K0          E3
+FOR     K2
+LD      M1000
+RST     M171
+DLD>    D658E3      D656E3
+DAND<   D658E3      D34
+SET     M171
+DADD    D658E3      D672        D678
+LD      M171
+DAND>   D678        D204
+DMOV    D678        D204
+LD      M1000
+ADD     E3          K4          E3
+NEXT
+DLD>    D204        D34
+DMOV    D34         D204
+SRET
+
+// P8  Z no-drop zones on X: M67 = X inside one
+P8
+LD      M1000
+RST     M67
+MOV     K0          E3
+FOR     K2
+DLD>    D666E3      D664E3
+DAND>=  D30         D664E3
+DAND<=  D30         D666E3
+SET     M67
+LD      M1000
+ADD     E3          K4          E3
+NEXT
+SRET
+
+// =====================================================================
+// P11  Black box: 16 x 8 words at D3750, next slot D681, count D682
+//      [0] first alarm code (1 = A01 ...) [1] D0 [2] D1 [3] D2
+//      [4] time hhmm [5] date MMDD [6] X pos (0.1 mm) [7] D680 reasons
+// =====================================================================
+P11
+LD      M1000
+MOV     K0          D685
+MOV     K0          E4
+FOR     K21
+LD      M200E4
+AND=    D685        K0
+MOV     E4          D685
+INC     D685
+LD      M1000
+INC     E4
+NEXT
+LD      M1000
+MUL     D681        K8          D686
+MOV     D686        E5
+MOV     D685        D3750E5
+MOV     D0          D3751E5
+MOV     D1          D3752E5
+MOV     D2          D3753E5
+MOV     D620        D3754E5
+MOV     D623        D3755E5
+MOV     D30         D3756E5
+MOV     D680        D3757E5
+INC     D682
+INC     D681
+LD>=    D681        K16
+MOV     K0          D681
+SRET
+
+// =====================================================================
+// P9  Default parameters
+// =====================================================================
+P9
+LD      M1000
+DMOV    K100000     D518            // X pulses / 1000 mm (100 p/mm)
+DMOV    K33333      D520            // Y pulses / 1000 mm
+DMOV    K1000       D500            // X pick-up pos   100.0 mm
+DMOV    K5500       D502            // X print pos     550.0 mm
+DMOV    K1000       D504            // X park (homing) pos = pick
+DMOV    K6150       D506            // X soft max      615.0 mm
+DMOV    K0          D508            // X cliche zone min   0.0 mm
+DMOV    K2500       D510            // X cliche zone max 250.0 mm
+DMOV    K50         D512            // Y park pos        5.0 mm
+DMOV    K3500       D514            // Y end pos       350.0 mm
+DMOV    K3750       D516            // Y soft max      375.0 mm
+MOV     K800        D522            // X auto speed    mm/s
+MOV     K100        D523            // X jog / manual  mm/s
+MOV     K60         D524            // X home speed    mm/s
+MOV     K8          D525            // X creep speed   mm/s
+MOV     K300        D526            // X accel/decel   ms
+MOV     K400        D527            // Y out speed     mm/s
+MOV     K400        D528            // Y return speed  mm/s
+MOV     K80         D529            // Y jog           mm/s
+MOV     K60         D530            // Y home          mm/s
+MOV     K8          D531            // Y creep         mm/s
+MOV     K300        D532            // Y accel/decel   ms
+MOV     K50         D540            // Dwell-1 pick    0.50 s
+MOV     K50         D541            // Dwell-2 print   0.50 s
+MOV     K0          D542            // Flash-off delay 0.00 s
+MOV     K150        D543            // Z down timeout  1.50 s
+MOV     K150        D544            // Z up timeout    1.50 s
+MOV     K10         D545            // Z settle after UP 0.10 s
+MOV     K50         D546            // Continuous pause 0.50 s
+MOV     K0          D554            // Print mode 0 = 1 pedal : 1 print
+MOV     K2          D555            // Multi-hit count N
+MOV     K600        D603            // Shift 1 start 06:00
+MOV     K1400       D604            // Shift 2 start 14:00
+MOV     K2200       D605            // Shift 3 start 22:00 (ends 06:00)
+SET     M508                        // login required to start
+MOV     K300        D547            // Homing timeout 30.0 s (100 ms units)
+DMOV    K5          D548            // In-position tolerance 0.5 mm
+DMOV    K50         D550            // Early Z descent lead 5.0 mm
+MOV     K300        D552            // Pre-pick max wait 3.00 s
+DMOV    K0          D564            // Batch target (0 = off)
+SET     M500                        // parallel inking ON
+RST     M506                        // pre-pick OFF until commissioned
+RST     M507                        // early Z descent OFF until tuned
+DMOV    K0          D640            // forbidden zones: all disabled
+ZRST    D640        D671
+DMOV    K20         D672            // zone safety margin 2.0 mm
 SRET
 
 END
