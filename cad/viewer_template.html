@@ -1,0 +1,348 @@
+<title>تامپو سه‌بعدی</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#E9EDF1; --panel:#F8FAFB; --panel2:#EEF2F5; --ink:#16202B; --muted:#5A6877; --line:#CDD5DD;
+  --accent:#D9531E; --accent-soft:#F6DED3; --on-accent:#FFFFFF; --ok:#1F8A5B; --stage:#DCE2E8; --grid:#B9C3CD;
+  --sans:"Vazirmatn","IRANSans",Tahoma,system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1419; --panel:#161D24; --panel2:#1C252E; --ink:#E3E9EF; --muted:#8D9BA9; --line:#27323D;
+    --accent:#F0773A; --accent-soft:#3A2418; --on-accent:#1A0E07; --ok:#46B883; --stage:#121A21; --grid:#2A3642;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1419; --panel:#161D24; --panel2:#1C252E; --ink:#E3E9EF; --muted:#8D9BA9; --line:#27323D;
+  --accent:#F0773A; --accent-soft:#3A2418; --on-accent:#1A0E07; --ok:#46B883; --stage:#121A21; --grid:#2A3642;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.6;margin:0}
+.app{display:grid;grid-template-columns:360px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);height:100%;
+  padding-inline:16px;padding-block:12px;gap:12px;box-sizing:border-box}
+header{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 20px}
+h1{font-size:20px;font-weight:800;margin:0;text-wrap:balance;letter-spacing:-.2px}
+h1 small{font-weight:500;color:var(--muted);font-size:13px;margin-inline-start:8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:12px;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:2px 10px}
+.chip b{font-family:var(--mono);font-weight:500;color:var(--ink);font-size:12px}
+.chip.ok b{color:var(--ok)}
+.stage{grid-column:2;grid-row:2;position:relative;min-height:0;background:var(--stage);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+#cv{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+#cv:active{cursor:grabbing}
+.hud{position:absolute;inset-block-start:10px;inset-inline-start:10px;display:flex;gap:6px;flex-wrap:wrap}
+.hud button{font:500 12px var(--sans);background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:4px 10px;cursor:pointer}
+.hud button:hover{border-color:var(--accent)}
+.step{position:absolute;inset-block-end:10px;inset-inline-start:10px;inset-inline-end:10px;display:flex;align-items:center;gap:10px;
+  background:color-mix(in srgb,var(--panel) 88%,transparent);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-size:13px}
+.step .t{font-family:var(--mono);color:var(--muted);font-size:12px;min-width:44px}
+.step .bar{flex:1;height:4px;background:var(--line);border-radius:2px;overflow:hidden}
+.step .bar i{display:block;height:100%;width:0;background:var(--accent)}
+aside{grid-column:1;grid-row:2;min-height:0;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:18px}
+section h2{font-size:12px;font-weight:700;letter-spacing:.4px;color:var(--muted);margin:0 0 8px}
+.row{display:flex;align-items:center;gap:10px}
+.play{flex:none;width:40px;height:40px;border-radius:50%;border:0;background:var(--accent);color:var(--on-accent);font-size:16px;cursor:pointer}
+.play:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.slider{display:grid;grid-template-columns:78px minmax(0,1fr) 62px;align-items:center;gap:8px;margin-block:4px}
+.slider label{font-size:13px}
+.slider output{font-family:var(--mono);font-size:12px;color:var(--muted);text-align:left;direction:ltr}
+input[type=range]{width:100%;accent-color:var(--accent);direction:ltr}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{font:500 12px var(--sans);background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:4px 10px;cursor:pointer}
+.seg button.on{background:var(--accent-soft);border-color:var(--accent)}
+.groups{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px}
+.groups label{display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer}
+.groups input{accent-color:var(--accent)}
+.sw{width:10px;height:10px;border-radius:2px;flex:none;border:1px solid var(--line)}
+.info{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:13px}
+.info .code{font-family:var(--mono);color:var(--accent);font-weight:500}
+.info .nm{font-weight:700;font-size:15px;margin-block:2px 6px}
+.info dl{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;margin:0}
+.info dt{color:var(--muted)}
+.info dd{margin:0;overflow-wrap:anywhere}
+.info .files{font-family:var(--mono);font-size:11px;direction:ltr;text-align:left;color:var(--muted);margin-top:6px}
+.info .hint{color:var(--muted)}
+#q{width:100%;box-sizing:border-box;font:13px var(--sans);padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:var(--panel2);color:var(--ink)}
+.list{display:flex;flex-direction:column;margin-top:6px;max-height:320px;overflow:auto;border:1px solid var(--line);border-radius:6px}
+.list button{display:grid;grid-template-columns:48px minmax(0,1fr) 34px;gap:8px;align-items:baseline;text-align:start;font:13px var(--sans);
+  color:var(--ink);background:none;border:0;border-bottom:1px solid var(--line);padding:5px 8px;cursor:pointer}
+.list button:last-child{border-bottom:0}
+.list button:hover,.list button.on{background:var(--accent-soft)}
+.list .c{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.list .q{font-family:var(--mono);font-size:12px;color:var(--muted);text-align:left;font-variant-numeric:tabular-nums}
+.foot{font-size:12px;color:var(--muted)}
+.foot code{font-family:var(--mono);font-size:11px;direction:ltr;unicode-bidi:embed}
+@media (max-width:860px){
+  .app{grid-template-columns:minmax(0,1fr);grid-template-rows:auto 60vh auto;height:auto}
+  .stage,aside{grid-column:1;grid-row:auto}
+  aside{overflow:visible}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="app" dir="rtl" lang="fa">
+  <header>
+    <h1>دستگاه تامپو تک‌رنگ کاپ‌بسته <small>مدل سه‌بعدی پارامتریک</small></h1>
+    <div class="chips" id="chips"></div>
+  </header>
+
+  <div class="stage" id="stage">
+    <canvas id="cv" aria-label="نمای سه‌بعدی دستگاه؛ با موس بچرخانید، با چرخ زوم کنید، روی قطعه کلیک کنید"></canvas>
+    <div class="hud" dir="rtl">
+      <button type="button" data-view="iso">سه‌بعدی</button>
+      <button type="button" data-view="front">روبه‌رو (اپراتور)</button>
+      <button type="button" data-view="side">کنار</button>
+      <button type="button" data-view="top">بالا</button>
+    </div>
+    <div class="step" aria-live="polite"><span class="t" id="tlab">0.0 s</span><span id="slab">آماده</span><span class="bar"><i id="sbar"></i></span></div>
+  </div>
+
+  <aside>
+    <section>
+      <h2>چرخه‌ی چاپ</h2>
+      <div class="row">
+        <button class="play" id="play" type="button" aria-label="پخش یا توقف چرخه">▶</button>
+        <div style="flex:1;font-size:13px">
+          <div>یک چاپ کامل در <b style="font-family:var(--mono)">4.5 s</b> ≈ <b style="font-family:var(--mono)">800</b> چاپ در ساعت</div>
+          <div class="seg" id="speed" style="margin-top:4px">
+            <button type="button" data-s="0.25">¼×</button><button type="button" data-s="0.5">½×</button><button type="button" data-s="1" class="on">1×</button>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:10px">
+        <div class="slider"><label for="sx">محور X</label><input id="sx" type="range" min="0" max="650" step="1" value="100"><output id="ox">100 mm</output></div>
+        <div class="slider"><label for="sz">پد Z</label><input id="sz" type="range" min="0" max="100" step="1" value="0"><output id="oz">بالا</output></div>
+        <div class="slider"><label for="sc">کاپ</label><input id="sc" type="range" min="0" max="370" step="1" value="0"><output id="oc">روی تصویر</output></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>نمایش</h2>
+      <div class="slider"><label for="ex">باز کردن</label><input id="ex" type="range" min="0" max="100" value="0"><output id="oex">0%</output></div>
+      <div class="slider"><label for="cut">برش طولی</label><input id="cut" type="range" min="-420" max="700" value="700"><output id="ocut">خاموش</output></div>
+      <div class="groups" id="groups"></div>
+    </section>
+
+    <section>
+      <h2>قطعه‌ی انتخاب‌شده</h2>
+      <div class="info" id="info"><span class="hint">روی یک قطعه در نمای سه‌بعدی یا در فهرست زیر کلیک کنید.</span></div>
+    </section>
+
+    <section>
+      <h2>فهرست قطعات</h2>
+      <input id="q" type="search" placeholder="جستجو: کد، نام یا جنس">
+      <div class="list" id="list"></div>
+    </section>
+
+    <p class="foot">فایل‌های ساخت در مخزن: مونتاژ کامل <code>cad/out/tampo_assembly.step</code>، نقشه‌ی کلی <code>cad/out/tampo_GA.dxf</code>، ورق‌ها <code>cad/out/dxf/</code>، لیست برش <code>cad/out/cut_list.csv</code>.
+      مختصات: X جهت حرکت پد به سمت اپراتور، Z بالا، ابعاد به میلی‌متر.</p>
+  </aside>
+</div>
+
+<script type="application/json" id="data">__DATA__</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(function(){
+const D = JSON.parse(document.getElementById('data').textContent);
+const M = D.meta;
+const $ = id => document.getElementById(id);
+const fa = n => String(n).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+// ---------- header chips
+$('chips').innerHTML = [
+  ['ابعاد کلی', `${M.L}×${M.W}×${M.H}`],
+  ['ارتفاع کار', `${M.Zc}`],
+  ['کورس X', `${M.x_travel}`],
+  ['جرم متحرک X', `${M.m_x} kg`],
+  ['قطعه', `${M.n_parts}`],
+].map(([k,v]) => `<span class="chip">${k} <b>${v}</b></span>`).join('') +
+  `<span class="chip ok">بررسی برخورد در ${fa(M.n_cfg)} حالت حرکتی: <b>${M.n_ok === M.n_cfg ? 'بدون برخورد' : 'برخورد دارد'}</b></span>`;
+
+// ---------- three.js scene (Z up, mm)
+const canvas = $('cv'), stage = $('stage');
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.localClippingEnabled = true;
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(32, 1, 20, 30000);
+camera.up.set(0,0,1);
+const controls = new THREE.OrbitControls(camera, canvas);
+controls.enableDamping = true; controls.dampingFactor = 0.12;
+const target0 = new THREE.Vector3(700, 0, 950);
+controls.target.copy(target0);
+scene.add(new THREE.HemisphereLight(0xffffff, 0x445566, 0.75));
+const sun = new THREE.DirectionalLight(0xffffff, 0.75); sun.position.set(2500, 1500, 4000); scene.add(sun);
+const fill = new THREE.DirectionalLight(0xffffff, 0.3); fill.position.set(-2000, -2500, 1500); scene.add(fill);
+let grid;
+function makeGrid(){
+  if (grid) scene.remove(grid);
+  grid = new THREE.GridHelper(4000, 40, new THREE.Color(css('--grid')), new THREE.Color(css('--grid')));
+  grid.rotation.x = Math.PI/2; grid.position.set(650, 0, 0); scene.add(grid);
+}
+makeGrid();
+
+const clip = new THREE.Plane(new THREE.Vector3(0,-1,0), 700);
+const root = new THREE.Group(), gx = new THREE.Group(), gz = new THREE.Group(), gc = new THREE.Group();
+gx.add(gz); root.add(gx); root.add(gc); scene.add(root);
+const edgeMat = new THREE.LineBasicMaterial({color:0x000000, transparent:true, opacity:0.28, clippingPlanes:[clip]});
+const meshes = [], byCode = {}, byGroup = {};
+const asmC = new THREE.Vector3(650, 0, 800);
+for (const p of D.parts){
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(p.v, 3));
+  g.setIndex(p.t); g.computeVertexNormals(); g.computeBoundingBox();
+  const col = new THREE.Color().setRGB(p.col[0], p.col[1], p.col[2]).convertSRGBToLinear();
+  const see = p.col[3] < 1;
+  const mat = new THREE.MeshStandardMaterial({color:col, metalness:0.25, roughness:0.55, transparent:see, opacity:p.col[3],
+    depthWrite:!see, side:THREE.DoubleSide, clippingPlanes:[clip], emissive:0x000000});
+  const m = new THREE.Mesh(g, mat);
+  if (!see) m.add(new THREE.LineSegments(new THREE.EdgesGeometry(g, 28), edgeMat));
+  const c = new THREE.Vector3(); g.boundingBox.getCenter(c);
+  m.userData = {code:p.c, group:p.g, dir:c.sub(asmC)};
+  (p.m === 'x' ? gx : p.m === 'z' ? gz : p.m === 'c' ? gc : root).add(m);
+  meshes.push(m);
+  (byCode[p.c] = byCode[p.c] || []).push(m);
+  (byGroup[p.g] = byGroup[p.g] || {col:p.col, list:[]}).list.push(m);
+}
+
+// ---------- groups
+$('groups').innerHTML = Object.entries(byGroup).map(([g,o],i) =>
+  `<label><input type="checkbox" id="g${i}" data-g="${g}" checked><span class="sw" style="background:rgb(${o.col.slice(0,3).map(x=>Math.round(x*255)).join(',')})"></span>${g}</label>`).join('');
+$('groups').addEventListener('change', e => { const g = e.target.dataset.g; if (g) byGroup[g].list.forEach(m => m.visible = e.target.checked); });
+
+// ---------- sizing
+function resize(){
+  const r = stage.getBoundingClientRect();
+  renderer.setSize(r.width, r.height, false);
+  camera.aspect = r.width / Math.max(1, r.height); camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(stage); resize();
+
+// ---------- views
+const VIEWS = {iso:[3300,2300,2300], front:[4600,0,1050], side:[650,-4600,1050], top:[650,-1,5200]};
+let camAnim = null;
+function goView(v){
+  camAnim = {t:0, p0:camera.position.clone(), p1:new THREE.Vector3(...VIEWS[v]), t0:controls.target.clone(), t1:target0.clone()};
+}
+camera.position.set(...VIEWS.iso);
+document.querySelectorAll('[data-view]').forEach(b => b.addEventListener('click', () => goView(b.dataset.view)));
+
+// ---------- motion state + print cycle
+const st = {x:M.x_pick, z:0, c:0};
+const ease = t => t<0?0:t>1?1:t*t*(3-2*t);
+const P0 = M.x_pick, P1 = M.x_print, ZS = M.z_stroke, CS = M.cup_stroke;
+const SEG = [ // [t0, t1, label, fn(u) -> partial state]
+  [0.00,0.50,'کاپ از روی تصویر کنار می‌رود', u=>({x:P0,z:0,c:CS*u})],
+  [0.50,0.85,'پد پایین می‌آید و رنگ را از کلیشه برمی‌دارد', u=>({x:P0,z:ZS*u,c:CS})],
+  [0.85,1.35,'مکث روی کلیشه', u=>({x:P0,z:ZS,c:CS})],
+  [1.35,1.70,'پد بالا می‌رود', u=>({x:P0,z:ZS*(1-u),c:CS})],
+  [1.70,2.50,'حرکت به محل چاپ؛ کاپ هم‌زمان برمی‌گردد و جوهر می‌زند', u=>({x:P0+(P1-P0)*u,z:0,c:CS*(1-Math.min(1,u*1.6))})],
+  [2.50,2.85,'پد روی قطعه پایین می‌آید', u=>({x:P1,z:ZS*u,c:0})],
+  [2.85,3.35,'چاپ: مکث روی قطعه', u=>({x:P1,z:ZS,c:0})],
+  [3.35,3.70,'پد بالا می‌رود', u=>({x:P1,z:ZS*(1-u),c:0})],
+  [3.70,4.50,'بازگشت به محل برداشت', u=>({x:P1+(P0-P1)*u,z:0,c:0})],
+];
+const TOTAL = 4.5;
+let playing = !matchMedia('(prefers-reduced-motion: reduce)').matches, speed = 1, tc = 0;
+function setPlay(v){ playing = v; $('play').textContent = v ? '❚❚' : '▶'; }
+setPlay(playing);
+$('play').addEventListener('click', () => setPlay(!playing));
+$('speed').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return;
+  speed = +b.dataset.s; $('speed').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); });
+function cycleState(t){
+  for (const [a,b,lab,f] of SEG) if (t >= a && t < b) return [f(ease((t-a)/(b-a))), lab];
+  return [SEG[0][3](0), SEG[0][2]];
+}
+function applyState(){
+  gx.position.x = st.x;
+  gz.position.z = -st.z;
+  gc.position.x = -st.c;
+  $('sx').value = st.x; $('ox').textContent = `${Math.round(st.x)} mm`;
+  $('sz').value = st.z; $('oz').textContent = st.z < 1 ? 'بالا' : st.z > ZS-1 ? 'پایین' : `${Math.round(st.z)} mm`;
+  $('sc').value = st.c; $('oc').textContent = st.c < 1 ? 'روی تصویر' : st.c > CS-1 ? 'عقب' : `${Math.round(st.c)} mm`;
+}
+[['sx','x'],['sz','z'],['sc','c']].forEach(([id,k]) => $(id).addEventListener('input', e => {
+  setPlay(false); st[k] = +e.target.value; $('slab').textContent = 'حرکت دستی'; applyState(); }));
+
+// ---------- explode + section
+$('ex').addEventListener('input', e => { const f = e.target.value/100*0.9;
+  meshes.forEach(m => m.position.copy(m.userData.dir).multiplyScalar(f)); $('oex').textContent = `${e.target.value}%`; });
+$('cut').addEventListener('input', e => { const v = +e.target.value; clip.constant = v;
+  $('ocut').textContent = v >= 700 ? 'خاموش' : `Y ≤ ${v}`; });
+
+// ---------- picking + info
+const byCodeInfo = Object.fromEntries(D.codes.map(c => [c.c, c]));
+let selected = null;
+function select(code){
+  if (selected) byCode[selected].forEach(m => m.material.emissive.setHex(0x000000));
+  selected = code;
+  document.querySelectorAll('#list button').forEach(b => b.classList.toggle('on', b.dataset.c === code));
+  if (!code){ $('info').innerHTML = '<span class="hint">روی یک قطعه در نمای سه‌بعدی یا در فهرست زیر کلیک کنید.</span>'; return; }
+  const hl = new THREE.Color(css('--accent')).convertSRGBToLinear().multiplyScalar(0.55);
+  byCode[code].forEach(m => m.material.emissive.copy(hl));
+  const c = byCodeInfo[code];
+  $('info').innerHTML = `<div class="code">${c.c}</div><div class="nm">${c.n}</div><dl>
+    <dt>بخش</dt><dd>${c.g}</dd><dt>نوع</dt><dd>${c.k}</dd><dt>جنس</dt><dd>${c.mt === '-' ? '—' : c.mt}</dd>
+    <dt>اندازه</dt><dd style="direction:ltr;text-align:right">${c.d}</dd><dt>تعداد</dt><dd>${fa(c.q)}</dd>
+    <dt>جرم هر عدد</dt><dd>${fa(c.kg)} kg</dd>${c.note ? `<dt>توضیح</dt><dd>${c.note}</dd>` : ''}</dl>
+    ${c.f.length ? `<div class="files">${c.f.join('<br>')}</div>` : ''}`;
+}
+const ray = new THREE.Raycaster(), ptr = new THREE.Vector2();
+let down = null;
+canvas.addEventListener('pointerdown', e => down = [e.clientX, e.clientY]);
+canvas.addEventListener('pointerup', e => {
+  if (!down || Math.hypot(e.clientX-down[0], e.clientY-down[1]) > 5) return;
+  const r = canvas.getBoundingClientRect();
+  ptr.set((e.clientX-r.left)/r.width*2-1, -(e.clientY-r.top)/r.height*2+1);
+  ray.setFromCamera(ptr, camera);
+  const hit = ray.intersectObjects(meshes.filter(m => m.visible), false)
+    .find(h => h.point.y <= clip.constant + 0.5 && h.object.material.opacity > 0.5);
+  select(hit ? hit.object.userData.code : null);
+});
+
+// ---------- part list
+function renderList(){
+  const q = $('q').value.trim().toLowerCase();
+  $('list').innerHTML = D.codes.filter(c => !q || (c.c+' '+c.n+' '+c.mt+' '+c.g).toLowerCase().includes(q))
+    .map(c => `<button type="button" data-c="${c.c}" class="${c.c===selected?'on':''}"><span class="c">${c.c}</span><span>${c.n}</span><span class="q">×${c.q}</span></button>`).join('');
+}
+$('q').addEventListener('input', renderList);
+$('list').addEventListener('click', e => { const b = e.target.closest('button'); if (b) select(b.dataset.c); });
+renderList();
+
+// ---------- theme changes
+new MutationObserver(() => { makeGrid(); }).observe(document.documentElement, {attributes:true, attributeFilter:['data-theme']});
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', makeGrid);
+
+// ---------- loop
+let last = performance.now();
+function frame(now){
+  const dt = Math.min(0.05, (now-last)/1000); last = now;
+  if (playing){
+    tc = (tc + dt*speed) % TOTAL;
+    const [s, lab] = cycleState(tc);
+    Object.assign(st, s); applyState();
+    $('slab').textContent = lab; $('tlab').textContent = `${tc.toFixed(1)} s`;
+    $('sbar').style.width = `${tc/TOTAL*100}%`;
+  }
+  if (camAnim){
+    camAnim.t = Math.min(1, camAnim.t + dt/0.6); const u = ease(camAnim.t);
+    camera.position.lerpVectors(camAnim.p0, camAnim.p1, u); controls.target.lerpVectors(camAnim.t0, camAnim.t1, u);
+    if (camAnim.t >= 1) camAnim = null;
+  }
+  controls.update(); renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+applyState();
+requestAnimationFrame(frame);
+})();
+</script>

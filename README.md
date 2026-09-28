@@ -25,6 +25,9 @@
 | [docs/12_zones_error_handling.md](docs/12_zones_error_handling.md) | **مناطق ممنوع، مدیریت خطا و بازیابی نرم‌افزاری** |
 | [tools/test_suite.py](tools/test_suite.py) | مجموعه‌ی تست (۴۶ سناریو، موازی) |
 | [tools/axis_sizing.py](tools/axis_sizing.py) | محاسبه‌ی سرعت پیک، گشتاور، نسبت اینرسی و نیروی جک |
+| [docs/13_3d_design.md](docs/13_3d_design.md) | **طراحی سه‌بعدی کل دستگاه** (قطعات و اسکلت)، راهنمای AutoCAD و ساخت |
+| [cad/tampo_machine.py](cad/tampo_machine.py) | مدل پارامتریک CadQuery: خروجی STEP، DXF ورق‌ها، نقشه‌ی کلی، لیست برش و بررسی تداخل |
+| [cad/out/tampo_viewer.html](cad/out/tampo_viewer.html) | نمایشگر سه‌بعدی با انیمیشن چرخه‌ی چاپ (در مرورگر باز کنید) |
 
 ## مهم‌ترین نتیجه‌ها (طرح نهایی بر اساس دستگاه موجود)
 
@@ -40,5 +43,6 @@
 ## اجرای محاسبات
 
 ```bash
+python3 cad/tampo_machine.py      # مدل سه‌بعدی و همه‌ی خروجی‌های ساخت (نیاز: pip install cadquery ezdxf)
 python3 tools/axis_sizing.py
 ```
