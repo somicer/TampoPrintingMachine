@@ -137,10 +137,19 @@ MOV     K1          D555
 LD>     D555        K9
 MOV     K9          D555
 
-// A15 - parameter invalid
+// Pick / print positions are adjusted by operators on the main screen:
+// clamp them into 0..soft max instead of raising A15 mid-production.
 DLD>    D500        D506
-DOR>    D502        D506
-DOR>    D504        D506
+DMOV    D506        D500
+DLD<    D500        K0
+DMOV    K0          D500
+DLD>    D502        D506
+DMOV    D506        D502
+DLD<    D502        K0
+DMOV    K0          D502
+
+// A15 - parameter invalid
+DLD>    D504        D506
 DOR>    D508        D510
 DOR>    D514        D516
 DOR>=   D512        D514
