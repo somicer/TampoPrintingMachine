@@ -16,15 +16,18 @@ ROTOR_INERTIA = 0.9e-4           # kg.m^2, typical NEMA24 4 N.m (check 60HSE4N d
 PULLEY_INERTIA = 0.6e-5          # kg.m^2, aluminium 24T x 15 mm, approx.
 
 # ---------- axes ----------
+GEAR = {"X (pad carriage)": 3.0, "Y (closed cup)": 1.0}   # planetary ratio
+
+# Field data (docs/08): X 14 kg, 500 mm pick->print in ~0.9 s;
+# Y cup drag up to ~90 N (rated force of the existing DC drive).
 AXES = {
-    "X (pad carriage)": dict(stroke=700.0, t_move=1.5, mass=10.0, mu=0.02, f_ext=0.0),
-    "Y (closed cup)":   dict(stroke=400.0, t_move=1.5, mass=4.0,  mu=0.02, f_ext=60.0),
+    "X (pad carriage)": dict(stroke=500.0, t_move=0.9, mass=14.0, mu=0.08, f_ext=0.0),
+    "Y (closed cup)":   dict(stroke=370.0, t_move=1.0, mass=4.0,  mu=0.02, f_ext=90.0),
 }
 
 # ---------- Z pneumatic ----------
-P_BAR = 6.0
-BORES = {"MGPM25": (25, 10), "MGPM32": (32, 14), "MGPM40": (40, 14),
-         "MGPM50": (50, 18), "MGPM63": (63, 18)}
+P_BAR = 5.1   # measured on the existing machine
+BORES = {"MGPM25": (25, 10), "SC40": (40, 16), "MGPM50": (50, 18), "SC63": (63, 20)}
 
 
 def trapezoid(stroke, t, frac=1 / 3):
@@ -45,21 +48,21 @@ def main():
 
     for name, ax in AXES.items():
         v, a, t_acc = trapezoid(ax["stroke"], ax["t_move"])
-        rps = v / circ
-        f_hz = v * ppmm
-        j_load = ax["mass"] * r ** 2
+        g = GEAR[name]
+        rps = v / circ * g
+        f_hz = v * ppmm * g
+        j_load = ax["mass"] * r ** 2 / g ** 2
         ratio = j_load / ROTOR_INERTIA
         f_lin = ax["mass"] * a / 1000 + ax["mu"] * ax["mass"] * G + ax["f_ext"]
-        t_load = f_lin * r
-        t_rot = (ROTOR_INERTIA + PULLEY_INERTIA) * (a / 1000) / r
+        t_load = f_lin * r / g
+        t_rot = (ROTOR_INERTIA + PULLEY_INERTIA / g ** 2) * (a / 1000) / r * g
         t_total = t_load + t_rot
         print(f"== {name} ==")
         print(f"  avg speed {ax['stroke']/ax['t_move']:.0f} mm/s, PEAK speed {v:.0f} mm/s,"
               f" accel {a/1000:.2f} m/s^2 (t_acc {t_acc:.2f} s)")
         print(f"  motor {rps*60:.0f} rpm, pulse freq {f_hz/1000:.1f} kHz")
         print(f"  belt force {f_lin:.1f} N, torque {t_total:.2f} N.m (x2 safety -> {2*t_total:.2f})")
-        print(f"  inertia ratio load/rotor = {ratio:.0f}:1"
-              f"  (with 1:3 gearbox -> {ratio/9:.1f}:1)\n")
+        print(f"  gearbox 1:{g:g}, inertia ratio load/rotor = {ratio:.1f}:1\n")
 
     print("== Z cylinder force at %.1f bar ==" % P_BAR)
     for n, (d, rod) in BORES.items():

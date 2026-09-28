@@ -18,12 +18,17 @@ RST_TOTAL,M115,Bit,W,,,,,Set ON button (lvl 2),6,Reset total counter
 RST_BATCH,M116,Bit,W,,,,,Set ON button (lvl 1),6,Reset batch counter
 Y_TEST_STROKE,M117,Bit,W,,,,,Set ON button,2,One ink stroke out+back
 AIR_LOTO,M119,Bit,RW,,,,,Toggle (lvl 2),9,Dump main air for maintenance
-OPT_OVERLAP,M500,Bit,RW,,,,,Toggle,1/4,Re-ink during print travel
+OPT_PARALLEL_INK,M500,Bit,RW,,,,,Toggle,1/4,Re-ink during X travel (default ON)
 OPT_Z_DOWN2,M501,Bit,RW,,,,,Toggle (lvl 2),9,Second down sensor X17 installed
 OPT_CONTINUOUS,M502,Bit,RW,,,,,Toggle,1/4,Cycle without pedal
 OPT_DRY_RUN,M503,Bit,RW,,,,,Toggle (lvl 1),4,No Z down
 OPT_BATCH_STOP,M504,Bit,RW,,,,,Toggle,4,Stop when batch reached
 OPT_WATCHDOG,M505,Bit,RW,,,,,Toggle (lvl 2),9,HMI heartbeat supervision
+OPT_PRE_PICK,M506,Bit,RW,,,,,Toggle (lvl 1),1/4,Pick ink right after print and wait for pedal
+OPT_EARLY_Z,M507,Bit,RW,,,,,Toggle (lvl 2),4,Start Z descent before X arrives (D550)
+ST_Z_ABOVE_SAFE,M26,Bit,R,,,,,Lamp,2/8,Pad above safe height
+ST_PAD_LOADED,M93,Bit,R,,,,,Lamp,1,Pad carries ink waiting for print
+ST_PRINT_REQ,M94,Bit,R,,,,,Lamp,1,Pedal stored
 ST_HOMED,M24,Bit,R,,,,,Lamp,1/2,All axes homed
 ST_Z_UP_OK,M25,Bit,R,,,,,Lamp,2/8,Z confirmed up
 ST_PERMIT_X,M40,Bit,R,,,,,Lamp,2,X motion permitted
@@ -39,19 +44,20 @@ MACHINE_STATE,D9,Word,R,,,,,Text by value,1,0 NotHomed/1 Homing/2 Ready/3 Auto/4
 X_POS,D30,DWord,R,mm,,,1,Numeric,1/2,X actual position
 Y_POS,D34,DWord,R,mm,,,1,Numeric,1/2,Y actual position
 ALARM_WORD,D50,Word,R,,,,,Alarm bits,7,Bit0=A01 ... Bit15=A16
+ALARM_WORD2,D51,Word,R,,,,,Alarm bits,7,Bit0=A17 landed while X moving
 HMI_HEARTBEAT,D60,Word,W,,,,,Cycle macro 500 ms,-,D60 = D60 + 1
-X_PICK_POS,D500,DWord,RW,mm,0,7000,1,Numeric,3,Pick-up position
-X_PRINT_POS,D502,DWord,RW,mm,0,7000,1,Numeric,3,Print position
-X_READY_POS,D504,DWord,RW,mm,0,7000,1,Numeric,3,Ready/park position
-X_SOFT_MAX,D506,DWord,RW,mm,0,7000,1,Numeric (lvl 2),3,X soft limit
-X_ZONE_MIN,D508,DWord,RW,mm,0,7000,1,Numeric (lvl 2),3,Cliche zone start
-X_ZONE_MAX,D510,DWord,RW,mm,0,7000,1,Numeric (lvl 2),3,Cliche zone end
+X_PICK_POS,D500,DWord,RW,mm,0,6200,1,Numeric,3,Pick-up position
+X_PRINT_POS,D502,DWord,RW,mm,0,6200,1,Numeric,3,Print position
+X_PARK_POS,D504,DWord,RW,mm,0,6200,1,Numeric,3,Park position after homing
+X_SOFT_MAX,D506,DWord,RW,mm,0,6200,1,Numeric (lvl 2),3,X soft limit
+X_ZONE_MIN,D508,DWord,RW,mm,0,6200,1,Numeric (lvl 2),3,Cliche zone start
+X_ZONE_MAX,D510,DWord,RW,mm,0,6200,1,Numeric (lvl 2),3,Cliche zone end
 Y_PARK_POS,D512,DWord,RW,mm,0,4000,1,Numeric,3,Cup park
 Y_END_POS,D514,DWord,RW,mm,0,4000,1,Numeric,3,Cup stroke end
 Y_SOFT_MAX,D516,DWord,RW,mm,0,4000,1,Numeric (lvl 2),3,Y soft limit
 X_SCALE,D518,DWord,RW,p/1000mm,1000,200000,0,Numeric (lvl 2),9,X pulses per 1000 mm
 Y_SCALE,D520,DWord,RW,p/1000mm,1000,200000,0,Numeric (lvl 2),9,Y pulses per 1000 mm
-X_SPD_AUTO,D522,Word,RW,mm/s,50,800,0,Numeric,3,
+X_SPD_AUTO,D522,Word,RW,mm/s,50,900,0,Numeric,3,
 X_SPD_MAN,D523,Word,RW,mm/s,5,200,0,Numeric,3,
 X_SPD_HOME,D524,Word,RW,mm/s,5,150,0,Numeric (lvl 2),3,
 X_SPD_CREEP,D525,Word,RW,mm/s,2,30,0,Numeric (lvl 2),3,
@@ -62,8 +68,8 @@ Y_SPD_JOG,D529,Word,RW,mm/s,5,200,0,Numeric,3,
 Y_SPD_HOME,D530,Word,RW,mm/s,5,150,0,Numeric (lvl 2),3,
 Y_SPD_CREEP,D531,Word,RW,mm/s,2,30,0,Numeric (lvl 2),3,
 Y_ACC,D532,Word,RW,ms,100,1000,0,Numeric,3,
-DWELL1,D540,Word,RW,s,20,60,2,Numeric,4,Pick-up dwell 0.20-0.60 s
-DWELL2,D541,Word,RW,s,30,80,2,Numeric,4,Print dwell 0.30-0.80 s
+DWELL1,D540,Word,RW,s,20,100,2,Numeric,4,Pick-up dwell 0.20-1.00 s
+DWELL2,D541,Word,RW,s,20,100,2,Numeric,4,Print dwell 0.20-1.00 s
 FLASH_OFF,D542,Word,RW,s,0,200,2,Numeric,4,Delay after ink stroke
 Z_DN_TIMEOUT,D543,Word,RW,s,50,500,2,Numeric,4,
 Z_UP_TIMEOUT,D544,Word,RW,s,50,500,2,Numeric,4,
@@ -71,8 +77,10 @@ Z_SETTLE,D545,Word,RW,s,0,50,2,Numeric,4,
 AUTO_PAUSE,D546,Word,RW,s,0,1000,2,Numeric,4,Pause in continuous mode
 HOME_TIMEOUT,D547,Word,RW,s,50,1200,1,Numeric (lvl 2),9,
 POS_TOL,D548,DWord,RW,mm,1,20,1,Numeric (lvl 2),3,
+EARLY_Z_LEAD,D550,DWord,RW,mm,0,1000,1,Numeric (lvl 2),4,Z starts down this far before X arrives
+PRE_PICK_MAX_WAIT,D552,Word,RW,s,50,1000,2,Numeric,4,Loaded pad max wait before re-pick
 TOTAL_COUNT,D560,DWord,R,pcs,,,0,Numeric,1/6,
 BATCH_COUNT,D562,DWord,R,pcs,,,0,Numeric,1/6,
 BATCH_TARGET,D564,DWord,RW,pcs,0,999999,0,Numeric,4/6,
-CYCLE_TIME,D566,DWord,R,s,,,2,Numeric,1/6,
+PRINT_INTERVAL,D566,DWord,R,s,,,2,Numeric,1/6,Time between two prints
 PARTS_PER_HOUR,D568,Word,R,pcs/h,,,0,Numeric,1/6,

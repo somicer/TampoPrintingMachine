@@ -1,12 +1,31 @@
 // =====================================================================
-//  Large-Format Closed-Cup Pad Printer  -  Delta DVP-28SV211T (SV2)
+//  Large-Format Closed-Cup Pad Printer  -  Delta DVP-28SV11T2 (SV2)
 //  Instruction List (WPLSoft / ISPSoft IL mnemonic)
 // ---------------------------------------------------------------------
-//  Rev   : 1.0
-//  Axes  : X = pad carriage   (Y0 PUL / Y1 DIR, home DOG X0)
-//          Y = closed ink cup (Y2 PUL / Y3 DIR, home DOG X1)
-//          Z = pneumatic pad lift (Y4 SOL-DOWN / Y5 SOL-UP, X2 UP / X3 DOWN)
+//  Rev   : 2.0  (redesign from field data, docs/08 + docs/09)
+//  Axes  : X = pad carriage  - closed-loop NEMA24 4 N.m + gearbox 1:3 +
+//              HTD5M 24T pulley  -> 40 mm/motor rev, 4000 p/rev = 100 p/mm
+//              (Y0 PUL / Y1 DIR, home DOG X0), stroke 620 mm
+//          Y = ink cup       - same motor, direct, 24T 5 mm pitch pulley
+//              -> 120 mm/rev = 33.333 p/mm (Y2 PUL / Y3 DIR, DOG X1),
+//              stroke 370 mm
+//          Z = pneumatic SC63x100 (Y4 SOL-DOWN / Y5 SOL-UP)
+//              X2 = UP, X20 = SAFE HEIGHT, X3 = DOWN (X17 = DOWN-2 opt.)
 //  Units : positions 0.1 mm (32-bit), speeds mm/s, times 10 ms
+//
+//  New in Rev 2.0:
+//    * Z "above safe height" flag (M26) from the X20 sensor + direction:
+//      X may move as soon as the pad is above the safe height (not only
+//      fully up)                                   -> motion overlap
+//    * Early Z descent when X is within D550 of the pick / print target
+//      (option M507). The pad must NOT pass the safe height while X still
+//      moves: that trips A10 (immediate stop) - the safety net.
+//    * Landing while X still moving -> A17 (immediate stop)
+//    * Parallel inking (M500, default ON)
+//    * Pre-pick (M506): after each print the pad picks the next image
+//      and waits over the cliche; the pedal then only triggers
+//      X->print + print. Max wait D552, then the pad re-picks.
+//    * Pedal is latched (M94) during the pick phase
 //
 //  NOTE  : Lines starting with "//" are comments for the reader. WPLSoft
 //          IL mode does not accept them - enter each network as ladder
@@ -16,6 +35,7 @@
 //          D1352) are taken from the DVP-ES2/EX2/SS2/SA2/SX2/SE/SV2
 //          programming manual - VERIFY them against the manual revision
 //          matching your PLC firmware before commissioning.
+//          X20..X27 / Y20..Y27 = first right-side expansion (DVP16SP11T).
 //
 //  Program structure (order matters - see docs/04_plc_program.md):
 //    N00  Init / default parameters
@@ -23,7 +43,7 @@
 //    N02  Alarm reset, alarm detection, alarm reaction
 //    N03  Position calculation & position/zone flags
 //    N04  Interlocks (permits)
-//    N05  Mode, start / stop, homing request
+//    N05  Mode, start / stop, pedal latch, homing request
 //    N06  Homing master sequence (D2) + axis sub-sequences (D3, D4)
 //    N07  Auto sequence (D0)
 //    N08  Ink (closed-cup) sub-sequence (D1)
@@ -37,46 +57,50 @@
 // =====================================================================
 // N00  INIT
 // =====================================================================
-// Start/end frequency of pulse channels (Hz)
 LD      M1002
-MOV     K200        D1340           // CH0 (Y0) start/end freq
-MOV     K200        D1352           // CH1 (Y2) start/end freq
-SET     M505                        // HMI watchdog enabled by default
+MOV     K200        D1340           // CH0 (Y0) start/end freq (Hz)
+MOV     K200        D1352           // CH1 (Y2) start/end freq (Hz)
+SET     M505                        // HMI watchdog enabled at power-up
 
 // Load default parameters on a blank PLC (scale = 0)
 DLD=    D518        K0
-DMOV    K33333      D518            // X pulses per 1000 mm (4000 p/rev, 24T HTD5M)
-DMOV    K33333      D520            // Y pulses per 1000 mm
-DMOV    K1500       D500            // X pick-up pos   150.0 mm
-DMOV    K6000       D502            // X print pos     600.0 mm
-DMOV    K1500       D504            // X ready pos     = pick-up
-DMOV    K6950       D506            // X soft max      695.0 mm
-DMOV    K500        D508            // X cliche zone min  50.0 mm
-DMOV    K2600       D510            // X cliche zone max 260.0 mm
+DMOV    K100000     D518            // X pulses / 1000 mm (100 p/mm)
+DMOV    K33333      D520            // Y pulses / 1000 mm
+DMOV    K1000       D500            // X pick-up pos   100.0 mm
+DMOV    K5500       D502            // X print pos     550.0 mm
+DMOV    K1000       D504            // X park (homing) pos = pick
+DMOV    K6150       D506            // X soft max      615.0 mm
+DMOV    K0          D508            // X cliche zone min   0.0 mm
+DMOV    K2500       D510            // X cliche zone max 250.0 mm
 DMOV    K50         D512            // Y park pos        5.0 mm
 DMOV    K3500       D514            // Y end pos       350.0 mm
-DMOV    K3950       D516            // Y soft max      395.0 mm
-MOV     K600        D522            // X auto speed    mm/s
+DMOV    K3750       D516            // Y soft max      375.0 mm
+MOV     K800        D522            // X auto speed    mm/s
 MOV     K100        D523            // X jog / manual  mm/s
-MOV     K80         D524            // X home speed    mm/s
-MOV     K10         D525            // X creep speed   mm/s
-MOV     K400        D526            // X accel/decel   ms
-MOV     K350        D527            // Y out speed     mm/s
-MOV     K350        D528            // Y return speed  mm/s
+MOV     K60         D524            // X home speed    mm/s
+MOV     K8          D525            // X creep speed   mm/s
+MOV     K300        D526            // X accel/decel   ms
+MOV     K400        D527            // Y out speed     mm/s
+MOV     K400        D528            // Y return speed  mm/s
 MOV     K80         D529            // Y jog           mm/s
 MOV     K60         D530            // Y home          mm/s
 MOV     K8          D531            // Y creep         mm/s
-MOV     K400        D532            // Y accel/decel   ms
-MOV     K40         D540            // Dwell-1 pick    0.40 s
+MOV     K300        D532            // Y accel/decel   ms
+MOV     K50         D540            // Dwell-1 pick    0.50 s
 MOV     K50         D541            // Dwell-2 print   0.50 s
 MOV     K0          D542            // Flash-off delay 0.00 s
 MOV     K150        D543            // Z down timeout  1.50 s
 MOV     K150        D544            // Z up timeout    1.50 s
 MOV     K10         D545            // Z settle after UP 0.10 s
-MOV     K50         D546            // Auto-repeat pause 0.50 s
+MOV     K50         D546            // Continuous pause 0.50 s
 MOV     K300        D547            // Homing timeout 30.0 s (100 ms units)
 DMOV    K5          D548            // In-position tolerance 0.5 mm
+DMOV    K300        D550            // Early Z descent lead 30.0 mm
+MOV     K300        D552            // Pre-pick max wait 3.00 s
 DMOV    K0          D564            // Batch target (0 = off)
+SET     M500                        // parallel inking ON
+RST     M506                        // pre-pick OFF until commissioned
+RST     M507                        // early Z descent OFF until tuned
 
 
 // =====================================================================
@@ -84,14 +108,14 @@ DMOV    K0          D564            // Batch target (0 = off)
 // =====================================================================
 LD<     D540        K20
 MOV     K20         D540
-LD>     D540        K60
-MOV     K60         D540
-LD<     D541        K30
-MOV     K30         D541
-LD>     D541        K80
-MOV     K80         D541
-LD>     D522        K800            // X speed hard cap 800 mm/s
-MOV     K800        D522
+LD>     D540        K100
+MOV     K100        D540
+LD<     D541        K20
+MOV     K20         D541
+LD>     D541        K100
+MOV     K100        D541
+LD>     D522        K900            // X speed hard cap 900 mm/s
+MOV     K900        D522
 LD>     D527        K600            // Y speed hard cap 600 mm/s
 MOV     K600        D527
 LD>     D528        K600
@@ -100,8 +124,10 @@ LD<     D526        K100            // accel min 100 ms
 MOV     K100        D526
 LD<     D532        K100
 MOV     K100        D532
+LD>     D552        K1000           // pre-pick wait max 10 s
+MOV     K1000       D552
 
-// A15 - parameter invalid (positions outside soft limits / bad scale)
+// A15 - parameter invalid
 DLD>    D500        D506
 DOR>    D502        D506
 DOR>    D504        D506
@@ -110,6 +136,7 @@ DOR>    D514        D516
 DOR>=   D512        D514
 DOR<=   D518        K0
 DOR<=   D520        K0
+DOR<    D550        K0
 SET     M214
 
 
@@ -119,8 +146,8 @@ SET     M214
 // --- Reset (panel X14 or HMI M102) --------------------------------
 LDP     X14
 ORP     M102
-SET     M36                         // ENA pulse -> clears CL57 alarm
-ZRST    M200        M215
+SET     M36                         // ENA pulse -> clears drive alarm
+ZRST    M200        M216
 RST     M95
 
 LD      M36
@@ -160,20 +187,23 @@ AND     X15
 TMR     T204        D544
 LD      T204
 SET     M207
-// A09 Z sensor plausibility (UP and DOWN at the same time)
+// A09 Z sensor plausibility (UP with SAFE or DOWN at the same time)
 LD      X2
 AND     X3
 LD      X2
 AND     X17
 ORB
+LD      X20
+AND     X3
+ORB
 TMR     T6          K3
 LD      T6
 SET     M208
-// A10 Z left UP position while an axis is moving over the cliche
+// A10 pad below safe height while an axis moves where it can collide
 LD      M1336
-ANI     X2
+ANI     M26
 LD      M1337
-ANI     X2
+ANI     M26
 AND     M30
 ORB
 SET     M209
@@ -203,7 +233,7 @@ TMR     T3          K20             // 2.0 s without heartbeat
 LD      T3
 SET     M213
 ZRST    M100        M119            // drop every HMI command / jog bit
-// A16 sequence step timeout (auto)
+// A16 sequence step timeout (auto, not while waiting for the pedal)
 LD      M90
 AND<>   D0          K10
 AND=    D0          D98
@@ -212,11 +242,17 @@ LD      T8
 SET     M215
 LD      M1000
 MOV     D0          D98
+// A17 pad landed while X was still moving (early-descent lead too long)
+LD      M62
+AND     M1336
+SET     M216
 
 // --- Alarm words for HMI ------------------------------------------
 LD      M1000
 MOV     K4M200      D50
+MOV     K4M216      D51
 LD<>    D50         K0
+OR<>    D51         K0
 OUT     M21                         // any alarm
 
 // --- Stop classes -------------------------------------------------
@@ -227,6 +263,7 @@ OR      M202
 OR      M203
 OR      M204
 OR      M209
+OR      M216
 OUT     M28
 // M29 : immediate pulse stop
 LD      M28
@@ -256,6 +293,8 @@ LD      M21
 RST     M90
 RST     M91
 RST     M92
+RST     M93
+RST     M94
 RST     M60
 RST     M61
 RST     M45
@@ -294,7 +333,7 @@ DADD    D502        D548        D76
 DZCP    D74         D76         D30     M73     // M74 = X at print
 DSUB    D504        D548        D78
 DADD    D504        D548        D80
-DZCP    D78         D80         D30     M76     // M77 = X at ready
+DZCP    D78         D80         D30     M76     // M77 = X at park
 DZCP    D508        D510        D30     M79     // M80 = X in cliche zone
 DSUB    D512        D548        D82
 DADD    D512        D548        D84
@@ -302,6 +341,14 @@ DZCP    D82         D84         D34     M82     // M83 = Y at park
 DSUB    D514        D548        D86
 DADD    D514        D548        D88
 DZCP    D86         D88         D34     M85     // M86 = Y at end
+
+// Distance-to-go of X (0.1 mm) and current X target
+DSUB    D200        D30         D90
+DABS    D90                             // D90/D91 = |target - pos|
+DLD=    D200        D500
+OUT     M96                             // X target = pick
+DLD=    D200        D502
+OUT     M97                             // X target = print
 
 LD      M22
 AND     M23
@@ -317,7 +364,7 @@ OUT     M32                         // X AT PRINT (stopped)
 LD      M77
 ANI     M1336
 AND     M22
-OUT     M34                         // X AT READY (stopped)
+OUT     M34                         // X AT PARK (stopped)
 LD      M80
 ORI     M22                         // not homed -> assume inside zone
 OUT     M30                         // X IN CLICHE ZONE
@@ -334,7 +381,7 @@ OUT     M35                         // Y AT END (stopped)
 // =====================================================================
 // N04  INTERLOCKS
 // =====================================================================
-// Z confirmed UP: UP sensor, no DOWN sensor, no DOWN command, settled
+// Z fully UP confirmed (used for homing / start)
 LD      X2
 ANI     X3
 ANI     X17
@@ -343,6 +390,20 @@ TMR     T205        D545
 LD      T205
 OUT     M25
 
+// Z ABOVE SAFE HEIGHT (M26): the safe sensor X20 only sees the piston
+// while it passes, so the direction of the valve tells above / below.
+LD      X2
+SET     M26                         // fully up -> above
+LDP     X20
+ANI     Y4
+SET     M26                         // passing SAFE going up -> above
+LDF     X20
+AND     Y4
+RST     M26                         // passing SAFE going down -> below
+LD      X3
+OR      X17
+RST     M26                         // pad down -> below
+
 // Z confirmed DOWN (pad compressed)
 LD      X3
 LD      X17
@@ -350,22 +411,41 @@ AND     M501
 ORB
 OUT     M62
 
-// X may move only with Z up
-LD      M25
+// X may move only while the pad is above the safe height
+LD      M26
+ANI     X3
+ANI     X17
 AND     M20
 OUT     M40
-// Y may move if Z up OR pad is outside the cliche zone
-LD      M25
+// Y may move if pad above safe height OR pad outside the cliche zone
+LD      M26
 ORI     M30
 AND     M20
 OUT     M42
-// Z may go down only: (X at pick AND cup parked) OR X at print
+
+// Early descent windows (option M507): X heading to the target and
+// within D550 of it (also true once X has arrived there).
+LD      M507
+AND     M96
+DAND<=  D90         D550
+AND     M92                         // cliche inked
+OUT     M63                         // early window: pick
+LD      M507
+AND     M97
+DAND<=  D90         D550
+OUT     M64                         // early window: print
+
+// Z may go down: (pick or early-pick) with cup parked,
+//                or (print or early-print) with light curtain clear
 LD      M31
+OR      M63
 AND     M33
-OR      M32
+LD      M32
+OR      M64
+AND     X16
+ORB
 AND     M24
 AND     M20
-ANI     M1336
 OUT     M41
 LDI     M41
 RST     M60                         // permit lost -> never re-descend later
@@ -373,7 +453,7 @@ RST     M61
 
 
 // =====================================================================
-// N05  MODE, START / STOP, HOMING REQUEST
+// N05  MODE, START / STOP, PEDAL LATCH, HOMING REQUEST
 // =====================================================================
 // Auto start (panel X12 or HMI M100)
 LD      X12
@@ -386,6 +466,7 @@ ANI     M90
 AND=    D2          K0
 SET     M90
 RST     M91
+RST     M94
 RST     M95
 MOV     K5          D0
 
@@ -395,6 +476,13 @@ OR      M101
 ORI     M120
 AND     M90
 SET     M91
+
+// Pedal latch: accepted while waiting (S10) and during the pick phase
+LDP     X11
+AND     M90
+AND     X16
+AND<=   D0          K70
+SET     M94
 
 // Homing request (HMI M103) - not while running
 LD      M103
@@ -415,7 +503,7 @@ OUT     M38
 // =====================================================================
 // N06  HOMING
 // =====================================================================
-// H10 : drop Z commands, forget home, wait Z up
+// H10 : drop Z commands, forget home, wait Z fully up
 LD=     D2          K10
 RST     M60
 RST     M61
@@ -435,7 +523,7 @@ AND=    D3          K0
 AND=    D4          K0
 AND     M24
 MOV     K40         D2
-// H40 : X -> ready, Y -> park
+// H40 : X -> park, Y -> park
 LD=     D2          K40
 ANI     M34
 ANI     M45
@@ -534,13 +622,13 @@ MOV     K0          D4
 // =====================================================================
 // N07  AUTO SEQUENCE (D0)
 // =====================================================================
-// S5  : go to start position (X ready, Y park)
+// S5  : go to start position (X pick, Y park)
 LD=     D0          K5
-ANI     M34
+ANI     M31
 ANI     M45
 AND     M58
 AND     M40
-DMOV    D504        D200
+DMOV    D500        D200
 MOV     D522        D202
 SET     M45
 LD=     D0          K5
@@ -552,29 +640,59 @@ DMOV    D512        D204
 MOV     D528        D206
 SET     M47
 LD=     D0          K5
-AND     M34
+AND     M31
 AND     M33
 MOV     K10         D0
 
-// S10 : wait pedal (or auto-repeat pause); stop request ends auto here
+// S10 : decision point
+//  - stop request                         -> idle
+//  - pre-pick and pad empty               -> S20 (pick, no pedal)
+//  - pre-pick, pad loaded, pedal/continuous -> S80 (print)
+//  - normal, pedal/continuous             -> S20
 LD=     D0          K10
 AND     M91
 RST     M90
 RST     M91
+RST     M93                         // a waiting pad is discarded (dries)
+RST     M94
 MOV     K0          D0
 LD=     D0          K10
 AND     M502
 TMR     T206        D546
 LD=     D0          K10
+AND     M93
+TMR     T207        D552            // pre-pick: pad waiting too long
+LD      T207
+RST     M93                         // ink on the pad is too dry -> re-pick
+LD=     D0          K10
 ANI     M91
+AND     M506
+ANI     M93
+AND     M20
+MOV     K20         D0
+LD=     D0          K10
+ANI     M91
+AND     M506
+AND     M93
 AND     X16
 AND     M20
-LDP     X11
+LD      M94
 OR      T206
 ANB
+RST     M94
+MOV     K80         D0
+LD=     D0          K10
+ANI     M91
+ANI     M506
+AND     X16
+AND     M20
+LD      M94
+OR      T206
+ANB
+RST     M94
 MOV     K20         D0
 
-// S20 : X -> pick (if not there) + ink stroke (if image not inked)
+// S20 : X -> pick (if not there / not moving) + ink stroke (if needed)
 LD=     D0          K20
 ANI     M31
 ANI     M45
@@ -588,8 +706,11 @@ ANI     M92
 AND=    D1          K0
 MOV     K10         D1
 LD=     D0          K20
-AND     M31
 AND     M92
+AND     M33
+LD      M31
+OR      M63                         // early descent at pick
+ANB
 MOV     K40         D0
 
 // S40 : flash-off delay (ink tack build-up)
@@ -599,7 +720,8 @@ LD=     D0          K40
 AND     T202
 MOV     K50         D0
 
-// S50 : Z down on cliche (skipped in dry-run)
+// S50 : Z down on cliche (skipped in dry-run); dwell starts only with
+//       the pad down AND X stopped at pick
 LD=     D0          K50
 ANI     M503
 AND     M41
@@ -608,28 +730,35 @@ LD=     D0          K50
 LD      M62
 OR      M503
 ANB
+AND     M31
 MOV     K60         D0
 
-// S60 : dwell-1 (timed from Z-DOWN confirmation), then Z up
+// S60 : dwell-1, then Z up; pad now loaded
 LD=     D0          K60
 TMR     T200        D540
 LD=     D0          K60
 AND     T200
 RST     M60
 RST     M92                         // image consumed
+SET     M93                         // pad loaded
 MOV     K70         D0
 
-// S70 : wait Z up; overlap option re-inks while pad travels
+// S70 : pad above safe height -> re-ink in parallel, then go on
 LD=     D0          K70
-AND     M25
+AND     M26
 AND     M500
 AND=    D1          K0
 MOV     K10         D1
 LD=     D0          K70
-AND     M25
+AND     M26
+AND     M506
+MOV     K10         D0              // pre-pick: wait for the pedal
+LD=     D0          K70
+AND     M26
+ANI     M506
 MOV     K80         D0
 
-// S80 : X -> print
+// S80 : X -> print (Z may start down early inside the D550 window)
 LD=     D0          K80
 ANI     M32
 ANI     M45
@@ -639,10 +768,12 @@ DMOV    D502        D200
 MOV     D522        D202
 SET     M45
 LD=     D0          K80
-AND     M32
+LD      M32
+OR      M64
+ANB
 MOV     K90         D0
 
-// S90 : Z down on part
+// S90 : Z down on part; dwell starts only with pad down AND X stopped
 LD=     D0          K90
 ANI     M503
 AND     M41
@@ -651,43 +782,47 @@ LD=     D0          K90
 LD      M62
 OR      M503
 ANB
+AND     M32
 MOV     K100        D0
 
-// S100 : dwell-2, then Z up
+// S100 : dwell-2, then Z up; count the print
 LD=     D0          K100
 TMR     T201        D541
 LD=     D0          K100
 AND     T201
 RST     M60
+RST     M93
+DINC    D560
+DINC    D562
+MOV     T210        D566            // time between prints (10 ms)
+MOV     K0          D567
+SET     M99                         // restart print-interval timer
 MOV     K110        D0
 
-// S110 : wait Z up
+// S110 : pad above safe height -> X may leave
 LD=     D0          K110
-AND     M25
+AND     M26
 MOV     K120        D0
 
-// S120 : X -> ready
+// S120 : X -> pick, do not wait for arrival (S20 / S10 handle it)
 LD=     D0          K120
-ANI     M34
+ANI     M31
 ANI     M45
 AND     M58
 AND     M40
-DMOV    D504        D200
+DMOV    D500        D200
 MOV     D522        D202
 SET     M45
+MOV     K10         D0
 LD=     D0          K120
-AND     M34
-MOV     K130        D0
+AND     M31
+MOV     K10         D0
 
-// S130 : cycle complete - counters, cycle time
-LD=     D0          K130
-DINC    D560
-DINC    D562
-MOV     T210        D566
-MOV     K0          D567
+// Parts per hour from the last print interval
+LD      M99
+AND>    D566        K0
 DDIV    K360000     D566        D570
 MOV     D570        D568
-MOV     K10         D0
 
 // Batch complete -> stop at end of cycle
 LD      M504
@@ -696,10 +831,12 @@ DAND>   D564        K0
 SET     M95
 SET     M91
 
-// Cycle timer (10 ms base)
+// Print-interval timer (10 ms base), restarted by M99
 LD      M90
-AND>=   D0          K20
+ANI     M99
 TMR     T210        K32767
+LD      M99
+RST     M99
 
 
 // =====================================================================
@@ -852,10 +989,11 @@ AND     M24
 AND=    D1          K0
 MOV     K10         D1
 
-// ---- Manual Z -----------------------------------------------------
+// ---- Manual Z (only with X stopped at pick or print) --------------
 LD      M108
 AND     M38
 AND     M41
+ANI     M1336
 SET     M61
 LD      M109
 ORI     M38
@@ -964,7 +1102,7 @@ RST     M1030
 
 
 // =====================================================================
-// N11  Z VALVE (bistable 5/2) - coils mutually exclusive, held
+// N11  Z VALVE (bistable 5/2, 3/8) - coils mutually exclusive, held
 //      Y4 coil is ALSO powered through the safety relay (hardware).
 // =====================================================================
 LD      M60
