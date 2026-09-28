@@ -273,7 +273,7 @@ function cycleState(t){
 function applyState(){
   gx.position.x = st.x;
   gz.position.z = -st.z;
-  gc.position.x = -st.c;
+  gc.position.y = -st.c;
   $('sx').value = st.x; $('ox').textContent = `${Math.round(st.x)} mm`;
   $('sz').value = st.z; $('oz').textContent = st.z < 1 ? 'بالا' : st.z > ZS-1 ? 'پایین' : `${Math.round(st.z)} mm`;
   $('sc').value = st.c; $('oc').textContent = st.c < 1 ? 'روی تصویر' : st.c > CS-1 ? 'عقب' : `${Math.round(st.c)} mm`;

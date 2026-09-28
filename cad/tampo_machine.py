@@ -33,7 +33,8 @@ QUICK = "--quick" in sys.argv
 P = dict(
     Zc=945.0,          # cliché top = part top at print = working height
     base_L=1300.0,     # base frame length (X)
-    base_W=700.0,      # base frame width (Y)
+    base_Y0=-600.0,    # base frame Y extent: the ink station (cup travel 370 along Y) sits on the -Y side
+    base_Y1=350.0,
     base_top=880.0,    # top of base frame tubes
     foot_h=60.0,       # levelling feet
     tb=60.0, tb_t=4.0, # base / portal square tube 60x60x4
@@ -42,16 +43,18 @@ P = dict(
     x_print=600.0,     # X-axis position of print
     x_travel=650.0,    # usable X travel (limit switch to limit switch)
     rail_y=150.0,      # Y of the X rails (±)
+    x_belt_y=105.0,    # X belt line, inside between the rails (close to the carriage centre)
     pad_L=195.0, pad_W=140.0, pad_H=80.0,   # pad 3016
     z_stroke=100.0, pad_press=5.0,          # SC63 stroke, pad compression on cliché
     cup_od=140.0, cup_h=45.0,
-    cup_home=590.0,    # world X of cup centre when it covers the image (= pick)
-    cup_stroke=370.0,  # cup travel (measured on the existing machine)
+    cup_stroke=370.0,  # cup travel along Y, 90° to X (measured on the existing machine)
     cliche_L=580.0, cliche_W=200.0, cliche_t=10.0,
     part_h=60.0,       # sample part height at the print station
     F_print=1590.0,    # SC63 @ 5.1 bar, N
 )
 Zc = P["Zc"]
+YA = P["base_Y0"] + 30          # leg / column centre lines
+YB = P["base_Y1"] - 30
 ZT = P["base_top"]
 X_PICK = P["x_home"] + P["x_pick"]      # 590
 X_PRINT = P["x_home"] + P["x_print"]    # 1090
@@ -259,35 +262,33 @@ def build_base():
     h = tb / 2
     zb0, zb1 = P["foot_h"], ZT
     legX = (h, 900.0, P["base_L"] - h)
-    yS = P["base_W"] / 2 - h            # 320
     for x in legX:
-        for y in (-yS, yS):
+        for y in (YA, YB):
             tube("پایه", (x, y, zb0), (x, y, zb1), tb, tb, t, g, note="سرتاسری، دو سر گونیا")
     for zc in (zb1 - h, zb0 + h):
-        for y in (-yS, yS):
+        for y in (YA, YB):
             tube("طولی", (tb, y, zc), (900 - h, y, zc), tb, tb, t, g, note="بین پایه‌ها")
             tube("طولی", (900 + h, y, zc), (P["base_L"] - tb, y, zc), tb, tb, t, g, note="بین پایه‌ها")
         for x in legX:
-            tube("عرضی", (x, -yS + h, zc), (x, yS - h, zc), tb, tb, t, g, note="بین طولی‌ها")
+            tube("عرضی", (x, YA + h, zc), (x, YB - h, zc), tb, tb, t, g, note="بین طولی‌ها")
     for x in (300.0, 600.0):  # deck supports
-        tube("عرضی زیر صفحه", (x, -yS + h, zb1 - h), (x, yS - h, zb1 - h), tb, tb, t, g)
+        tube("عرضی زیر صفحه", (x, YA + h, zb1 - h), (x, YB - h, zb1 - h), tb, tb, t, g)
     # print-station sub-frame (well), top at Z 640
     zs = 640 - h
-    for y in (-yS, yS):
+    for y in (YA, YB):
         tube("طولی زیرقاب چاپ", (900 + h, y, zs), (P["base_L"] - tb, y, zs), tb, tb, t, g)
     for x in (960.0, 1210.0):
-        tube("عرضی زیرقاب چاپ", (x, -yS + h, zs), (x, yS - h, zs), tb, tb, t, g)
-    # levelling feet
+        tube("عرضی زیرقاب چاپ", (x, YA + h, zs), (x, YB - h, zs), tb, tb, t, g)
     for x in legX:
-        for y in (-yS, yS):
+        for y in (YA, YB):
             buy("B40", "پایه‌ی ترازشو M16", comp(cyl("Z", (x, y), 80, 0, 12), cyl("Z", (x, y), 16, 12, P["foot_h"])),
                 "gear", g, 0.6, "M16، کف Ø80، ظرفیت ≥ ۵۰۰ kg")
-    # deck (top plate over the ink station)
-    deck = Plate("P01", "صفحه‌ی رویی ایستگاه جوهر", 800, P["base_W"], 10, "St37",
-                 holes=[(u, v, 9) for u in (-370, -120, 130, 370) for v in (-320, 320)] +
-                       [(u, v, 9) for u in (-170, 130) for v in (-320, 320)],
+    W = P["base_Y1"] - P["base_Y0"]
+    yc = (P["base_Y0"] + P["base_Y1"]) / 2
+    deck = Plate("P01", "صفحه‌ی رویی ایستگاه جوهر", 800, W, 10, "St37",
+                 holes=[(u, v - yc, 9) for u in (-370, -170, 130, 370) for v in (YA, YB)],
                  note="با پیچ M8 روی قاب؛ سوراخ‌های نصب قطعات را بعد از چیدمان جای‌یابی کنید")
-    plate(deck, "XY", 470, 0, ZT, g, "steel")
+    plate(deck, "XY", 470, yc, ZT, g, "steel")
 
 
 # ============================================================================
@@ -297,14 +298,13 @@ def build_gantry():
     tb, t = P["tb"], P["tb_t"]
     g = "اسکلت بالا"
     h = tb / 2
-    yS = P["base_W"] / 2 - h
     portX = (40.0, 1260.0)
     for x in portX:
-        for y in (-yS, yS):
+        for y in (YA, YB):
             tube("ستون پرتال", (x, y, ZT), (x, y, CROSS_BOT), tb, tb, t, g, note="روی قاب پایین جوش")
-        tube("تیر عرضی پرتال", (x, -P["base_W"] / 2, CROSS_BOT + h), (x, P["base_W"] / 2, CROSS_BOT + h), tb, tb, t, g,
+        tube("تیر عرضی پرتال", (x, P["base_Y0"], CROSS_BOT + h), (x, P["base_Y1"], CROSS_BOT + h), tb, tb, t, g,
              note="سرتاسری روی ستون‌ها")
-    for y in (-330.0, 330.0):
+    for y in (P["base_Y0"] + 20, P["base_Y1"] - 20):
         tube("طولی بالای محافظ", (portX[0] + h, y, CROSS_TOP - 20), (portX[1] - h, y, CROSS_TOP - 20), 40, 40, 3, g,
              note="بین دو پرتال، رو با تیر عرضی")
     for y in (-P["rail_y"], P["rail_y"]):
@@ -328,7 +328,8 @@ def build_gantry():
 def build_x_carriage():
     g = "کالسکه X"
     xc = P["x_home"]           # pad centre X at axis 0
-    ycp = 17.5                 # carriage plate centre Y (plate spans Y -200..235)
+    ycp = -7.5                 # carriage plate centre Y (plate spans Y -200..185)
+    yb = P["x_belt_y"]
     # HGH20CA blocks
     for dx in (-70, 70):
         for y in (-P["rail_y"], P["rail_y"]):
@@ -344,18 +345,18 @@ def build_x_carriage():
     for dx in (-85, 85):
         holes += [(dx, -ycp, 40)] + pcd(dx, -ycp, 25.5, 4, 6.6)        # LMF25UU
     holes += rect_pattern(0, -ycp, 25, 50, 9)                          # SC63 FA flange
-    holes += [(-20, 216 - ycp, 6.6), (20, 216 - ycp, 6.6)]             # belt clamp
+    holes += [(-20, yb - ycp, 6.6), (20, yb - ycp, 6.6)]               # belt clamp
     holes += [(-45, 97 - ycp, 5.5), (45, 97 - ycp, 5.5)]               # Z valve
     holes += [(-25, -190 - ycp, 6.6), (25, -190 - ycp, 6.6)]           # drag-chain bracket
-    cp = Plate("P10", "صفحه‌ی کالسکه X", 280, 435, CP_T, "آلومینیوم 6061", holes=holes,
+    cp = Plate("P10", "صفحه‌ی کالسکه X", 280, 385, CP_T, "آلومینیوم 6061", holes=holes,
                cuts=[(0, -97.5 - ycp, 230, 45)],
                note="صفحه‌ی سبک‌شده؛ سوراخ‌های واگن M5 با فاصله‌ی 36×32 (HGH20CA)")
     plate(cp, "XY", xc, ycp, ZCP, g, "alu", mov="x")
     # belt clamp (top strand of the X belt)
     clamp = Plate("P11", "گیره‌ی تسمه X", 60, 25, 32, "آلومینیوم 6061", holes=[(-20, 0, 6.6), (20, 0, 6.6)],
                   note="دو تکه؛ شیار دندانه‌ی HTD5M در صفحه‌ی بین", process="فرز")
-    clamp_shape = box(xc - 30, xc + 30, 200, 232, ZCP - 25, ZCP)
-    machined("P11", "گیره‌ی تسمه X", clamp_shape, clamp.solid(), "آلومینیوم 6061", "alu", g, "60x32x25", mov="x")
+    clamp_shape = box(xc - 30, xc + 30, yb - 17, yb + 17, ZCP - 25, ZCP)
+    machined("P11", "گیره‌ی تسمه X", clamp_shape, clamp.solid(), "آلومینیوم 6061", "alu", g, "60x34x25", mov="x")
     # Z valve on the carriage + quick exhausts
     buy("B20", "شیر 5/2 سایز 3/8 (4V320)", box(xc - 55, xc + 55, 80, 115, ZCP + CP_T, ZCP + CP_T + 60), "valve", g,
         0.55, "Airtac 4V320-10 24VDC", mov="x")
@@ -434,49 +435,48 @@ def build_z_head():
 # 5. X DRIVE  (NEMA24 + PLF60 1:3 + HTD5M 25 mm belt)
 # ============================================================================
 def build_x_drive():
+    """Belt runs INSIDE, between the rails at Y = x_belt_y, so the drive force acts close to the
+    carriage centre. Motor + gearbox sit between the beams behind the carriage's home position."""
     g = "محرک X"
-    yb = 215.0
+    yb = P["x_belt_y"]
     xr, xf = 90.0, 1230.0
-    # rear motor bracket (L: foot on portal cross + vertical plate)
-    foot = Plate("P20", "پایه‌ی براکت موتور X", 60, 77, 12, "St37", holes=rect_pattern(0, 0, 18, 25, 9))
-    plate(foot, "XY", 40, 177 + 38.5, CROSS_TOP, g, "steel")
-    vp = Plate("P21", "براکت موتور X", 130, 151, 12, "St37",
-               holes=[(xr - 75, PULLEY_Z - 1324.5, 51)] + pcd(xr - 75, PULLEY_Z - 1324.5, 35, 4, 5.5),
+    yp0 = yb - 33                      # bracket plate (12 mm) on the -Y side of the pulley
+    ztop = PULLEY_Z + 23               # below the carriage plate
+    zc_b = (CROSS_TOP + 12 + ztop) / 2
+    hb = ztop - CROSS_TOP - 12
+    foot = Plate("P20", "پایه‌ی براکت موتور X", 60, 52, 12, "St37", holes=rect_pattern(0, 0, 18, 15, 9))
+    plate(foot, "XY", 40, yp0 + 26, CROSS_TOP, g, "steel")
+    vp = Plate("P21", "براکت موتور X", 130, hb, 12, "St37",
+               holes=[(xr - 75, PULLEY_Z - zc_b, 51)] + pcd(xr - 75, PULLEY_Z - zc_b, 35, 4, 5.5),
                note="جوش به پایه + لچکی؛ الگوی فلنج گیربکس PLF60 را با کاتالوگ تطبیق دهید")
-    plate(vp, "XZ", 75, 1249 + 75.5, 242, g, "steel")
-    buy("B03", "گیربکس خورشیدی PLF60 1:3", comp(box(xr - 30, xr + 30, 254, 264, PULLEY_Z - 30, PULLEY_Z + 30),
-                                                 cyl("Y", (xr, PULLEY_Z), 58, 264, 324)), "gear", g, 1.0,
+    plate(vp, "XZ", 75, zc_b, yp0, g, "steel")
+    buy("B03", "گیربکس خورشیدی PLF60 1:3", comp(box(xr - 30, xr + 30, yp0 - 10, yp0, PULLEY_Z - 30, PULLEY_Z + 30),
+                                                 cyl("Y", (xr, PULLEY_Z), 58, yp0 - 70, yp0 - 10)), "gear", g, 1.0,
         "PLF60-3 / EG24 1:3")
-    buy("B04", "استپر کلوزلوپ NEMA24 4 N·m (X)", comp(box(xr - 30, xr + 30, 324, 434, PULLEY_Z - 30, PULLEY_Z + 30),
-                                                      box(xr - 20, xr + 20, 434, 454, PULLEY_Z - 12, PULLEY_Z + 12)),
-        "motor", g, 1.9, "60 mm, L≈110, 4 N·m")
+    buy("B04", "استپر کلوزلوپ NEMA24 4 N·m (X)", box(xr - 30, xr + 30, yp0 - 180, yp0 - 70, PULLEY_Z - 30,
+                                                     PULLEY_Z + 30), "motor", g, 1.9, "60 mm, L≈110, 4 N·m")
     for x in (xr, xf):
         buy("B05", "پولی 24T HTD5M عرض 25", comp(cyl("Y", (x, PULLEY_Z), PD24 - 1.1, yb - 14, yb + 14),
                                                  cyl("Y", (x, PULLEY_Z), 46, yb - 16, yb - 14),
                                                  cyl("Y", (x, PULLEY_Z), 46, yb + 14, yb + 16))
-            .cut(cyl("Y", (x, PULLEY_Z), 14, yb - 20, yb + 20)), "gear", g, 0.18,
-            "24-5M-25")
-        buy("B06", "شافت پولی Ø14", cyl("Y", (x, PULLEY_Z), 14, yb - 16, 254), "gear", g, 0.05, "Ø14")
-    # front idler bracket with tension slot
-    foot2 = Plate("P22", "پایه‌ی براکت هرزگرد X", 60, 77, 12, "St37", holes=rect_pattern(0, 0, 18, 25, 9))
-    plate(foot2, "XY", 1260, 177 + 38.5, CROSS_TOP, g, "steel")
-    vp2 = Plate("P23", "براکت هرزگرد X (شیار کشش)", 110, 151, 12, "St37",
-                slots=[(xf - 1235 - 10, PULLEY_Z - 1324.5, xf - 1235 + 10, PULLEY_Z - 1324.5, 14.5)],
-                holes=[(40, PULLEY_Z - 1324.5, 8.5)],
+            .cut(cyl("Y", (x, PULLEY_Z), 14, yb - 20, yb + 20)), "gear", g, 0.18, "24-5M-25")
+        buy("B06", "شافت پولی Ø14", cyl("Y", (x, PULLEY_Z), 14, yp0 + 12, yb + 16), "gear", g, 0.05, "Ø14")
+    foot2 = Plate("P22", "پایه‌ی براکت هرزگرد X", 60, 52, 12, "St37", holes=rect_pattern(0, 0, 18, 15, 9))
+    plate(foot2, "XY", 1260, yp0 + 26, CROSS_TOP, g, "steel")
+    vp2 = Plate("P23", "براکت هرزگرد X (شیار کشش)", 110, hb, 12, "St37",
+                slots=[(xf - 1235 - 10, PULLEY_Z - zc_b, xf - 1235 + 10, PULLEY_Z - zc_b, 14.5)],
+                holes=[(40, PULLEY_Z - zc_b, 8.5)],
                 note="شیار ±10 برای کشش تسمه؛ پیچ کشش M8 از لبه")
-    plate(vp2, "XZ", 1235, 1249 + 75.5, 242, g, "steel")
-    # belt: top strand clamped to the carriage, bottom strand free
+    plate(vp2, "XZ", 1235, zc_b, yp0, g, "steel")
     r = PD24 / 2
     for z0_, z1_ in ((PULLEY_Z + r, PULLEY_Z + r + 3.6), (PULLEY_Z - r - 3.6, PULLEY_Z - r)):
         buy("B07", "تسمه HTD5M عرض 25 مغزی فولادی", box(xr, xf, yb - 12.5, yb + 12.5, z0_, z1_), "belt", g,
             0.1, "HTD5M-25 PU steel", mov=None)
-    # limit switches + home sensor on the +Y beam
     for x in (330.0, 1275.0):
         buy("B30", "لیمیت سوئیچ Omron D4N", box(x - 15, x + 15, 176, 199, BEAM_TOP - 60, BEAM_TOP - 5), "yellow",
             "سنسورها", 0.15, "D4N-1A31")
     buy("B31", "سنسور هوم M18", cyl("Z", (395, 188), 18, BEAM_TOP - 60, BEAM_TOP - 5), "gear", "سنسورها", 0.06,
         "PR18-8DN")
-    # drag chain tray on the -Y beam
     tray = Plate("P24", "سینی زنجیر کابل X", 860, 64, 2, "فولاد", note="ورق 2 خم U، ارتفاع لبه 30",
                  process="برش + خم")
     plate(tray, "XY", 825, -228, BEAM_TOP - 12, g, "steel")
@@ -493,74 +493,78 @@ def xc_chain():
 # 6. INK STATION: cliché holder + closed cup on HGR15 + belt drive
 # ============================================================================
 def build_ink():
+    """Cliché long side along Y. The cup moves along Y (90° to X), from the image under the pad path
+    (Y = 0) to the -Y side, on an HGR15 rail placed behind the cliché (smaller X)."""
     g = "ایستگاه جوهر"
-    x0c = 120.0
-    xcl = x0c + P["cliche_L"] / 2
-    ch = Plate("P30", "پایه‌ی کلیشه (بستر فرزکاری‌شده)", 600, 220, 45, "St37",
-               holes=rect_pattern(0, 0, 280, 90, 11) + rect_pattern(0, 0, 150, 0, 8.5),
+    xcl = X_PICK
+    cs = P["cup_stroke"]
+    y0c, y1c = -cs - 110, 100.0              # cliché Y extent (580)
+    ycl = (y0c + y1c) / 2
+    ch = Plate("P30", "پایه‌ی کلیشه (بستر فرزکاری‌شده)", 220, 600, 45, "St37",
+               holes=rect_pattern(0, 0, 90, 280, 11) + rect_pattern(0, 0, 0, 150, 8.5),
                note="روی سطح فرز و سنگ؛ 4× پیچ M10 به صفحه‌ی رویی، گیره‌های کلیشه با M8",
                process="فرز + سنگ")
-    plate(ch, "XY", xcl, 0, ZT + 10, g, "steel")
-    buy("B50", "کلیشه‌ی فولادی 580×200×10", box(x0c, x0c + P["cliche_L"], -P["cliche_W"] / 2, P["cliche_W"] / 2,
+    plate(ch, "XY", xcl, ycl, ZT + 10, g, "steel")
+    buy("B50", "کلیشه‌ی فولادی 580×200×10", box(xcl - P["cliche_W"] / 2, xcl + P["cliche_W"] / 2, y0c, y1c,
                                                  Zc - P["cliche_t"], Zc), "cliche", g, 9.1, "کلیشه‌ی ضخیم فولادی")
-    buy("B51", "گیره‌ی کلیشه", comp(*[box(x - 15, x + 15, y - 12, y + 12, Zc, Zc + 8)
-                                      for x in (x0c + 40, x0c + P["cliche_L"] - 40) for y in (-112, 112)]), "gear", g,
+    buy("B51", "گیره‌ی کلیشه", comp(*[box(x - 12, x + 12, y - 15, y + 15, Zc, Zc + 8)
+                                      for x in (xcl - 112, xcl + 112) for y in (y0c + 40, y1c - 40)]), "gear", g,
         0.2, "گیره‌ی لبه")
-    # cup rail riser
-    ris = box(180, 640, -195, -155, ZT + 10, CUP_RAIL_BOT)
-    machined("M10", "پایه‌ی ریل کاپ", ris, box(0, 460, 0, 40, 0, CUP_RAIL_BOT - ZT - 10), "St37", "steel", g,
-             f"460x40x{CUP_RAIL_BOT - ZT - 10:g}", note="رو فرز؛ قلاویز M4 گام 60 برای HGR15")
-    buy("B09", "ریل HIWIN HGR15 طول 460", box(180, 640, -182.5, -167.5, CUP_RAIL_BOT, CUP_RAIL_BOT + 15), "rail", g,
-        0.67, "HGR15R460C")
-    xcup = P["cup_home"]
-    blk = box(xcup - 30.7, xcup + 30.7, -192, -158, CUP_RAIL_BOT + 4.3, CUP_ARM_BOT).cut(
-        box(xcup - 32, xcup + 32, -183, -167, CUP_RAIL_BOT, CUP_RAIL_BOT + 15.5))
-    buy("B10", "واگن HIWIN HGH15CA", blk, "block",
-        g, 0.18, "HGH15CAZ0C", mov="c")
-    arm = Plate("P31", "بازوی کاپ", 60, 270, 12, "آلومینیوم 6061",
-                holes=rect_pattern(0, -175 + 105, 13, 13, 4.5) + pcd(0, 105, 25, 3, 8.5, a0=90) +
-                      [(-15, -215 + 105, 6.6), (15, -215 + 105, 6.6)],
+    # cup rail (along Y) on a riser behind the cliché
+    xr_ = xcl - 145                             # rail centre X = 445
+    ry0, ry1 = -cs - 50, 40.0
+    ris = box(xr_ - 20, xr_ + 20, ry0, ry1, ZT + 10, CUP_RAIL_BOT)
+    machined("M10", "پایه‌ی ریل کاپ", ris, box(0, 40, 0, ry1 - ry0, 0, CUP_RAIL_BOT - ZT - 10), "St37", "steel", g,
+             f"40x{ry1 - ry0:g}x{CUP_RAIL_BOT - ZT - 10:g}", note="رو فرز؛ قلاویز M4 گام 60 برای HGR15")
+    buy("B09", f"ریل HIWIN HGR15 طول {ry1 - ry0:g}", box(xr_ - 7.5, xr_ + 7.5, ry0, ry1, CUP_RAIL_BOT, CUP_RAIL_BOT + 15),
+        "rail", g, 1.45 * (ry1 - ry0) / 1000, f"HGR15R{ry1 - ry0:g}C")
+    blk = box(xr_ - 17, xr_ + 17, -30.7, 30.7, CUP_RAIL_BOT + 4.3, CUP_ARM_BOT).cut(
+        box(xr_ - 8, xr_ + 8, -32, 32, CUP_RAIL_BOT, CUP_RAIL_BOT + 15.5))
+    buy("B10", "واگن HIWIN HGH15CA", blk, "block", g, 0.18, "HGH15CAZ0C", mov="c")
+    xbelt = xr_ - 45                            # cup belt line X = 400
+    ax0, ax1 = xbelt - 20, xcl + 30             # arm X extent
+    axc = (ax0 + ax1) / 2
+    arm = Plate("P31", "بازوی کاپ", ax1 - ax0, 60, 12, "آلومینیوم 6061",
+                holes=rect_pattern(xr_ - axc, 0, 13, 13, 4.5) + pcd(xcl - axc, 0, 25, 3, 8.5, a0=0) +
+                      [(xbelt - axc, -15, 6.6), (xbelt - axc, 15, 6.6)],
                 note="3× پین فنری روی کاپ؛ نگه‌دارنده‌ی کاپ باید آزاد روی کلیشه بنشیند")
-    arm_shape = arm.place("XY", xcup, -105, CUP_ARM_BOT)
-    add("P31", arm.name, arm_shape, "plate", arm.mat, C["alu"], g, "c",
-        meta=dict(dims="60x270x12", plate=arm, process=arm.process, note=arm.note), local=arm.solid())
-    # arm is 60 wide; cup sits below the arm end, hung on 3 spring pins
-    buy("B52", "کاپ بسته Ø140 با رینگ سرامیکی", comp(cyl("Z", (xcup, 0), P["cup_od"], Zc, Zc + 8),
-                                                   cyl("Z", (xcup, 0), P["cup_od"] - 10, Zc + 8, Zc + P["cup_h"])),
+    plate(arm, "XY", axc, 0, CUP_ARM_BOT, g, "alu", mov="c")
+    buy("B52", "کاپ بسته Ø140 با رینگ سرامیکی", comp(cyl("Z", (xcl, 0), P["cup_od"], Zc, Zc + 8),
+                                                   cyl("Z", (xcl, 0), P["cup_od"] - 10, Zc + 8, Zc + P["cup_h"])),
         "cup", g, 1.6, "Ø140 (مطابق کاپ فعلی)", mov="c")
-    for (u, v, d) in pcd(xcup, 0, 25, 3, 8, a0=90):
+    for (u, v, d) in pcd(xcl, 0, 25, 3, 8, a0=0):
         buy("B53", "پین فنری کاپ", cyl("Z", (u, v), 8, Zc + P["cup_h"], CUP_ARM_BOT), "gear", g, 0.02, "Ø8", mov="c")
-    machined("P32", "گیره‌ی تسمه کاپ", box(xcup - 25, xcup + 25, -232, -198, CUP_ARM_BOT - 20, CUP_ARM_BOT),
-             box(0, 50, 0, 34, 0, 20), "آلومینیوم 6061", "alu", g, "50x34x20", mov="c")
-    # cup drive (NEMA24 direct, 24T pulley, 20 mm belt)
-    yb = -215.0
-    xr, xf = 120.0, 700.0
-    for x, code, nm in ((xr, "P33", "براکت موتور کاپ"), (xf, "P34", "براکت هرزگرد کاپ (شیار کشش)")):
-        f = Plate(code + "F", "پایه‌ی " + nm, 90, 40, 10, "St37", holes=[(-30, 0, 9), (30, 0, 9)])
-        plate(f, "XY", x, -220, ZT + 10, g, "steel")
+    machined("P32", "گیره‌ی تسمه کاپ", box(xbelt - 17, xbelt + 17, -25, 25, CUP_ARM_BOT - 20, CUP_ARM_BOT),
+             box(0, 34, 0, 50, 0, 20), "آلومینیوم 6061", "alu", g, "34x50x20", mov="c")
+    # cup drive: NEMA24 direct at the -Y end, idler at the +Y end, belt along Y
+    yr, yf = -cs - 130, 80.0
+    xpl = xbelt - 25                            # bracket plate X 375..385 (between pulley and motor)
+    for y, code, nm in ((yr, "P33", "براکت موتور کاپ"), (yf, "P34", "براکت هرزگرد کاپ (شیار کشش)")):
+        f = Plate(code + "F", "پایه‌ی " + nm, 40, 90, 10, "St37", holes=[(0, -30, 9), (0, 30, 9)])
+        plate(f, "XY", xpl + 5, y, ZT + 10, g, "steel")
         if code == "P33":
             vp = Plate(code, nm, 90, 130, 10, "St37",
                        holes=[(0, CUP_PULLEY_Z - 965, 39)] + rect_pattern(0, CUP_PULLEY_Z - 965, 23.57, 23.57, 5.2))
         else:
             vp = Plate(code, nm, 90, 130, 10, "St37",
                        slots=[(-10, CUP_PULLEY_Z - 965, 10, CUP_PULLEY_Z - 965, 12.5)])
-        plate(vp, "XZ", x, 965, -240, g, "steel")
-    buy("B11", "استپر کلوزلوپ NEMA24 4 N·m (کاپ)",
-        comp(box(xr - 30, xr + 30, -350, -240, CUP_PULLEY_Z - 30, CUP_PULLEY_Z + 30)), "motor", g, 1.9,
-        "60 mm, L≈110, 4 N·m")
-    for x in (xr, xf):
-        buy("B12", "پولی 24T گام 5 عرض 20", comp(cyl("Y", (x, CUP_PULLEY_Z), PD24 - 1.1, yb - 11, yb + 11),
-                                                 cyl("Y", (x, CUP_PULLEY_Z), 44, yb - 13, yb - 11),
-                                                 cyl("Y", (x, CUP_PULLEY_Z), 44, yb + 11, yb + 13)), "gear", g, 0.15,
-            "24-5M-20 (مطابق تسمه‌ی فعلی)")
+        plate(vp, "YZ", y, 965, xpl, g, "steel")
+    buy("B11", "استپر کلوزلوپ NEMA24 4 N·m (کاپ)", box(xpl - 110, xpl, yr - 30, yr + 30, CUP_PULLEY_Z - 30,
+                                                        CUP_PULLEY_Z + 30), "motor", g, 1.9, "60 mm, L≈110, 4 N·m")
+    for y in (yr, yf):
+        buy("B12", "پولی 24T گام 5 عرض 20", comp(cyl("X", (y, CUP_PULLEY_Z), PD24 - 1.1, xbelt - 11, xbelt + 11),
+                                                 cyl("X", (y, CUP_PULLEY_Z), 44, xbelt - 13, xbelt - 11),
+                                                 cyl("X", (y, CUP_PULLEY_Z), 44, xbelt + 11, xbelt + 13)),
+            "gear", g, 0.15, "24-5M-20 (مطابق تسمه‌ی فعلی)")
     r = PD24 / 2
     for z0_, z1_ in ((CUP_PULLEY_Z + r, CUP_PULLEY_Z + r + 3.6), (CUP_PULLEY_Z - r - 3.6, CUP_PULLEY_Z - r)):
-        buy("B13", "تسمه گام 5 عرض 20 (کاپ)", box(xr, xf, yb - 10, yb + 10, z0_, z1_), "belt", g, 0.08,
+        buy("B13", "تسمه گام 5 عرض 20 (کاپ)", box(xbelt - 10, xbelt + 10, yr, yf, z0_, z1_), "belt", g, 0.08,
             "5M-20 open")
-    for x in (170.0, 650.0):
-        buy("B30", "لیمیت سوئیچ Omron D4N", box(x - 15, x + 15, -150, -128, ZT + 10, ZT + 65), "yellow", "سنسورها",
-            0.15, "D4N-1A31")
-    buy("B31", "سنسور هوم M18", cyl("Y", (200, ZT + 45), 18, -154, -120), "gear", "سنسورها", 0.06, "PR18-8DN")
+    for y in (ry0 - 25, ry1 + 5):
+        buy("B30", "لیمیت سوئیچ Omron D4N", box(xr_ - 15, xr_ + 15, y, y + 20, ZT + 10, ZT + 65), "yellow",
+            "سنسورها", 0.15, "D4N-1A31")
+    buy("B31", "سنسور هوم M18", cyl("Z", (xr_ - 35, ry0 + 20), 18, ZT + 10, ZT + 50), "gear", "سنسورها", 0.06,
+        "PR18-8DN")
 
 
 # ============================================================================
@@ -600,21 +604,22 @@ def build_print_station():
 def build_periphery():
     g = "ایمنی و برق"
     # light curtain on the front portal columns (field between the two sticks)
-    for y in (-300.0, 300.0):
+    for y in (YA + 47.5, YB - 47.5):
         buy("B60", "پرده‌ی نوری نوع ۴، 14 mm (فرستنده / گیرنده)", box(1292, 1327, y - 17.5, y + 17.5, ZT, ZT + 310), "yellow", g, 0.6,
             "ارتفاع حفاظت ≈ 300")
     # guards (polycarbonate 5 mm)
     gd = "محافظ‌ها"
-    pr = Plate("P50", "محافظ عقب (پلی‌کربنات)", 700, CROSS_TOP - ZT, 5, "پلی‌کربنات")
-    add("P50", pr.name, pr.place("YZ", 0, (ZT + CROSS_TOP) / 2, -5), "plate", pr.mat, C["guard"], gd,
-        meta=dict(dims=f"700x{CROSS_TOP - ZT:g}x5", plate=pr, process=pr.process, note=""), local=pr.solid())
+    W = P["base_Y1"] - P["base_Y0"]
+    pr = Plate("P50", "محافظ عقب (پلی‌کربنات)", W, CROSS_TOP - ZT, 5, "پلی‌کربنات")
+    add("P50", pr.name, pr.place("YZ", (P["base_Y0"] + P["base_Y1"]) / 2, (ZT + CROSS_TOP) / 2, -5), "plate", pr.mat,
+        C["guard"], gd, meta=dict(dims=f"{W:g}x{CROSS_TOP - ZT:g}x5", plate=pr, process=pr.process, note=""), local=pr.solid())
     pr2 = Plate("P51", "محافظ کناری راست (پلی‌کربنات)", 1160, CROSS_TOP - ZT, 5, "پلی‌کربنات")
-    plate(pr2, "XZ", 650, (ZT + CROSS_TOP) / 2, 352, gd, "guard")
+    plate(pr2, "XZ", 650, (ZT + CROSS_TOP) / 2, P["base_Y1"] + 2, gd, "guard")
     pr3 = Plate("P52", "درب کناری چپ روی ایستگاه جوهر (لولایی، با سوئیچ ایمنی)", 800, CROSS_TOP - ZT, 5, "پلی‌کربنات")
-    plate(pr3, "XZ", 470, (ZT + CROSS_TOP) / 2, -357, gd, "guard")
+    plate(pr3, "XZ", 470, (ZT + CROSS_TOP) / 2, P["base_Y0"] - 7, gd, "guard")
     pr4 = Plate("P53", "محافظ کناری چپ جلو (پلی‌کربنات)", 360, CROSS_TOP - ZT, 5, "پلی‌کربنات")
-    plate(pr4, "XZ", 1050, (ZT + CROSS_TOP) / 2, -357, gd, "guard")
-    buy("B61", "سوئیچ ایمنی درب", box(860, 880, -380, -358, 1120, 1160), "yellow", g, 0.1, "Pilz PSEN / Schmersal")
+    plate(pr4, "XZ", 1050, (ZT + CROSS_TOP) / 2, P["base_Y0"] - 7, gd, "guard")
+    buy("B61", "سوئیچ ایمنی درب", box(860, 880, P["base_Y0"] - 30, P["base_Y0"] - 8, 1120, 1160), "yellow", g, 0.1, "Pilz PSEN / Schmersal")
     # HMI on a bracket at the right front column
     machined("P54", "بازوی HMI", box(1290, 1340, 300, 340, 1330, 1370), box(0, 50, 0, 40, 0, 40), "St37", "frame", g,
              "SHS 40x40x3 L50 + ورق")
@@ -622,14 +627,14 @@ def build_periphery():
                                             box(1410, 1412, 330, 510, 1290, 1420)), "hmi", g, 2.5, "DOP-107BV در جعبه")
     buy("B63", "E-Stop", comp(box(1350, 1400, 540, 585, 1270, 1320), cyl("Y", (1375, 1295), 40, 585, 610)),
         "red", g, 0.2, "XB5AS8442")
-    buy("B63", "E-Stop", comp(box(1235, 1285, -420, -350, 1050, 1120), cyl("Y", (1260, 1085), 40, -445, -420)),
+    buy("B63", "E-Stop", comp(box(1235, 1285, P["base_Y0"] - 70, P["base_Y0"], 1050, 1120), cyl("Y", (1260, 1085), 40, P["base_Y0"] - 95, P["base_Y0"] - 70)),
         "red", g, 0.2, "XB5AS8442")
     buy("B64", "چراغ برج", comp(cyl("Z", (40, -300), 60, CROSS_TOP, CROSS_TOP + 100),
                                cyl("Z", (40, -300), 60, CROSS_TOP + 100, CROSS_TOP + 150)), "green", g, 0.5, "3 رنگ")
-    buy("B65", "تابلو برق 600×800×250", comp(box(150, 750, -600, -352, 80, 880), box(170, 730, -603, -600, 100, 860)),
+    buy("B65", "تابلو برق 600×800×250", comp(box(150, 750, P["base_Y1"] + 7, P["base_Y1"] + 257, 80, 880), box(170, 730, P["base_Y1"] + 257, P["base_Y1"] + 260, 100, 860)),
         "cab", g, 28.0, "ورق 1.5، صفحه‌ی نصب")
     buy("B66", "پدال پایی", box(1450, 1750, -100, 100, 0, 90), "yellow", g, 1.2, "پدال صنعتی با قاب")
-    buy("B67", "FRL + پرشر سوئیچ", comp(box(20, 100, -420, -357, 1000, 1160)), "pneu", g, 1.2, "AW20 + ISE")
+    buy("B67", "FRL + پرشر سوئیچ", comp(box(10, 90, P["base_Y0"] - 90, P["base_Y0"] - 12, 1000, 1160)), "pneu", g, 1.2, "AW20 + ISE")
 
 
 def build_all():
@@ -660,7 +665,7 @@ def moved(p, dx=0.0, dz=0.0, dcup=0.0):
     if p["mov"] == "z":
         return s.translate(V(dx, 0, -dz))
     if p["mov"] == "c":
-        return s.translate(V(dcup, 0, 0))
+        return s.translate(V(0, dcup, 0))
     return s
 
 
@@ -755,15 +760,21 @@ def stiffness():
         b = L - a
         d = (F / 2) * a * a * b * b / (3 * E * I_beam * L)
         out.append((f"خیز تیر ریل X زیر نیروی {F:.0f} N در {lbl}", d))
-    # portal cross beam: two point loads (one per rail) at 170 mm from the columns
+    def ss(L, loads, x, I):
+        d = 0.0
+        for (Pn, a_) in loads:
+            b_ = L - a_
+            if x <= a_:
+                d += Pn * b_ * x * (L * L - b_ * b_ - x * x) / (6 * E * I * L)
+            else:
+                d += Pn * a_ * (L - x) * (L * L - a_ * a_ - (L - x) ** 2) / (6 * E * I * L)
+        return d
+    Lc = YB - YA
     R = F * (X_PRINT - 40) / L / 2
-    a = 320 - 150.0
-    Lc = 640.0
-    d = R * a * a * (3 * Lc - 4 * a) / (6 * E * I_60)
+    loads = [(R, -P["rail_y"] - YA), (R, P["rail_y"] - YA)]
+    d = max(ss(Lc, loads, a_, I_60) for _, a_ in loads)
     out.append(("خیز تیر عرضی پرتال جلو در محل تیر ریل", d))
-    # print sub-frame crosses: centre load F/2 each on 580 span
-    d = (F / 2) * 580 ** 3 / (48 * E * I_60)
-    out.append(("خیز عرضی زیرقاب چاپ", d))
+    out.append(("خیز عرضی زیرقاب چاپ", ss(Lc, [(F / 2, -YA)], -YA, I_60)))
     return out
 
 
@@ -811,6 +822,12 @@ def write_report(inter, stat, extra):
           f"* نیروی لازم در شتاب ۲.۸ m/s²: **{F:.0f} N** → گشتاور روی موتور با گیربکس ۱:۳ و پولی ۲۴ دندانه: **{T:.2f} N·m**.",
           f"* گشتاور موجود استپر ۴ N·m در ≈۱۲۵۰ rpm: ۱.۲ تا ۱.۵ N·m → حاشیه‌ی **{1.2 / T:.1f} تا {1.5 / T:.1f} برابر** ✅",
           f"* نسبت اینرسی بار به روتور: **≈ {ratio:.1f} : 1** (برای استپر کلوزلوپ تا ۱۰:۱ مناسب است).", ""]
+    o = extra["offset"]
+    L += ["## ۷. نیروی تسمه‌ی X خارج از مرکز کالسکه", "",
+          f"* مرکز جرم بخش متحرک X در Y = **{o['ycg']:.0f} mm** است. خط تسمه در Y = **{o['yb']:.0f} mm** است، پس فاصله **{o['arm']:.0f} mm** است.",
+          f"* گشتاور چرخشی (دور محور عمودی) در بیشترین شتاب: **{o['M']:.1f} N·m**.",
+          f"* این گشتاور به‌صورت نیروی جانبی روی واگن‌ها می‌نشیند: **≈ {o['Fy']:.0f} N برای هر واگن**. ظرفیت هر واگن HGH20CA حدود **17,750 N** است، یعنی کمتر از **{o['pct']:.1f}٪** ظرفیت ✅",
+          f"* در طرح قبلی که تسمه بیرون بود (Y = 215)، همین عدد {o['Fy_old']:.0f} N بود. با آوردن تسمه به داخل، نصف شد.", ""]
     with open(os.path.join(OUT, "check_report.md"), "w") as f:
         f.write("\n".join(L) + "\n")
     return "\n".join(L)
@@ -1002,7 +1019,7 @@ def main():
                                                    for s in sideplates for b in beams)),
         ("پد در انتهای کورس تا تیر عرضی پرتال جلو", min_dist(moved(pad, P["x_travel"]), front_cross["shape"])),
         ("فضای آزاد بالای قطعه تا زیر تیر عرضی جلو (دسترسی دست)", CROSS_BOT - Zc),
-        ("عرض دهانه‌ی جلو بین ستون‌ها", P["base_W"] - 2 * P["tb"]),
+        ("عرض دهانه‌ی جلو بین ستون‌ها", YB - YA - P["tb"]),
     ]
     m_all = sum(mass_of(p) for p in PARTS)
     m_x = sum(mass_of(p) for p in PARTS if p["mov"] in ("x", "z"))
@@ -1011,7 +1028,15 @@ def main():
     m_frame = sum(mass_of(p) for p in PARTS if p["kind"] == "tube")
     mass = [("کل دستگاه (بدون تابلو)", m_all - 28), ("اسکلت لوله‌ای", m_frame), ("متحرک X (کالسکه + هد Z)", m_x),
             ("متحرک Z", m_z), ("متحرک کاپ", m_c)]
-    extra = dict(dist=dist, stiff=stiffness(), mass=mass, m_x=m_x, motor=x_motor_check(m_x))
+    mv = [p for p in PARTS if p["mov"] in ("x", "z")]
+    ycg = sum(mass_of(p) * p["shape"].BoundingBox().center.y for p in mv) / m_x
+    Fdrv = x_motor_check(m_x)[0]
+    arm = abs(P["x_belt_y"] - ycg)
+    Mz = Fdrv * arm / 1000
+    Fy = Mz / 0.140 / 2          # block pairs 140 mm apart along X, two rails
+    Fy_old = Fdrv * abs(215 - ycg) / 1000 / 0.140 / 2
+    extra = dict(dist=dist, stiff=stiffness(), mass=mass, m_x=m_x, motor=x_motor_check(m_x),
+                 offset=dict(ycg=ycg, yb=P["x_belt_y"], arm=arm, M=Mz, Fy=Fy, pct=Fy / 17750 * 100, Fy_old=Fy_old))
     rep = write_report(inter, stat, extra)
     print(rep)
     if not QUICK:
