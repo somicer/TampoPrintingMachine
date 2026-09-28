@@ -146,10 +146,18 @@ input[type=range]{width:100%;accent-color:var(--accent);direction:ltr}
 </div>
 
 <script type="application/json" id="data">__DATA__</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>/*__THREE__*/</script>
+<script>/*__ORBIT__*/</script>
 <script>
 (function(){
+function fail(msg){
+  const d = document.createElement('div');
+  d.style.cssText = 'position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--muted);font-size:14px;line-height:1.9';
+  d.textContent = msg; document.getElementById('stage').appendChild(d);
+}
+if (typeof THREE === 'undefined'){ fail('کتابخانه‌ی سه‌بعدی بارگذاری نشد. صفحه را دوباره باز کنید.'); return; }
+try { const t = document.createElement('canvas'); if (!(t.getContext('webgl') || t.getContext('experimental-webgl'))) throw 0; }
+catch(e){ fail('مرورگر این دستگاه WebGL (نمایش سه‌بعدی) را پشتیبانی نمی‌کند یا خاموش است. در Chrome یا در رایانه باز کنید.'); return; }
 const D = JSON.parse(document.getElementById('data').textContent);
 const M = D.meta;
 const $ = id => document.getElementById(id);

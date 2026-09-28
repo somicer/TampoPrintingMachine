@@ -893,7 +893,10 @@ def export_viewer(summary):
     tpl = open(os.path.join(HERE, "viewer_template.html"), encoding="utf-8").read()
     js = json.dumps(data, separators=(",", ":"), ensure_ascii=False).replace("</", "<\\/")
     with open(os.path.join(OUT, "tampo_viewer.html"), "w", encoding="utf-8") as f:
-        f.write(tpl.replace("__DATA__", js))
+        vend = os.path.join(HERE, "vendor")   # three.js r128 (MIT) inlined so the viewer needs no CDN
+        three = open(os.path.join(vend, "three.min.js"), encoding="utf-8").read().replace("</script", "<\\/script")
+        orbit = open(os.path.join(vend, "OrbitControls.js"), encoding="utf-8").read().replace("</script", "<\\/script")
+        f.write(tpl.replace("__DATA__", js).replace("/*__THREE__*/", three).replace("/*__ORBIT__*/", orbit))
 
 
 def export_ga():
