@@ -90,7 +90,7 @@
 ### ✅ S12: Manual jog X homed (soft limits, hold-to-run)
 
 - ✅ homing
-- ✅ jog+ stops at soft max 1010 mm
+- ✅ jog+ stops at soft max 750 mm
 - ✅ release stops jog-
 - ✅ no alarm
 
@@ -392,9 +392,9 @@
 - ✅ D541 500 -> 100
 - ✅ D554 -1 -> 0
 - ✅ D555 20 -> 9
-- ✅ D500 20000 -> 10100
+- ✅ D500 20000 -> 7500
 - ✅ D500 -50 -> 0
-- ✅ D502 20000 -> 10100
+- ✅ D502 20000 -> 7500
 - ✅ D502 -50 -> 0
 
 ### ✅ S46: Homing: Y sensor stuck ON -> A12

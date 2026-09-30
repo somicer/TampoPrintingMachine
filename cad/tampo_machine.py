@@ -36,7 +36,8 @@ QUICK = "--quick" in sys.argv
 P = dict(
     Zc=945.0,          # cliché top = part top at print = working height
     body_L=600.0,      # machine body length (X): holds the ink station only
-    reach=700.0,       # how far the pad centre reaches beyond the body front (disc table is outside)
+    x_travel=750.0,    # usable X travel (pad centre from home to the furthest print point)
+    rail_margin=40.0,  # rail length beyond the block envelope at each end of travel (overtravel, braking)
     base_Y0=-600.0,    # base frame Y extent: the ink station (cup travel 370 along Y) sits on the -Y side
     base_Y1=350.0,
     base_top=880.0,    # top of base frame tubes
@@ -60,12 +61,12 @@ Zc = P["Zc"]
 YA = P["base_Y0"] + 30          # leg / column centre lines
 YB = P["base_Y1"] - 30
 ZT = P["base_top"]
-P["x_travel"] = P["body_L"] + P["reach"] - P["x_home"]      # 1010 usable X travel
+P["reach"] = P["x_home"] + P["x_travel"] - P["body_L"]      # pad reach beyond the body front (440)
 X_PICK = P["x_home"] + P["x_pick"]      # 340
 X_PRINT = P["x_home"] + P["x_print"]    # 785
 X_FRONT = P["body_L"]                   # body front face
 X_FP = X_FRONT - 30                     # front post centre line
-X_REACH = P["x_home"] + P["x_travel"]   # 1300 furthest pad centre
+X_REACH = P["x_home"] + P["x_travel"]   # 1040 furthest pad centre
 X_DISC = X_FRONT + P["disc_gap"] + P["disc_od"] / 2   # disc / table centre 1160
 X_END = X_REACH + 190                   # beam tip (end cross member outer face)
 PAD_UP_BOTTOM = Zc + P["z_stroke"] - P["pad_press"]          # 1040
@@ -386,10 +387,12 @@ def build_gantry():
         end_cap(box(10, 70, yy, yy + 2, CROSS_BOT, CROSS_TOP), g)
     tube("عرضی سر تیرها", (X_END - h, -ry - 30, CROSS_BOT + h), (X_END - h, ry + 30, CROSS_BOT + h), tb, tb, t, g,
          note="زیر سر آزاد دو تیر؛ هرزگرد X رویش")
-    r0 = P["x_home"] - 115
-    r1 = X_REACH + 115
-    rl = round(r1 - r0, -1)
-    n = int(rl // 60)
+    # HIWIN standard length: L = (n-1)*60 + 2*20, covering travel + block envelope (2 x 108.75) + margins
+    need = P["x_travel"] + 217.5 + 2 * P["rail_margin"]
+    n = int(math.ceil((need - 40) / 60)) + 1
+    rl = (n - 1) * 60 + 40
+    r0 = (P["x_home"] + X_REACH) / 2 - rl / 2
+    r1 = r0 + rl
     for y in (-ry, ry):
         bar = Plate("P02", "تسمه‌ی نصب ریل X (سنگ‌خورده)", rl, 40, 15, "CK45",
                     holes=[(-rl / 2 + 20 + 60 * i, 0, 4.2) for i in range(n)] +
@@ -1015,6 +1018,13 @@ def write_report(inter, stat, extra):
     for nm, lo, hi, want in extra["sens"]:
         L.append(f"| {nm} | از {lo:.1f} تا {hi:.1f} mm | {want} |")
     L += ["", "حدود واقعی کمی (حدود ۱ تا ۲ mm) با این عددها فرق دارد، چون سطح حس سنسور ۱۲ mm قطر دارد. هنگام راه‌اندازی، هر سنسور را با شیار براکت طوری تنظیم کنید که چراغ آن دقیقاً در همین نقطه‌ها روشن و خاموش شود.", ""]
+    r = extra["rail"]
+    L += ["## ۹. ریل‌های X", "",
+          f"* طول هر ریل HGR20: **{r['L']:.0f} mm** (استاندارد HIWIN: گام سوراخ ۶۰، از هر سر ۲۰ mm).",
+          f"* کورس X: {P['x_travel']:g} mm. فاصله‌ی اطمینان ریل بعد از واگن‌ها: **{r['m0']:.0f} mm** در ابتدای کورس و **{r['m1']:.0f} mm** در انتها (برای رد شدن از لیمیت سوئیچ و ترمز).",
+          f"* بار چاپ روی هر واگن: **{r['per_block']:.0f} N** (نیرو رو به بالا). ظرفیت ایستای هر واگن HGH20CA: 27,760 N، یعنی ضریب اطمینان **{27760 / r['per_block']:.0f}**. حتی با ضربه‌ی دو برابر، ضریب **{27760 / r['per_block'] / 2:.0f}** است (HIWIN برای ضربه ۳ تا ۵ را کافی می‌داند).",
+          "* واگن‌های سری HG در هر چهار جهت (پایین، بالا، چپ و راست) ظرفیت برابر دارند، پس کشیده شدن رو به بالا مشکلی ندارد.",
+          "* در حین حرکت X، پد بالاست (قانون «پد روی سطح = X ساکن»)، پس واگن‌ها در حرکت فقط وزن کالسکه را می‌برند.", ""]
     with open(os.path.join(OUT, "check_report.md"), "w") as f:
         f.write("\n".join(L) + "\n")
     return "\n".join(L)
@@ -1246,6 +1256,12 @@ def main():
         lo, hi = max(0.0, fb.zmin - zc_), min(P["z_stroke"], fb.zmax - zc_)
         sens.append((nm, lo, hi, want))
     extra["sens"] = sens
+    rail = [q for q in PARTS if q["code"] == "B01"][0]["shape"].BoundingBox()
+    blk = find("B02")
+    bx0 = min(q["shape"].BoundingBox().xmin for q in blk)
+    bx1 = max(q["shape"].BoundingBox().xmax for q in blk)
+    extra["rail"] = dict(L=rail.xlen, m0=bx0 - rail.xmin, m1=rail.xmax - (bx1 + P["x_travel"]),
+                         per_block=P["F_print"] / 4)
     rep = write_report(inter, stat, extra)
     print(rep)
     if not QUICK:

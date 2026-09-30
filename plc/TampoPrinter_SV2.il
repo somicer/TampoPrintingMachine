@@ -1800,7 +1800,7 @@ DMOV    K33333      D520            // Y pulses / 1000 mm
 DMOV    K500        D500            // X pick-up pos    50.0 mm
 DMOV    K4950       D502            // X print pos     495.0 mm (disc Ø1000, r 375)
 DMOV    K500        D504            // X park (homing) pos = pick
-DMOV    K10100      D506            // X soft max     1010.0 mm (700 mm beyond the body)
+DMOV    K7500       D506            // X soft max      750.0 mm (X travel 75 cm)
 DMOV    K0          D508            // X cliche zone min   0.0 mm
 DMOV    K2000       D510            // X cliche zone max 200.0 mm
 DMOV    K50         D512            // Y park pos        5.0 mm

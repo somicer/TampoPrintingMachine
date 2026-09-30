@@ -239,13 +239,13 @@ def S12(s, c):
     s.run(12)
     s.plc.bits["M104"] = False
     s.run(0.3)
-    ck(c, "jog+ stops at soft max 1010 mm", abs(s.xpos() - 1010) < 1)
+    ck(c, "jog+ stops at soft max 750 mm", abs(s.xpos() - 750) < 1)
     s.plc.bits["M105"] = True
     s.run(1.0)
     s.plc.bits["M105"] = False
     s.run(0.3)
     x = s.xpos()
-    ck(c, "release stops jog-", 0 < x < 1010 and not s.b("M1336"))
+    ck(c, "release stops jog-", 0 < x < 750 and not s.b("M1336"))
     ck(c, "no alarm", clean(s))
 
 
@@ -731,7 +731,7 @@ def S45(s, c):
         P.put(d, v)
         s.run(0.02)
         ck(c, "%s %d -> %d" % (d, v, want), s.w(d) == want)
-    for d, v, want in [("D500", 20000, 10100), ("D500", -50, 0), ("D502", 20000, 10100), ("D502", -50, 0)]:
+    for d, v, want in [("D500", 20000, 7500), ("D500", -50, 0), ("D502", 20000, 7500), ("D502", -50, 0)]:
         P.put(d, v, True)
         s.run(0.02)
         ck(c, "%s %d -> %d" % (d, v, want), s.w(d, True) == want)

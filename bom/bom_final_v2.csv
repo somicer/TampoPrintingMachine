@@ -11,7 +11,7 @@ group,item,spec,qty,usd_min,usd_max,basis,source
 حرکت,گیربکس X,خورشیدی NEMA24 (فلنج ۶۰)، نسبت ۱:۳، لقی ≤ ۱۵ آرک‌دقیقه,1,100,150,estimate,https://www.omc-stepperonline.com/nema-24-eg-series-planetary-gearbox
 تغذیه,منبع ۴۸ ولت,MeanWell NDR-480-48 (۴۸V / ۱۰A),1,106,106,search,https://www.digikey.com/en/products/detail/mean-well-usa-inc/NDR-480-48/7705225
 تغذیه,منبع ۲۴ ولت,MeanWell LRS-150-24,1,18,18,search,https://www.digikey.com/en/products/detail/mean-well-usa-inc/LRS-150-24/7705015
-مکانیک X,ریل,HIWIN HGR20، طول ۱۲۴۰ mm,2,55,97,estimate,https://motionconstrained.com/store/hiwin-linear-guides/hiwin-hg-series-linear-guides/hg-rails-only/hiwin-hgr20r-linear-guideway-rail/
+مکانیک X,ریل,HIWIN HGR20، طول ۱۰۶۰ mm,2,47,83,estimate,https://motionconstrained.com/store/hiwin-linear-guides/hiwin-hg-series-linear-guides/hg-rails-only/hiwin-hgr20r-linear-guideway-rail/
 مکانیک X,واگن,HIWIN HGH20CA,4,23,83,search,https://www.ebay.com/itm/174586829684
 مکانیک X,تسمه X (متر),HTD5M عرض ۲۵ mm، پلی‌یورتان با مغزی فولادی، مدار باز,3,10,25,estimate,
 مکانیک X,پولی X,۲۴ دندانه HTD5M برای تسمه‌ی ۲۵ mm (یکی محرک، یکی هرزگرد),2,5,20,search,https://bepltd.com/products/24-5m-15-htd-pilot-bore-5m-timing-belt-pulley-24-tooth-x-15mm-wide
